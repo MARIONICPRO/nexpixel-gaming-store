@@ -1,0 +1,305 @@
+/* ===== MODALES.CSS - VERSIÓN AZUL ===== */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.9);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal {
+    background: #0a1a2f; /* Azul oscuro */
+    border: 2px solid #2a6fdb; /* Azul */
+    border-radius: 15px;
+    padding: 2rem;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: modalFadeIn 0.3s ease;
+    box-shadow: 0 10px 30px rgba(42, 111, 219, 0.3);
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: #aaccff; /* Azul muy claro */
+    font-size: 1.5rem;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s;
+}
+
+.modal-close:hover {
+    background: #2a6fdb; /* Azul */
+    color: white;
+}
+
+.modal h2 {
+    color: #4d8cff; /* Azul claro */
+    margin-bottom: 2rem;
+    text-align: center;
+    font-size: 2rem;
+    text-shadow: 0 0 10px rgba(77, 140, 255, 0.3);
+}
+
+.modal-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #2a3f5f; /* Azul grisáceo */
+    padding-bottom: 1rem;
+}
+
+.modal-tab {
+    flex: 1;
+    padding: 0.8rem;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s;
+    font-weight: bold;
+    color: #aaccff; /* Azul muy claro */
+}
+
+.modal-tab:hover {
+    background: rgba(42, 111, 219, 0.2); /* Azul semitransparente */
+    color: white;
+}
+
+.modal-tab.active {
+    background: #2a6fdb; /* Azul */
+    color: white;
+}
+
+.modal-form {
+    display: none;
+}
+
+.modal-form.active {
+    display: block;
+}
+
+/* ===== FORMULARIOS DENTRO DEL MODAL ===== */
+.modal .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.modal .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #aaccff; /* Azul muy claro */
+    font-weight: 500;
+}
+
+.modal .form-group input,
+.modal .form-group select,
+.modal .form-group textarea {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    background: #1a2f4f; /* Azul oscuro */
+    border: 2px solid #2a6fdb; /* Azul */
+    border-radius: 8px;
+    color: white;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.modal .form-group input:focus,
+.modal .form-group select:focus,
+.modal .form-group textarea:focus {
+    outline: none;
+    border-color: #4d8cff; /* Azul claro */
+    box-shadow: 0 0 0 3px rgba(77, 140, 255, 0.2);
+}
+
+.modal .form-group input::placeholder,
+.modal .form-group textarea::placeholder {
+    color: #6688aa; /* Azul grisáceo */
+}
+
+/* ===== BOTÓN PRINCIPAL DEL MODAL ===== */
+.btn-modal {
+    width: 100%;
+    padding: 1rem;
+    background: #2a6fdb; /* Azul */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin: 1rem 0;
+    box-shadow: 0 4px 15px rgba(42, 111, 219, 0.3);
+}
+
+.btn-modal:hover {
+    background: #4d8cff; /* Azul claro */
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(42, 111, 219, 0.5);
+}
+
+/* ===== ENLACES DE CAMBIO (login/registro) ===== */
+.modal-switch {
+    text-align: center;
+    color: #aaccff; /* Azul muy claro */
+    margin-top: 1rem;
+}
+
+.modal-switch a {
+    color: #4d8cff; /* Azul claro */
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.modal-switch a:hover {
+    color: #2a6fdb; /* Azul */
+    text-decoration: underline;
+}
+
+/* ===== SUBIDA DE FOTO ===== */
+.foto-upload-modal {
+    border: 2px dashed #2a6fdb; /* Azul */
+    padding: 1.5rem;
+    text-align: center;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-bottom: 1rem;
+    background: rgba(26, 47, 79, 0.5);
+}
+
+.foto-upload-modal:hover {
+    background: rgba(42, 111, 219, 0.1); /* Azul semitransparente */
+    border-color: #4d8cff; /* Azul claro */
+}
+
+.foto-preview-modal {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin: 1rem auto;
+    object-fit: cover;
+    display: none;
+    border: 3px solid #2a6fdb; /* Azul */
+    box-shadow: 0 0 15px rgba(42, 111, 219, 0.5);
+}
+
+.foto-preview-modal[src] {
+    display: block;
+}
+
+/* ===== REQUISITOS DE CONTRASEÑA ===== */
+.password-requirements {
+    background: #1a2f4f; /* Azul oscuro */
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+    border: 1px solid #2a3f5f; /* Azul grisáceo */
+}
+
+.password-requirements p {
+    color: #aaccff; /* Azul muy claro */
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.requirement {
+    color: #aaccff; /* Azul muy claro */
+    margin-left: 1rem;
+    margin-bottom: 0.3rem;
+}
+
+.requirement.valid {
+    color: #4caf50; /* Verde (se mantiene para indicar éxito) */
+}
+
+.requirement.invalid {
+    color: #f44336; /* Rojo (se mantiene para indicar error) */
+}
+
+/* ===== SELECT DENTRO DEL MODAL ===== */
+.modal select {
+    width: 100%;
+    padding: 0.8rem;
+    background: #1a2f4f;
+    border: 2px solid #2a6fdb;
+    border-radius: 8px;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.modal select:focus {
+    outline: none;
+    border-color: #4d8cff;
+}
+
+.modal select option {
+    background: #0a1a2f;
+    color: white;
+}
+
+/* ===== CAMPOS DE PROVEEDOR ===== */
+#proveedor-campos {
+    background: rgba(26, 47, 79, 0.5);
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    border-left: 3px solid #2a6fdb;
+}
+
+#proveedor-campos h4 {
+    color: #4d8cff;
+    margin-bottom: 1rem;
+}
+
+/* ===== RESPONSIVE ===== */
+@media screen and (max-width: 480px) {
+    .modal {
+        padding: 1.5rem;
+    }
+    
+    .modal h2 {
+        font-size: 1.5rem;
+    }
+    
+    .modal-tabs {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarjetas - NexPixel</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/modales.css">
+    <link rel="stylesheet" href="css/tarjetas.css">
+</head>
+<body>
+    <!-- Botón menú hamburguesa para móvil -->
+    <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">☰</button>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar"></div>
+
+    <!-- Contenido principal -->
+    <div class="content">
+        <!-- Header con título y botón de filtros -->
+        <div class="page-header">
+            <h2>💳 Tarjetas</h2>
+            <button class="filter-toggle-btn" id="toggleFiltrosBtn" onclick="toggleFiltrosPanel()">
+                <span>🔍</span> Filtros
+                <span class="filter-icon">▼</span>
+            </button>
+        </div>
+
+        <div class="tarjetas-container with-filters" id="tarjetasContainer">
+            <!-- Panel de filtros (ocultable) -->
+            <div class="filtros-panel" id="filtrosPanel">
+                <h3>
+                    Filtrar Tarjetas
+                    <button class="close-filtros-btn" onclick="toggleFiltrosPanel()">✕</button>
+                </h3>
+                
+                <div class="filtro-grupo">
+                    <h4>Tipo de tarjeta</h4>
+                    <label class="filtro-opcion">
+                        <input type="radio" name="tipo" value="todos" checked onchange="aplicarFiltros()"> Todas
+                    </label>
+                    <label class="filtro-opcion">
+                        <input type="radio" name="tipo" value="regalo" onchange="aplicarFiltros()"> Tarjeta de regalo
+                    </label>
+                    <label class="filtro-opcion">
+                        <input type="radio" name="tipo" value="suscripcion" onchange="aplicarFiltros()"> Suscripción
+                    </label>
+                </div>
+
+                <div class="filtro-grupo">
+                    <h4>Plataforma</h4>
+                    <div id="filtro-plataformas"></div>
+                </div>
+
+                <div class="filtro-grupo">
+                    <h4>Valor</h4>
+                    <select class="filtro-select" id="filtro-valor" onchange="aplicarFiltros()">
+                        <option value="">Todos</option>
+                        <option value="50000">$50,000</option>
+                        <option value="100000">$100,000</option>
+                        <option value="200000">$200,000</option>
+                        <option value="500000">$500,000</option>
+                    </select>
+                </div>
+
+                <button class="btn-filtrar" onclick="aplicarFiltros()">Aplicar filtros</button>
+            </div>
+
+            <!-- Grid de tarjetas -->
+            <main>
+                <!-- Barra de búsqueda -->
+                <div class="search-section">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Buscar tarjetas..." oninput="buscarTarjetas()">
+                </div>
+
+                <div class="resultados-header">
+                    <span class="resultados-count" id="resultados-count">Cargando tarjetas...</span>
+                    <select class="ordenar-select" id="ordenar" onchange="ordenarProductos()">
+                        <option value="relevancia">Relevancia</option>
+                        <option value="precio-asc">Menor precio</option>
+                        <option value="precio-desc">Mayor precio</option>
+                        <option value="nombre">Nombre A-Z</option>
+                    </select>
+                </div>
+
+                <div id="tarjetas-grid" class="tarjetas-grid">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Cargando tarjetas...</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Botón flotante carrito -->
+    <a href="carrito.html" class="cart-floating" id="cartFloating">
+        🛒
+        <span class="cart-badge" id="cartCount">0</span>
+    </a>
+
+    <!-- Modales -->
+    <div class="modal-overlay" id="auth-modal"></div>
+    <div class="modal-overlay" id="perfil-modal"></div>
+  <!-- ✅ SCRIPTS CORRECTOS PARA NODE.JS -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script src="js/modales.js"></script>
+    <script src="js/productos.js"></script>
+    <script src="js/carrito-db.js"></script>
+    <script src="js/ia-db.js"></script>
+    <script src="js/compras.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

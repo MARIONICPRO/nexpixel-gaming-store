@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Producto - NexPixel</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/modales.css">
+    <link rel="stylesheet" href="css/producto.css">
+</head>
+
+<body>
+    <!-- Botón menú hamburguesa para móvil -->
+    <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">☰</button>
+    
+    <div class="sidebar" id="sidebar"></div>
+
+    <div class="content">
+        <div id="producto-container" class="producto-detalle-page">
+            <!-- El contenido se cargará aquí -->
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Cargando producto...</p>
+            </div>
+        </div>
+
+        <section class="recomendaciones">
+            <h2>🎮 Productos similares</h2>
+            <div id="productos-similares" class="productos-grid">
+                <!-- Se cargarán aquí -->
+            </div>
+        </section>
+    </div>
+
+    <a href="carrito.html" class="cart-floating" id="cartFloating">
+        🛒
+        <span class="cart-badge" id="cartCount">0</span>
+    </a>
+
+    <div class="modal-overlay" id="auth-modal"></div>
+    <div class="modal-overlay" id="perfil-modal"></div>
+
+    <!-- ✅ SCRIPTS CORRECTOS PARA NODE.JS -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script src="js/modales.js"></script>
+    <script src="js/productos.js"></script>
+    <script src="js/carrito-db.js"></script>
+    <script src="js/ia-db.js"></script>
+    <script src="js/compras.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>

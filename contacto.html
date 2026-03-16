@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacto - NexPixel</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/modales.css">
+    <link rel="stylesheet" href="css/contacto.css">
+</head>
+
+<body>
+    <!-- Botón menú hamburguesa para móvil -->
+<button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">☰</button>
+    <!-- BARRA LATERAL -->
+    <div class="sidebar" id="sidebar"></div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="content">
+        <div class="contacto-container">
+            <div class="info-contacto">
+                <h2>📞 Contáctanos</h2>
+                <p>¿Tienes dudas o problemas? Estamos aquí para ayudarte.</p>
+
+                <div class="metodos-contacto">
+                    <div class="metodo-item">
+                        <div class="metodo-icono">📧</div>
+                        <div>
+                            <h4>Email</h4>
+                            <p>soporte@nexpixel.com</p>
+                        </div>
+                    </div>
+                    <div class="metodo-item">
+                        <div class="metodo-icono">📱</div>
+                        <div>
+                            <h4>WhatsApp</h4>
+                            <p>+57 300 123 4567</p>
+                        </div>
+                    </div>
+                    <div class="metodo-item">
+                        <div class="metodo-icono">💬</div>
+                        <div>
+                            <h4>Chat</h4>
+                            <p>24/7 en línea</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="formulario-contacto">
+                <h2>Enviar mensaje</h2>
+                <form id="form-contacto" onsubmit="return enviarMensaje(event)">
+                    <div class="form-group">
+                        <input type="text" id="contacto-nombre" placeholder="Tu nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="contacto-email" placeholder="Tu email" required>
+                    </div>
+                    <div class="form-group">
+                        <select id="contacto-tipo" required>
+                            <option value="">Selecciona un motivo</option>
+                            <option value="duda">Duda sobre producto</option>
+                            <option value="problema">Problema con compra</option>
+                            <option value="devolucion">Solicitar devolución</option>
+                            <option value="proveedor">Ser proveedor</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="contacto-mensaje" rows="5" placeholder="Tu mensaje" required></textarea>
+                    </div>
+                    <button type="submit" class="btn-enviar">Enviar mensaje</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <a href="carrito.html" class="cart-floating" id="cartFloating">
+        🛒
+        <span class="cart-badge" id="cartCount">0</span>
+    </a>
+
+
+    <!-- MODALES -->
+    <div class="modal-overlay" id="auth-modal"></div>
+    <div class="modal-overlay" id="perfil-modal"></div>
+
+     <!-- ✅ SCRIPTS CORRECTOS PARA NODE.JS -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script src="js/modales.js"></script>
+    <script src="js/productos.js"></script>
+    <script src="js/carrito-db.js"></script>
+    <script src="js/ia-db.js"></script>
+    <script src="js/compras.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>

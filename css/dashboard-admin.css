@@ -1,0 +1,281 @@
+/* ============================================
+   NEXPIXEL - DASHBOARD ADMIN (VERSIÓN CORREGIDA)
+   ============================================ */
+
+/* Contenedor principal */
+.dashboard-header {
+    margin-bottom: 2rem;
+}
+
+.dashboard-header h1 {
+    color: #4d8cff;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    border-left: 5px solid #2a6fdb;
+    padding-left: 1rem;
+}
+
+/* Grid de estadísticas */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: rgba(16, 36, 64, 0.8);
+    padding: 1.5rem;
+    border-radius: 10px;
+    text-align: center;
+    border: 1px solid rgba(77, 140, 255, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+.stat-card h4 {
+    color: #aaccff;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: normal;
+}
+
+.stat-card .stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #4d8cff;
+}
+
+/* Tabs de navegación */
+.dashboard-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(77, 140, 255, 0.2);
+    padding-bottom: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.tab-btn {
+    padding: 0.8rem 1.5rem;
+    background: transparent;
+    border: none;
+    color: #aaccff;
+    cursor: pointer;
+    font-size: 1rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.tab-btn:hover {
+    background: rgba(77, 140, 255, 0.1);
+    color: white;
+}
+
+.tab-btn.active {
+    background: #2a6fdb;
+    color: white;
+}
+
+/* Contenido del dashboard */
+.dashboard-content {
+    background: rgba(16, 36, 64, 0.8);
+    border-radius: 12px;
+    padding: 2rem;
+    border: 1px solid rgba(77, 140, 255, 0.2);
+    backdrop-filter: blur(10px);
+    color: white;
+    min-height: 400px;
+}
+
+/* Tablas */
+.dashboard-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.dashboard-content th {
+    text-align: left;
+    padding: 1rem;
+    background: rgba(26, 47, 79, 0.8);
+    color: #aaccff;
+    font-weight: 500;
+    border-bottom: 2px solid rgba(77, 140, 255, 0.3);
+}
+
+.dashboard-content td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(77, 140, 255, 0.1);
+    color: white;
+}
+
+/* Badges */
+.badge {
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.badge-success {
+    background: rgba(76, 175, 80, 0.2);
+    color: #81c784;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.badge-warning {
+    background: rgba(255, 193, 7, 0.2);
+    color: #ffb74d;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.badge-danger {
+    background: rgba(244, 67, 54, 0.2);
+    color: #ff8a80;
+    border: 1px solid rgba(244, 67, 54, 0.3);
+}
+
+.badge-info {
+    background: rgba(33, 150, 243, 0.2);
+    color: #64b5f6;
+    border: 1px solid rgba(33, 150, 243, 0.3);
+}
+
+/* Botones de acción */
+.btn-action {
+    padding: 0.4rem 0.8rem;
+    margin: 0 0.2rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.btn-edit {
+    background: rgba(76, 175, 80, 0.2);
+    color: #81c784;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.btn-edit:hover {
+    background: #4caf50;
+    color: white;
+}
+
+.btn-delete {
+    background: rgba(244, 67, 54, 0.2);
+    color: #ff8a80;
+    border: 1px solid rgba(244, 67, 54, 0.3);
+}
+
+.btn-delete:hover {
+    background: #f44336;
+    color: white;
+}
+
+/* Select dentro de tablas */
+.dashboard-content select {
+    background: rgba(26, 47, 79, 0.8);
+    border: 1px solid rgba(77, 140, 255, 0.3);
+    color: white;
+    padding: 0.4rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.dashboard-content select:focus {
+    outline: none;
+    border-color: #4d8cff;
+}
+
+.dashboard-content select option {
+    background: #0a1a2f;
+    color: white;
+}
+
+/* Responsive */
+@media screen and (max-width: 1024px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .dashboard-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .dashboard-tabs {
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+
+    .tab-btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .dashboard-content {
+        padding: 1rem;
+        overflow-x: auto;
+    }
+
+    .dashboard-content table {
+        font-size: 0.9rem;
+    }
+
+    .dashboard-content th,
+    .dashboard-content td {
+        padding: 0.8rem 0.5rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .dashboard-content table {
+        font-size: 0.8rem;
+    }
+
+    .btn-action {
+        padding: 0.3rem 0.5rem;
+        font-size: 0.8rem;
+    }
+}
+/* ===== CORRECCIÓN PARA LA BARRA LATERAL ===== */
+
+/* Asegurar que el body tenga el layout correcto */
+body {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+/* La sidebar ya tiene position:fixed en sidebar.css, 
+   pero necesitamos que el contenido tenga el margen correcto */
+.content {
+    margin-left: 280px !important; /* Forzar el margen */
+    width: calc(100% - 280px);
+    padding: 2rem;
+    min-height: 100vh;
+    background: rgba(5, 10, 20, 0.7);
+    backdrop-filter: blur(10px);
+    box-sizing: border-box;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+    .content {
+        margin-left: 0 !important;
+        width: 100%;
+        padding: 1rem;
+        padding-top: 70px;
+    }
+}

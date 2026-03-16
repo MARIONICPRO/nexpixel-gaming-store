@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito - NexPixel</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/carrito.css">
+    <link rel="stylesheet" href="css/modales.css">
+</head>
+<body class="carrito-page">
+    <div class="carrito-wrapper">
+        <div class="carrito-header">
+            <h1>🛒 Tu Carrito de Compras</h1>
+            <a href="index.html" class="btn-volver">← Seguir comprando</a>
+        </div>
+
+        <div class="carrito-container">
+            <div class="carrito-productos">
+                <h2>Productos seleccionados</h2>
+                <div id="carrito-items" class="carrito-items"></div>
+            </div>
+
+            <div class="panel-pago">
+                <h2>Proceso de pago</h2>
+                
+                <!-- Campos comunes para todos los métodos -->
+                <div id="campos-comunes">
+                    <div class="form-group">
+                        <label>Nombre completo</label>
+                        <input type="text" id="pago-nombre" placeholder="Ej: Juan Pérez" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Documento de identidad</label>
+                        <input type="text" id="pago-documento" placeholder="Ej: 123456789" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Correo electrónico</label>
+                        <input type="email" id="pago-email" placeholder="ejemplo@correo.com" required>
+                    </div>
+                </div>
+                
+                <!-- Métodos de pago -->
+                <h3>Método de pago</h3>
+                <div class="metodos-pago">
+                    <div class="metodo-pago" data-metodo="nequi" onclick="seleccionarMetodo('nequi')">
+                        <span>Nequi</span>
+                    </div>
+                    <div class="metodo-pago" data-metodo="daviplata" onclick="seleccionarMetodo('daviplata')">
+                        <span>Daviplata</span>
+                    </div>
+                    <div class="metodo-pago" data-metodo="visa" onclick="seleccionarMetodo('visa')">
+                
+                        <span>Visa</span>
+                    </div>
+                    <div class="metodo-pago" data-metodo="efecty" onclick="seleccionarMetodo('efecty')">
+
+                        <span>Efecty</span>
+                    </div>
+                </div>
+
+                <!-- Contenedor para campos específicos según método de pago -->
+                <div id="campos-especificos" class="campos-especificos"></div>
+
+                <!-- Total y botón confirmar -->
+                <div class="total-pagar">
+                    <span>Total a pagar:</span>
+                    <span id="total-pagar">$0</span>
+                </div>
+                
+                <button class="btn-confirmar" onclick="confirmarPago()">Confirmar pago</button>
+            </div>
+        </div>
+
+        <div class="recomendaciones-carrito">
+            <h3>✨ También te puede interesar</h3>
+            <div id="recomendaciones-carrito" class="recomendaciones-mini"></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="auth-modal"></div>
+    <div class="modal-overlay" id="perfil-modal"></div>
+
+    <!-- PRIMERO: API client -->
+<script src="js/api.js"></script>
+
+<!-- SEGUNDO: Auth (depende de API) -->
+<script src="js/auth.js"></script>
+
+  <!-- ✅ SCRIPTS CORRECTOS PARA NODE.JS -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/modales.js"></script>
+    <script src="js/productos.js"></script>
+    <script src="js/carrito-db.js"></script>
+    <script src="js/ia-db.js"></script>
+    <script src="js/compras.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,278 @@
+/* ============================================
+   NEXPIXEL - PÁGINA DE DETALLE DE PRODUCTO
+   =========================================== */
+
+/* Contenedor principal del detalle */
+.producto-detalle-page {
+    margin-bottom: 3rem;
+}
+
+/* ===== DETALLE DEL PRODUCTO ===== */
+.producto-detalle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    background: rgba(16, 36, 64, 0.8);
+    border-radius: 20px;
+    padding: 2.5rem;
+    border: 1px solid rgba(77, 140, 255, 0.3);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    margin-bottom: 2rem;
+}
+
+/* Imagen del producto */
+.producto-detalle-imagen {
+    border-radius: 15px;
+    overflow: hidden;
+    border: 2px solid rgba(77, 140, 255, 0.5);
+    box-shadow: 0 0 30px rgba(77, 140, 255, 0.3);
+    background: linear-gradient(135deg, #1a2f4f, #0a1a2f);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1/1;
+}
+
+.producto-detalle-imagen img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.producto-detalle-imagen img:hover {
+    transform: scale(1.05);
+}
+
+/* Información del producto */
+.producto-detalle-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.producto-detalle-info h1 {
+    font-size: 2.5rem;
+    color: white;
+    margin: 0;
+    line-height: 1.2;
+    text-shadow: 0 0 15px rgba(77, 140, 255, 0.5);
+}
+
+.producto-detalle-precio {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #4d8cff;
+    margin: 0.5rem 0;
+    text-shadow: 0 0 10px rgba(77, 140, 255, 0.5);
+}
+
+.producto-detalle-descripcion {
+    font-size: 1.1rem;
+    color: #aaccff;
+    line-height: 1.6;
+    margin: 1rem 0;
+    padding: 1rem 0;
+    border-top: 1px solid rgba(77, 140, 255, 0.2);
+    border-bottom: 1px solid rgba(77, 140, 255, 0.2);
+}
+
+/* Metadatos del producto */
+.producto-detalle-metadata {
+    background: rgba(10, 30, 50, 0.5);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid rgba(77, 140, 255, 0.2);
+    margin: 1rem 0;
+}
+
+.producto-detalle-metadata p {
+    margin: 0.8rem 0;
+    color: white;
+    font-size: 1rem;
+}
+
+.producto-detalle-metadata strong {
+    color: #4d8cff;
+    font-weight: 600;
+    min-width: 120px;
+    display: inline-block;
+}
+
+/* Botón de agregar al carrito */
+.producto-detalle-info .btn-agregar {
+    background: transparent;
+    border: 2px solid #4d8cff;
+    color: white;
+    padding: 1.2rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.producto-detalle-info .btn-agregar:hover {
+    background: #4d8cff;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(77, 140, 255, 0.4);
+}
+
+/* ===== PRODUCTOS SIMILARES ===== */
+.recomendaciones h2 {
+    font-size: 2rem;
+    color: white;
+    margin-bottom: 2rem;
+    border-left: 5px solid #4d8cff;
+    padding-left: 1rem;
+    text-shadow: 0 0 10px rgba(77, 140, 255, 0.3);
+}
+
+/* Grid de productos similares */
+#productos-similares {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.8rem;
+    margin-top: 1.5rem;
+}
+
+/* Tarjetas de productos similares (heredan de producto-card) */
+#productos-similares .producto-card {
+    background: rgba(16, 36, 64, 0.7);
+    border: 1px solid rgba(77, 140, 255, 0.2);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    backdrop-filter: blur(5px);
+}
+
+#productos-similares .producto-card:hover {
+    transform: translateY(-8px);
+    border-color: #4d8cff;
+    box-shadow: 0 10px 25px rgba(77, 140, 255, 0.3);
+}
+
+#productos-similares .producto-img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-bottom: 1px solid rgba(77, 140, 255, 0.2);
+}
+
+#productos-similares .producto-info {
+    padding: 1.2rem;
+}
+
+#productos-similares .producto-info h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: white;
+}
+
+#productos-similares .producto-precio {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #4d8cff;
+    margin: 0.5rem 0;
+}
+
+/* Loading spinner */
+.loading {
+    text-align: center;
+    padding: 3rem;
+    grid-column: 1 / -1;
+}
+
+.spinner {
+    border: 4px solid rgba(77, 140, 255, 0.2);
+    border-top: 4px solid #4d8cff;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ===== RESPONSIVE ===== */
+@media screen and (max-width: 1024px) {
+    .producto-detalle {
+        gap: 2rem;
+        padding: 2rem;
+    }
+
+    .producto-detalle-info h1 {
+        font-size: 2rem;
+    }
+
+    .producto-detalle-precio {
+        font-size: 2rem;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .producto-detalle {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding: 1.5rem;
+    }
+
+    .producto-detalle-imagen {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .producto-detalle-info h1 {
+        font-size: 1.8rem;
+        text-align: center;
+    }
+
+    .producto-detalle-precio {
+        text-align: center;
+    }
+
+    .producto-detalle-metadata p {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .producto-detalle-metadata strong {
+        margin-bottom: 0.3rem;
+    }
+
+    #productos-similares {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .producto-detalle {
+        padding: 1rem;
+    }
+
+    .producto-detalle-info h1 {
+        font-size: 1.5rem;
+    }
+
+    .producto-detalle-precio {
+        font-size: 1.8rem;
+    }
+
+    .producto-detalle-descripcion {
+        font-size: 1rem;
+    }
+
+    #productos-similares {
+        grid-template-columns: 1fr;
+    }
+}

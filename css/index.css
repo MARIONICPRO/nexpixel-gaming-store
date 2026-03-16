@@ -1,0 +1,172 @@
+/* ============================================
+   NEXPIXEL - PÁGINA PRINCIPAL
+   ============================================ */
+
+.hero {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: linear-gradient(135deg, rgba(10, 30, 60, 0.8) 0%, rgba(20, 50, 100, 0.8) 100%);
+    border-radius: 15px;
+    margin-bottom: 3rem;
+    border: 1px solid var(--color-primario);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow);
+}
+
+.hero h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    background: var(--gradient-button);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 20px rgba(42, 111, 219, 0.5);
+}
+
+.hero p {
+    font-size: 1.2rem;
+    color: var(--color-texto-claro);
+}
+
+/* Carrusel */
+.carruel-section {
+    margin-bottom: 4rem;
+}
+
+.carruel-section h2 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    color: white;
+    border-left: 5px solid var(--color-primario);
+    padding-left: 1rem;
+    text-shadow: 0 0 10px rgba(42, 111, 219, 0.5);
+}
+
+.carrusel-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 15px;
+    border: 1px solid var(--color-primario);
+    background: rgba(10, 20, 40, 0.5);
+    backdrop-filter: blur(5px);
+}
+
+.carrusel-track {
+    display: flex;
+    transition: transform 0.5s ease;
+    gap: 20px;
+    padding: 1rem;
+}
+
+.carrusel-item {
+    flex: 0 0 calc(25% - 15px);
+    background: var(--gradient-card);
+    border: 1px solid var(--color-borde);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.carrusel-item:hover {
+    transform: translateY(-5px);
+    border-color: var(--color-primario-claro);
+    box-shadow: 0 10px 25px rgba(42, 111, 219, 0.4);
+}
+
+.carrusel-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-bottom: 1px solid var(--color-borde);
+}
+
+.carrusel-info {
+    padding: 1rem;
+}
+
+.carrusel-info h3 {
+    font-size: 1rem;
+    margin-bottom: 0.3rem;
+    color: white;
+}
+
+.carrusel-plataforma {
+    color: var(--color-primario-claro);
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+}
+
+.carrusel-precio {
+    color: var(--color-primario-claro);
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.carrusel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--gradient-button);
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: var(--transition);
+    border: 1px solid rgba(255,255,255,0.3);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.carrusel-btn:hover {
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 0 20px rgba(42, 111, 219, 0.8);
+}
+
+.carrusel-btn.prev {
+    left: 10px;
+}
+
+.carrusel-btn.next {
+    right: 10px;
+}
+
+/* Recomendaciones */
+.recomendaciones h2 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    color: white;
+    border-left: 5px solid var(--color-primario);
+    padding-left: 1rem;
+    text-shadow: 0 0 10px rgba(42, 111, 219, 0.5);
+}
+
+/* Responsive */
+@media screen and (max-width: 1024px) {
+    .carrusel-item {
+        flex: 0 0 calc(33.333% - 14px);
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .hero h1 {
+        font-size: 2rem;
+    }
+
+    .carrusel-item {
+        flex: 0 0 calc(50% - 10px);
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .carrusel-item {
+        flex: 0 0 100%;
+    }
+}
