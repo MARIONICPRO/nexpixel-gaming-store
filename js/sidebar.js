@@ -16,7 +16,7 @@ async function renderizarSidebar() {
     const paginaActual = window.location.pathname.split('/').pop() || 'index.html';
 
     let perfilHTML = '';
-    let dashboardButtons = ''; // 👈 NUEVO: Botones de dashboard
+    let dashboardButtons = '';
 
     if (usuario) {
         // Usuario logueado - mostrar perfil

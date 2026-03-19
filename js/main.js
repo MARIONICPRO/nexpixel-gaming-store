@@ -1,6 +1,4 @@
-// ============================================
-// NEXPIXEL - MAIN.JS (VERSIÓN COMPLETA Y CORREGIDA)
-// ============================================
+
 
 // ===== VARIABLES GLOBALES =====
 let posicionCarrusel = 0;

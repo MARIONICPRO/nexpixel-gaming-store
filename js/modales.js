@@ -422,7 +422,6 @@ async function guardarPerfil(event) {
 
             cerrarModalPerfil();
             
-            // 👇 FORZAR ACTUALIZACIÓN DE LA SIDEBAR
             await renderizarSidebar();
             
             mostrarNotificacion('✅ Perfil actualizado correctamente');
@@ -499,26 +498,7 @@ window.iniciarSesionModal = iniciarSesionModal;
 window.registrarUsuarioModal = registrarUsuarioModal;
 window.guardarPerfil = guardarPerfil;
 window.eliminarCuenta = eliminarCuenta;
-// 👇 CÓDIGO TEMPORAL PARA DEPURAR
-document.addEventListener('DOMContentLoaded', function () {
-    console.log('🔍 Buscando botón de login...');
 
-    // Buscar el botón por su texto o clase
-    const botones = document.querySelectorAll('.btn-modal');
-    console.log('Botones encontrados:', botones.length);
-
-    botones.forEach((btn, i) => {
-        console.log(`Botón ${i}:`, btn.textContent);
-        if (btn.textContent.includes('Entrar')) {
-            console.log('✅ Botón "Entrar" encontrado');
-            btn.addEventListener('click', function (e) {
-                console.log('👆 Click en botón "Entrar"');
-                e.preventDefault();
-                iniciarSesionModal(e);
-            });
-        }
-    });
-});
 // Cambiar contraseña desde el perfil
 async function cambiarPasswordModal() {
     const passwordNueva = prompt('Ingresa la nueva contraseña (mínimo 6 caracteres):');
