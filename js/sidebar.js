@@ -22,7 +22,7 @@ async function renderizarSidebar() {
         // Usuario logueado - mostrar perfil
         const fotoUrl = usuario.foto_perfil || 'assets/img/default-avatar.png';
         const inicial = usuario.nombre ? usuario.nombre.charAt(0).toUpperCase() : 'U';
-        
+
         // 👇 NUEVO: Botones según tipo de usuario
         if (usuario.tipo_usuario === 'admin') {
             dashboardButtons = `
@@ -37,26 +37,27 @@ async function renderizarSidebar() {
                 </a>
             `;
         }
-        
+
+        // En la sección de la imagen del perfil
         perfilHTML = `
-            <div class="user-profile-sidebar">
-                <button class="close-sidebar show-on-mobile" onclick="cerrarSidebar()">✕</button>
-                <div class="user-avatar-large">
-                    ${usuario.foto_perfil ? 
-                        `<img src="${fotoUrl}" alt="${usuario.nombre}">` : 
-                        `<div class="avatar-placeholder">${inicial}</div>`
-                    }
-                </div>
-                <div class="user-name">${usuario.nombre}</div>
-                <div class="user-email">${usuario.email}</div>
-                <div class="user-role">${
-                    usuario.tipo_usuario === 'admin' ? '👑 Administrador' : 
-                    usuario.tipo_usuario === 'proveedor' ? '🏢 Proveedor' : '👤 Cliente'
-                }</div>
-                <button class="btn-editar-perfil" onclick="abrirModalPerfil()">✏️ Editar perfil</button>
-                <button class="btn-sidebar-logout" onclick="cerrarSesion()">🚪 Cerrar sesión</button>
-            </div>
-        `;
+    <div class="user-profile-sidebar">
+        <button class="close-sidebar show-on-mobile" onclick="cerrarSidebar()">✕</button>
+        <div class="user-avatar-large">
+            ${usuario.foto_perfil ?
+                `<img src="${usuario.foto_perfil}?t=${Date.now()}" alt="${usuario.nombre}" 
+                      onerror="this.src='assets/img/default-avatar.png'">` :
+                `<div class="avatar-placeholder">${inicial}</div>`
+            }
+        </div>
+        <div class="user-name">${usuario.nombre}</div>
+        <div class="user-email">${usuario.email}</div>
+        <div class="user-role">${usuario.tipo_usuario === 'admin' ? '👑 Administrador' :
+                usuario.tipo_usuario === 'proveedor' ? '🏢 Proveedor' : '👤 Cliente'
+            }</div>
+        <button class="btn-editar-perfil" onclick="abrirModalPerfil()">✏️ Editar perfil</button>
+        <button class="btn-sidebar-logout" onclick="cerrarSesion()">🚪 Cerrar sesión</button>
+    </div>
+`;
     } else {
         // Usuario no logueado - mostrar botones de autenticación
         perfilHTML = `
@@ -96,7 +97,7 @@ async function renderizarSidebar() {
             ${dashboardButtons} <!-- 👈 NUEVO: Botones insertados aquí -->
         </div>
     `;
-    
+
     console.log('Sidebar renderizada correctamente');
 }
 

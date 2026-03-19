@@ -1,13 +1,21 @@
-/* ===== DASHBOARD PROVEEDOR ===== */
+/* ============================================
+   NEXPIXEL - DASHBOARD PROVEEDOR (VERSIÓN AZUL)
+   ============================================ */
+
+/* Contenedor principal */
 .dashboard-header {
     margin-bottom: 2rem;
 }
 
 .dashboard-header h1 {
-    color: #e94560;
-    margin-bottom: 2rem;
+    color: #4d8cff;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    border-left: 5px solid #2a6fdb;
+    padding-left: 1rem;
 }
 
+/* Grid de estadísticas */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -16,62 +24,85 @@
 }
 
 .stat-card {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid #2a2f45;
-    border-radius: 10px;
+    background: rgba(16, 36, 64, 0.8);
     padding: 1.5rem;
+    border-radius: 10px;
     text-align: center;
+    border: 1px solid rgba(77, 140, 255, 0.2);
+    backdrop-filter: blur(10px);
 }
 
 .stat-card h4 {
-    color: #aaa;
+    color: #aaccff;
     margin-bottom: 0.5rem;
     font-size: 0.9rem;
+    font-weight: normal;
 }
 
 .stat-number {
-    color: #e94560;
     font-size: 2rem;
     font-weight: bold;
+    color: #4d8cff;
 }
 
-/* Tabs */
+/* Tabs de navegación */
 .dashboard-tabs {
     display: flex;
-    gap: 1rem;
+    gap: 0.5rem;
     margin-bottom: 2rem;
-    border-bottom: 2px solid #2a2f45;
-    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(77, 140, 255, 0.2);
+    padding-bottom: 0.5rem;
+    flex-wrap: wrap;
 }
 
 .tab-btn {
     padding: 0.8rem 1.5rem;
     background: transparent;
     border: none;
-    color: #aaa;
+    color: #aaccff;
     cursor: pointer;
     font-size: 1rem;
-    border-radius: 5px;
-    transition: all 0.3s;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    font-weight: 500;
 }
 
 .tab-btn:hover {
-    background: rgba(233, 69, 96, 0.1);
+    background: rgba(77, 140, 255, 0.1);
     color: white;
 }
 
 .tab-btn.active {
-    background: #e94560;
+    background: #2a6fdb;
     color: white;
 }
 
-/* Formulario para añadir producto (con imagen) */
+/* Contenido del dashboard */
+.dashboard-content {
+    background: rgba(16, 36, 64, 0.8);
+    border-radius: 12px;
+    padding: 2rem;
+    border: 1px solid rgba(77, 140, 255, 0.2);
+    backdrop-filter: blur(10px);
+    color: white;
+    min-height: 400px;
+}
+
+/* ===== FORMULARIO PARA AÑADIR PRODUCTO ===== */
 .form-producto {
-    max-width: 600px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid #2a2f45;
+    max-width: 800px;
+    margin: 0 auto;
+    background: rgba(16, 36, 64, 0.5);
+    border: 1px solid rgba(77, 140, 255, 0.3);
     border-radius: 15px;
     padding: 2rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 0;
 }
 
 .form-group {
@@ -81,131 +112,279 @@
 .form-group label {
     display: block;
     margin-bottom: 0.5rem;
-    color: white;
-    font-weight: bold;
+    color: #aaccff;
+    font-weight: 500;
+    font-size: 0.95rem;
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
     width: 100%;
-    padding: 0.8rem;
-    background: #1a1f35;
-    border: 1px solid #2a2f45;
-    border-radius: 5px;
+    padding: 0.8rem 1rem;
+    background: rgba(26, 47, 79, 0.8);
+    border: 1px solid rgba(77, 140, 255, 0.3);
+    border-radius: 8px;
     color: white;
     font-size: 1rem;
+    transition: all 0.2s ease;
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: #e94560;
+    border-color: #4d8cff;
+    box-shadow: 0 0 0 3px rgba(77, 140, 255, 0.2);
 }
 
-/* Subida de imagen */
-.image-upload {
-    border: 2px dashed #e94560;
-    padding: 2rem;
-    text-align: center;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s;
-    margin-bottom: 1rem;
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: #6688aa;
 }
 
-.image-upload:hover {
-    background: rgba(233, 69, 96, 0.1);
-}
-
-.image-preview {
-    max-width: 200px;
-    max-height: 200px;
-    margin: 1rem auto;
-    display: none;
-    border-radius: 8px;
-    border: 2px solid #e94560;
-}
-
-.image-preview.active {
+.form-group small {
+    color: #aaccff;
+    font-size: 0.8rem;
     display: block;
+    margin-top: 0.3rem;
 }
 
-.btn-guardar {
-    width: 100%;
-    padding: 1rem;
-    background: #e94560;
+/* Campos específicos por tipo */
+#campos-juego h3,
+#campos-tarjeta h3 {
+    color: #4d8cff;
+    margin: 1.5rem 0 1rem;
+    font-size: 1.2rem;
+    border-bottom: 1px solid rgba(77, 140, 255, 0.3);
+    padding-bottom: 0.5rem;
+}
+
+/* Botón principal */
+.btn-nuevo {
+    background: #2a6fdb;
     color: white;
     border: none;
-    border-radius: 5px;
-    font-size: 1.1rem;
-    font-weight: bold;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
     cursor: pointer;
-    transition: all 0.3s;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.btn-guardar:hover {
-    transform: scale(1.02);
-    box-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
+.btn-nuevo:hover {
+    background: #4d8cff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(42, 111, 219, 0.3);
 }
 
-/* Lista de productos del proveedor */
+/* ===== LISTA DE PRODUCTOS DEL PROVEEDOR ===== */
 .productos-proveedor {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1.5rem;
+    margin-top: 1rem;
 }
 
 .producto-proveedor-card {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid #2a2f45;
-    border-radius: 10px;
+    background: rgba(16, 36, 64, 0.6);
+    border: 1px solid rgba(77, 140, 255, 0.2);
+    border-radius: 12px;
     overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+.producto-proveedor-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(77, 140, 255, 0.5);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 }
 
 .producto-proveedor-img {
     width: 100%;
-    height: 150px;
+    height: 160px;
     object-fit: cover;
+    background: #1a2f4f;
+    border-bottom: 1px solid rgba(77, 140, 255, 0.2);
 }
 
 .producto-proveedor-info {
-    padding: 1rem;
+    padding: 1.2rem;
 }
 
 .producto-proveedor-info h3 {
-    font-size: 1rem;
+    font-size: 1.1rem;
     margin-bottom: 0.5rem;
+    color: white;
+    font-weight: 600;
 }
 
 .producto-proveedor-precio {
-    color: #e94560;
+    font-size: 1.2rem;
     font-weight: bold;
+    color: #4d8cff;
     margin-bottom: 0.5rem;
 }
 
 .producto-proveedor-stock {
-    color: #4caf50;
+    color: #81c784;
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.producto-proveedor-tipo {
+    color: #aaccff;
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+}
+
+.producto-proveedor-ventas {
+    color: #ffb74d;
     font-size: 0.9rem;
     margin-bottom: 1rem;
 }
 
+.producto-acciones {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
 .btn-editar {
-    padding: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(33, 150, 243, 0.2);
+    color: #64b5f6;
+    border: 1px solid rgba(33, 150, 243, 0.3);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+    flex: 1;
+}
+
+.btn-editar:hover {
     background: #2196f3;
     color: white;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-    margin-right: 0.5rem;
 }
 
 .btn-eliminar {
-    padding: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(244, 67, 54, 0.2);
+    color: #ff8a80;
+    border: 1px solid rgba(244, 67, 54, 0.3);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+    flex: 1;
+}
+
+.btn-eliminar:hover {
     background: #f44336;
     color: white;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
+}
+
+/* ===== TABLAS DE VENTAS ===== */
+.tabla-ventas {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.tabla-ventas th {
+    text-align: left;
+    padding: 1rem;
+    background: rgba(26, 47, 79, 0.8);
+    color: #aaccff;
+    font-weight: 500;
+    border-bottom: 2px solid rgba(77, 140, 255, 0.3);
+}
+
+.tabla-ventas td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(77, 140, 255, 0.1);
+    color: white;
+}
+
+.tabla-ventas tr:hover td {
+    background: rgba(77, 140, 255, 0.05);
+}
+
+/* ===== FORMULARIO DE CÓDIGOS ===== */
+#codigos-lista {
+    font-family: monospace;
+    background: #1a2f4f;
+}
+
+/* ===== RESPONSIVE ===== */
+@media screen and (max-width: 1024px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .productos-proveedor {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .dashboard-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .dashboard-tabs {
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+
+    .tab-btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .dashboard-content {
+        padding: 1rem;
+        overflow-x: auto;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .form-producto {
+        padding: 1rem;
+    }
+
+    .productos-proveedor {
+        grid-template-columns: 1fr;
+    }
+
+    .tabla-ventas {
+        font-size: 0.9rem;
+    }
+
+    .tabla-ventas th,
+    .tabla-ventas td {
+        padding: 0.8rem 0.5rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .producto-acciones {
+        flex-direction: column;
+    }
+
+    .tabla-ventas {
+        font-size: 0.8rem;
+    }
 }

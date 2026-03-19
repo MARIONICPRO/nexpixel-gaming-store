@@ -30,27 +30,42 @@ class ApiClient {
 
     async request(endpoint, options = {}) {
         const url = `${API_URL}${endpoint}`;
+        console.log('🔵 ===== API.REQUEST INICIADO =====');
+        console.log('📌 Endpoint:', endpoint);
+        console.log('📌 URL completa:', url);
+        console.log('📌 Método:', options.method || 'GET');
+        console.log('📌 Headers:', this.getHeaders());
+        if (options.body) {
+            console.log('📌 Body:', options.body);
+        }
+
         const config = {
             ...options,
             headers: this.getHeaders(),
         };
 
         try {
+            console.log('📤 Enviando petición...');
             const response = await fetch(url, config);
+            console.log('📥 Status respuesta:', response.status);
+            console.log('📥 Status text:', response.statusText);
+            
             const data = await response.json();
+            console.log('📥 Datos recibidos:', data);
 
             if (!response.ok) {
                 throw new Error(data.error || 'Error en la petición');
             }
 
+            console.log('✅ Petición exitosa');
             return data;
         } catch (error) {
-            console.error('API Error:', error);
+            console.error('❌ API Error:', error);
             throw error;
         }
     }
 
-    // Auth
+    // ===== AUTH =====
     async login(email, password) {
         const data = await this.request('/auth/login', {
             method: 'POST',
@@ -84,7 +99,14 @@ class ApiClient {
         });
     }
 
-    // Productos
+    // 👇 NUEVO: Método para eliminar cuenta
+    async eliminarCuenta() {
+        return this.request('/auth/eliminar', {
+            method: 'DELETE'
+        });
+    }
+
+    // ===== PRODUCTOS =====
     async getProductos(filtros = {}) {
         const params = new URLSearchParams(filtros).toString();
         return this.request(`/productos${params ? '?' + params : ''}`);
@@ -105,19 +127,12 @@ class ApiClient {
     async getProductosPopulares(limite = 10) {
         return this.request(`/productos/populares?limite=${limite}`);
     }
-    // ===== EN api.js - Agrega estos métodos =====
 
-    // Productos populares
-    async getProductosPopulares(limite = 10) {
-        return this.request(`/productos/populares?limite=${limite}`);
-    }
-
-    // (Opcional) Recomendaciones personalizadas
+    // ===== RECOMENDACIONES =====
     async getRecomendaciones(limite = 8) {
         return this.request(`/recomendaciones?limite=${limite}`);
     }
 }
-
 
 // Instancia global
 const API = new ApiClient();

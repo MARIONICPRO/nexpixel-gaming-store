@@ -1,5 +1,10 @@
+// ============================================
+// DASHBOARD-PROVE.JS - VERSIÓN PARA NODE.JS (USA API)
+// ============================================
+
 let proveedorActual = null;
 
+// ===== CARGA INICIAL DEL DASHBOARD =====
 async function cargarDashboardProveedor() {
     console.log('Cargando dashboard proveedor...');
     proveedorActual = Auth.usuarioActual;
@@ -13,33 +18,46 @@ async function cargarDashboardProveedor() {
     cambiarTabProveedor('productos');
 }
 
+// ===== ESTADÍSTICAS =====
 async function cargarStatsProveedor() {
     try {
-        const productos = await ProductoDB.getAll({ proveedor: proveedorActual.id_usuario });
+        const response = await fetch(`${API_URL}/proveedor/stats`, {
+            headers: API.getHeaders()
+        });
+        const data = await response.json();
 
         document.getElementById('stats-proveedor').innerHTML = `
             <div class="stat-card">
                 <h4>Mis productos</h4>
-                <div class="stat-number">${productos?.length || 0}</div>
+                <div class="stat-number">${data.stats?.totalProductos || 0}</div>
+            </div>
+            <div class="stat-card">
+                <h4>Códigos disponibles</h4>
+                <div class="stat-number">${data.stats?.totalCodigosDisponibles || 0}</div>
+            </div>
+            <div class="stat-card">
+                <h4>Ventas totales</h4>
+                <div class="stat-number">${data.stats?.totalVentas || 0}</div>
+            </div>
+            <div class="stat-card">
+                <h4>Ingresos</h4>
+                <div class="stat-number">$${formatearPrecio(data.stats?.ingresosTotales || 0)}</div>
             </div>
         `;
     } catch (error) {
         console.error('Error cargando stats:', error);
         document.getElementById('stats-proveedor').innerHTML = `
-            <div class="stat-card">
-                <h4>Mis productos</h4>
-                <div class="stat-number">0</div>
-            </div>
+            <div class="stat-card"><h4>Mis productos</h4><div class="stat-number">0</div></div>
         `;
     }
 }
 
-// ===== FUNCIÓN CORREGIDA - ya no usa event =====
+// ===== CAMBIAR ENTRE PESTAÑAS =====
 function cambiarTabProveedor(tab) {
-    // Remover clase active de todos los tabs
+    console.log('Cambiando a pestaña:', tab);
+    
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
 
-    // Activar el tab correspondiente según el texto
     const tabs = document.querySelectorAll('.tab-btn');
     tabs.forEach(btn => {
         if (btn.textContent.includes(
@@ -51,19 +69,24 @@ function cambiarTabProveedor(tab) {
         }
     });
 
-    // Navegar a la pestaña correspondiente
     if (tab === 'productos') cargarMisProductos();
     else if (tab === 'nuevo') cargarFormularioNuevoProducto();
     else if (tab === 'codigos') cargarFormularioCodigos();
     else if (tab === 'ventas') cargarMisVentas();
 }
 
+// ===== CARGAR PRODUCTOS DEL PROVEEDOR =====
 async function cargarMisProductos() {
     try {
-        const productos = await ProductoDB.getAll({ proveedor: proveedorActual.id_usuario });
+        const response = await fetch(`${API_URL}/proveedor/productos`, {
+            headers: API.getHeaders()
+        });
+        const data = await response.json();
+        const productos = data.productos || [];
+        
         const container = document.getElementById('proveedor-content');
 
-        if (!productos?.length) {
+        if (productos.length === 0) {
             container.innerHTML = `
                 <div style="text-align: center; padding: 3rem;">
                     <p>No tienes productos aún</p>
@@ -76,14 +99,6 @@ async function cargarMisProductos() {
         let html = '<div class="productos-proveedor">';
 
         for (const p of productos) {
-            // Obtener códigos disponibles
-            let codigosDisponibles = 0;
-            try {
-                codigosDisponibles = await InventarioDB.contarDisponibles(p.id_producto) || 0;
-            } catch (error) {
-                console.error('Error obteniendo códigos:', error);
-            }
-
             html += `
                 <div class="producto-proveedor-card">
                     <img src="${p.imagen_url || 'assets/img/default-game.jpg'}" 
@@ -93,7 +108,7 @@ async function cargarMisProductos() {
                     <div class="producto-proveedor-info">
                         <h3>${p.nombre_producto}</h3>
                         <p class="producto-proveedor-precio">$${formatearPrecio(p.precio)}</p>
-                        <p class="producto-proveedor-stock">Códigos: ${codigosDisponibles} disponibles</p>
+                        <p class="producto-proveedor-stock">Códigos: ${p.codigos_disponibles || 0} disponibles</p>
                         <p class="producto-proveedor-tipo">Tipo: ${p.tipo_producto}</p>
                         <p class="producto-proveedor-ventas">Vendidos: ${p.ventas_totales || 0}</p>
                         <div class="producto-acciones">
@@ -113,8 +128,8 @@ async function cargarMisProductos() {
     }
 }
 
+// ===== FORMULARIO PARA NUEVO PRODUCTO =====
 function cargarFormularioNuevoProducto() {
-    // Primero mostrar un loading
     document.getElementById('proveedor-content').innerHTML = `
         <h2 style="color: #4d8cff; margin-bottom: 2rem;">➕ Añadir nuevo producto</h2>
         <div style="text-align: center; padding: 2rem;">
@@ -123,23 +138,22 @@ function cargarFormularioNuevoProducto() {
         </div>
     `;
 
-    // Cargar plataformas de la base de datos
     cargarPlataformasYMostrarFormulario();
 }
 
-// ===== NUEVA FUNCIÓN - Agrégala DESPUÉS de la anterior =====
 async function cargarPlataformasYMostrarFormulario() {
     try {
-        // Obtener plataformas de la base de datos
-        const plataformas = await PlataformaDB.getAll();
+        const response = await fetch(`${API_URL}/proveedor/plataformas`, {
+            headers: API.getHeaders()
+        });
+        const data = await response.json();
+        const plataformas = data.plataformas || [];
 
-        // Generar opciones del select
         let options = '<option value="">Seleccionar plataforma</option>';
         plataformas.forEach(p => {
             options += `<option value="${p.id_plataforma}">${p.nombre_plataforma}</option>`;
         });
 
-        // Mostrar el formulario completo con las plataformas cargadas
         document.getElementById('proveedor-content').innerHTML = `
             <h2 style="color: #4d8cff; margin-bottom: 2rem;">➕ Añadir nuevo producto</h2>
             <form onsubmit="return guardarNuevoProducto(event)" class="form-producto">
@@ -245,47 +259,53 @@ function toggleCamposProducto() {
     document.getElementById('campos-tarjeta').style.display = tipo === 'Tarjeta regalo' ? 'block' : 'none';
 }
 
+// ===== GUARDAR NUEVO PRODUCTO =====
 async function guardarNuevoProducto(event) {
     event.preventDefault();
 
     try {
+        const tipoProducto = document.getElementById('producto-tipo').value;
+        const plataformaId = parseInt(document.getElementById('producto-plataforma').value);
+
+        if (!plataformaId) {
+            mostrarNotificacion('❌ Debes seleccionar una plataforma', 'error');
+            return false;
+        }
+
         const producto = {
-            id_proveedor: proveedorActual.id_usuario,
-            id_categoria: document.getElementById('producto-tipo').value === 'Juego' ? 1 : 2,
-            id_plataforma: parseInt(document.getElementById('producto-plataforma').value),
+            id_categoria: tipoProducto === 'Juego' ? 1 : 2,
+            id_plataforma: plataformaId,
             nombre_producto: document.getElementById('producto-nombre').value,
             precio: parseFloat(document.getElementById('producto-precio').value),
-            tipo_producto: document.getElementById('producto-tipo').value,
+            tipo_producto: tipoProducto,
             stock: parseInt(document.getElementById('producto-stock').value) || 0,
             descripcion: document.getElementById('producto-descripcion')?.value || '',
-            imagen_url: document.getElementById('producto-imagen').value || 'assets/img/default-game.jpg',
-            estado: 'activo',
-            fecha_creacion: new Date()
+            imagen_url: document.getElementById('producto-imagen').value || 'assets/img/default-game.jpg'
         };
 
-        // Campos específicos según tipo
-        if (producto.tipo_producto === 'Juego') {
+        if (tipoProducto === 'Juego') {
             producto.genero = document.getElementById('juego-genero')?.value || '';
             producto.edicion = document.getElementById('juego-edicion')?.value || '';
             producto.desarrollador = document.getElementById('juego-desarrollador')?.value || '';
             producto.fecha_lanzamiento = document.getElementById('juego-lanzamiento')?.value || null;
-        } else if (producto.tipo_producto === 'Tarjeta regalo') {
+        } else if (tipoProducto === 'Tarjeta regalo') {
             producto.valor_tarjeta = parseFloat(document.getElementById('tarjeta-valor')?.value) || producto.precio;
         }
 
-        const nuevoProducto = await ProductoDB.crear(producto);
+        const response = await fetch(`${API_URL}/proveedor/productos`, {
+            method: 'POST',
+            headers: API.getHeaders(),
+            body: JSON.stringify(producto)
+        });
+        
+        const data = await response.json();
 
-        // Si hay stock, crear códigos automáticamente
-        if (producto.stock > 0 && nuevoProducto) {
-            const codigos = [];
-            for (let i = 0; i < producto.stock; i++) {
-                codigos.push(`COD-${nuevoProducto.id_producto}-${i + 1}-${Math.random().toString(36).substring(7).toUpperCase()}`);
-            }
-            await InventarioDB.agregarCodigos(nuevoProducto.id_producto, codigos);
+        if (data.success) {
+            mostrarNotificacion('✅ Producto guardado correctamente');
+            cambiarTabProveedor('productos');
+        } else {
+            mostrarNotificacion(data.error || 'Error al guardar', 'error');
         }
-
-        mostrarNotificacion('✅ Producto guardado correctamente');
-        cambiarTabProveedor('productos');
     } catch (error) {
         console.error('Error guardando producto:', error);
         mostrarNotificacion('Error al guardar el producto', 'error');
@@ -294,6 +314,7 @@ async function guardarNuevoProducto(event) {
     return false;
 }
 
+// ===== CARGAR CÓDIGOS =====
 function cargarFormularioCodigos() {
     document.getElementById('proveedor-content').innerHTML = `
         <h2 style="color: #4d8cff; margin-bottom: 2rem;">🔑 Cargar códigos digitales</h2>
@@ -319,10 +340,15 @@ function cargarFormularioCodigos() {
 
 async function cargarSelectProductos() {
     try {
-        const productos = await ProductoDB.getAll({ proveedor: proveedorActual.id_usuario });
+        const response = await fetch(`${API_URL}/proveedor/productos`, {
+            headers: API.getHeaders()
+        });
+        const data = await response.json();
+        const productos = data.productos || [];
+        
         const select = document.getElementById('codigo-producto');
 
-        if (!productos?.length) {
+        if (productos.length === 0) {
             select.innerHTML = '<option value="">No tienes productos</option>';
             return;
         }
@@ -345,9 +371,20 @@ async function guardarCodigos(event) {
     const codigos = codigosTexto.split('\n').filter(c => c.trim());
 
     try {
-        const cantidad = await InventarioDB.agregarCodigos(productoId, codigos);
-        mostrarNotificacion(`✅ ${cantidad} códigos cargados correctamente`);
-        document.getElementById('codigos-lista').value = '';
+        const response = await fetch(`${API_URL}/proveedor/productos/${productoId}/codigos`, {
+            method: 'POST',
+            headers: API.getHeaders(),
+            body: JSON.stringify({ codigos })
+        });
+        
+        const data = await response.json();
+
+        if (data.success) {
+            mostrarNotificacion(`✅ ${data.message || 'Códigos cargados'}`);
+            document.getElementById('codigos-lista').value = '';
+        } else {
+            mostrarNotificacion(data.error || 'Error al cargar', 'error');
+        }
     } catch (error) {
         console.error('Error guardando códigos:', error);
         mostrarNotificacion('Error al cargar códigos', 'error');
@@ -356,46 +393,32 @@ async function guardarCodigos(event) {
     return false;
 }
 
+// ===== VENTAS =====
 async function cargarMisVentas() {
     try {
-        const productos = await ProductoDB.getAll({ proveedor: proveedorActual.id_usuario });
-        
-        if (!productos?.length) {
-            document.getElementById('proveedor-content').innerHTML = '<p style="text-align: center;">No hay ventas aún</p>';
-            return;
-        }
-        
-        // 👇 MEJOR: Crear una función en CompraDB para esto
-        // Por ahora, usamos supabaseClient pero deberías moverlo a CompraDB
-        const idsProductos = productos.map(p => p.id_producto);
-        
-        const { data: ventas, error } = await supabaseClient
-            .from('detalle_compra')
-            .select(`
-                *,
-                compra: id_compra (fecha_compra),
-                producto: id_producto (nombre_producto, precio)
-            `)
-            .in('id_producto', idsProductos)
-            .order('id_detail', { ascending: false });
-        
-        if (error) throw error;
+        const response = await fetch(`${API_URL}/proveedor/ventas`, {
+            headers: API.getHeaders()
+        });
+        const data = await response.json();
         
         const container = document.getElementById('proveedor-content');
-        
-        if (!ventas?.length) {
+
+        if (!data.ventas || data.ventas.length === 0) {
             container.innerHTML = '<p style="text-align: center;">No hay ventas aún</p>';
             return;
         }
+
+        let html = '<h3>Mis ventas</h3>';
+        html += '<p>Total ingresos: <strong>$' + formatearPrecio(data.totalIngresos || 0) + '</strong></p>';
+        html += '<table class="tabla-ventas"><tr><th>Fecha</th><th>Producto</th><th>Cantidad</th><th>Total</th></tr>';
         
-        let html = '<h3>Mis ventas</h3><table class="tabla-ventas"><tr><th>Fecha</th><th>Producto</th><th>Cantidad</th><th>Total</th></tr>';
-        ventas.forEach(v => {
+        data.ventas.forEach(v => {
             html += `
                 <tr>
-                    <td>${v.compra ? new Date(v.compra.fecha_compra).toLocaleDateString() : 'N/A'}</td>
-                    <td>${v.producto?.nombre_producto || 'Producto'}</td>
-                    <td>${v.cantidad || 1}</td>
-                    <td>$${formatearPrecio(v.precio_unitario * (v.cantidad || 1))}</td>
+                    <td>${new Date(v.fecha).toLocaleDateString()}</td>
+                    <td>${v.producto}</td>
+                    <td>${v.cantidad}</td>
+                    <td>$${formatearPrecio(v.subtotal)}</td>
                 </tr>
             `;
         });
@@ -408,27 +431,35 @@ async function cargarMisVentas() {
     }
 }
 
-// ===== FUNCIÓN PARA ELIMINAR PRODUCTO =====
+// ===== ELIMINAR PRODUCTO =====
 async function eliminarProducto(id) {
-    if (confirm('¿Estás seguro de eliminar este producto?')) {
-        try {
-            await ProductoDB.eliminar(id);
+    if (!confirm('¿Estás seguro de eliminar este producto?')) return;
+
+    try {
+        const response = await fetch(`${API_URL}/proveedor/productos/${id}`, {
+            method: 'DELETE',
+            headers: API.getHeaders()
+        });
+        
+        const data = await response.json();
+
+        if (data.success) {
             mostrarNotificacion('Producto eliminado');
             cargarMisProductos();
-        } catch (error) {
-            console.error('Error eliminando producto:', error);
-            mostrarNotificacion('Error al eliminar', 'error');
+        } else {
+            mostrarNotificacion(data.error || 'Error al eliminar', 'error');
         }
+    } catch (error) {
+        console.error('Error eliminando producto:', error);
+        mostrarNotificacion('Error al eliminar', 'error');
     }
 }
 
-// ===== FUNCIÓN PARA EDITAR PRODUCTO (ÚNICA) =====
-// ===== FUNCIÓN PARA EDITAR PRODUCTO (CON PLATAFORMAS DINÁMICAS) =====
+// ===== EDITAR PRODUCTO =====
 async function editarProducto(id) {
     console.log('✏️ Editando producto:', id);
-    
+
     try {
-        // Mostrar loading mientras carga
         document.getElementById('proveedor-content').innerHTML = `
             <h2 style="color: #4d8cff; margin-bottom: 2rem;">✏️ Editando producto</h2>
             <div style="text-align: center; padding: 2rem;">
@@ -437,23 +468,29 @@ async function editarProducto(id) {
             </div>
         `;
 
-        // Obtener datos del producto y plataformas
-        const producto = await ProductoDB.getById(id);
-        const plataformas = await PlataformaDB.getAll();
-        
+        const response = await fetch(`${API_URL}/proveedor/productos/${id}`, {
+            headers: API.getHeaders()
+        });
+        const data = await response.json();
+        const producto = data.producto;
+
         if (!producto) {
             mostrarNotificacion('Producto no encontrado', 'error');
             return;
         }
 
-        // Generar opciones de plataforma con la seleccionada
+        const platResponse = await fetch(`${API_URL}/proveedor/plataformas`, {
+            headers: API.getHeaders()
+        });
+        const platData = await platResponse.json();
+        const plataformas = platData.plataformas || [];
+
         let plataformaOptions = '<option value="">Seleccionar plataforma</option>';
         plataformas.forEach(p => {
             const selected = producto.id_plataforma === p.id_plataforma ? 'selected' : '';
             plataformaOptions += `<option value="${p.id_plataforma}" ${selected}>${p.nombre_plataforma}</option>`;
         });
 
-        // Mostrar formulario de edición
         const container = document.getElementById('proveedor-content');
         container.innerHTML = `
             <h2 style="color: #4d8cff; margin-bottom: 2rem;">✏️ Editar producto</h2>
@@ -547,23 +584,17 @@ async function editarProducto(id) {
             </form>
         `;
     } catch (error) {
-        console.error('Error cargando producto para editar:', error);
-        document.getElementById('proveedor-content').innerHTML = `
-            <h2 style="color: #4d8cff; margin-bottom: 2rem;">✏️ Editar producto</h2>
-            <p style="color: #ff6b8b; text-align: center;">Error al cargar el producto. Intenta de nuevo.</p>
-            <button class="btn-nuevo" onclick="cambiarTabProveedor('productos')" style="margin-top: 1rem;">Volver a productos</button>
-        `;
+        console.error('Error cargando producto:', error);
+        mostrarNotificacion('Error al cargar el producto', 'error');
     }
 }
 
-// Función para mostrar/ocultar campos en edición
 function toggleEditCamposProducto() {
     const tipo = document.getElementById('edit-producto-tipo').value;
     document.getElementById('edit-campos-juego').style.display = tipo === 'Juego' ? 'block' : 'none';
     document.getElementById('edit-campos-tarjeta').style.display = tipo === 'Tarjeta regalo' ? 'block' : 'none';
 }
 
-// Función para guardar cambios de edición
 async function guardarEdicionProducto(event, productoId) {
     event.preventDefault();
 
@@ -576,13 +607,8 @@ async function guardarEdicionProducto(event, productoId) {
             return false;
         }
 
-        // Determinar categoría según tipo
-        let idCategoria = 1;
-        if (tipoProducto === 'Tarjeta regalo') idCategoria = 2;
-        else if (tipoProducto === 'Suscripcion') idCategoria = 3;
-
         const productoActualizado = {
-            id_categoria: idCategoria,
+            id_categoria: tipoProducto === 'Juego' ? 1 : 2,
             id_plataforma: plataformaId,
             nombre_producto: document.getElementById('edit-producto-nombre').value,
             precio: parseFloat(document.getElementById('edit-producto-precio').value),
@@ -597,25 +623,34 @@ async function guardarEdicionProducto(event, productoId) {
             valor_tarjeta: parseFloat(document.getElementById('edit-tarjeta-valor')?.value) || null
         };
 
-        console.log('📦 Actualizando producto:', productoActualizado);
+        const response = await fetch(`${API_URL}/proveedor/productos/${productoId}`, {
+            method: 'PUT',
+            headers: API.getHeaders(),
+            body: JSON.stringify(productoActualizado)
+        });
 
-        await ProductoDB.actualizar(productoId, productoActualizado);
+        const data = await response.json();
 
-        mostrarNotificacion('✅ Producto actualizado correctamente');
-        cambiarTabProveedor('productos');
+        if (data.success) {
+            mostrarNotificacion('✅ Producto actualizado correctamente');
+            cambiarTabProveedor('productos');
+        } else {
+            mostrarNotificacion(data.error || 'Error al actualizar', 'error');
+        }
     } catch (error) {
-        console.error('❌ Error actualizando producto:', error);
+        console.error('Error actualizando producto:', error);
         mostrarNotificacion('Error al actualizar el producto', 'error');
     }
 
     return false;
 }
 
+// ===== UTILIDADES =====
 function formatearPrecio(precio) {
     return new Intl.NumberFormat('es-CO').format(precio);
 }
 
-// Exponer funciones globalmente
+// ===== EXPONER FUNCIONES GLOBALMENTE =====
 window.cargarDashboardProveedor = cargarDashboardProveedor;
 window.cambiarTabProveedor = cambiarTabProveedor;
 window.guardarNuevoProducto = guardarNuevoProducto;

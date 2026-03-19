@@ -1,5 +1,5 @@
 // ============================================
-// AUTH.JS - VERSIÓN PARA NODE.JS (USA API)
+// AUTH.JS - VERSIÓN PARA FRONTEND (USA API)
 // ============================================
 
 const Auth = {
@@ -7,7 +7,6 @@ const Auth = {
 
     async init() {
         await this.cargarUsuario();
-        // No necesitamos verificarAdmin aquí, el backend lo maneja
     },
 
     async cargarUsuario() {
@@ -16,17 +15,16 @@ const Auth = {
         
         if (token && usuarioGuardado) {
             try {
-                // Verificar que el token sigue siendo válido
                 const response = await API.getPerfil();
-                if (response.success) {
+                if (response && response.success) {
                     this.usuarioActual = response.usuario;
                     localStorage.setItem('nexpixel_usuario', JSON.stringify(response.usuario));
+                    console.log('✅ Usuario cargado:', this.usuarioActual.nombre);
                 } else {
-                    // Token inválido o expirado
                     this.cerrarSesion();
                 }
             } catch (error) {
-                console.error('Error cargando usuario:', error);
+                console.error('❌ Error cargando usuario:', error);
                 this.cerrarSesion();
             }
         }
@@ -34,64 +32,73 @@ const Auth = {
 
     async login(email, password) {
         try {
+            console.log('🔍 Intentando login con:', email);
+            
             const response = await API.login(email, password);
             
-            if (response.success) {
+            console.log('📥 Respuesta del servidor:', response);
+            
+            if (response && response.success) {
                 this.usuarioActual = response.usuario;
                 localStorage.setItem('nexpixel_usuario', JSON.stringify(response.usuario));
-                // El token ya se guardó en API.setToken()
                 return { success: true, usuario: response.usuario };
             }
             
-            return { success: false, error: response.error };
+            return { success: false, error: response?.error || 'Error al iniciar sesión' };
+            
         } catch (error) {
-            console.error('Error en login:', error);
-            return { success: false, error: 'Error al conectar con el servidor' };
+            console.error('❌ Error en login:', error);
+            return { success: false, error: error.message || 'Error al conectar con el servidor' };
         }
     },
 
     async register(datos) {
         try {
-            // Preparar datos para enviar al backend
+            console.log('📝 Registrando usuario:', datos);
+
             const datosRegistro = {
                 nombre: datos.nombre,
                 email: datos.email,
-                password: datos.password_hash, // El backend espera 'password'
+                password: datos.password,
                 tipo_usuario: datos.tipo_usuario,
                 telefono: datos.telefono || '',
                 empresa: datos.empresa || null,
                 nit: datos.nit || null
             };
 
+            console.log('📤 Enviando a API:', datosRegistro);
+
             const response = await API.register(datosRegistro);
-            
-            if (response.success) {
+
+            if (response && response.success) {
                 this.usuarioActual = response.usuario;
                 localStorage.setItem('nexpixel_usuario', JSON.stringify(response.usuario));
                 return { success: true, usuario: response.usuario };
             }
+
+            return { success: false, error: response?.error || 'Error al registrar' };
             
-            return { success: false, error: response.error };
         } catch (error) {
-            console.error('Error en registro:', error);
-            return { success: false, error: 'Error al conectar con el servidor' };
+            console.error('❌ Error en registro:', error);
+            return { success: false, error: error.message || 'Error al conectar con el servidor' };
         }
     },
 
-    async actualizarPerfil(id, datos) {
+    async actualizarPerfil(datos) {
         try {
             const response = await API.updatePerfil(datos);
-            
-            if (response.success) {
+
+            if (response && response.success) {
                 this.usuarioActual = response.usuario;
                 localStorage.setItem('nexpixel_usuario', JSON.stringify(response.usuario));
                 return { success: true };
             }
+
+            return { success: false, error: response?.error || 'Error al actualizar' };
             
-            return { success: false, error: response.error };
         } catch (error) {
-            console.error('Error actualizando perfil:', error);
-            return { success: false, error: 'Error al conectar con el servidor' };
+            console.error('❌ Error actualizando perfil:', error);
+            return { success: false, error: error.message || 'Error al conectar con el servidor' };
         }
     },
 
@@ -105,11 +112,12 @@ const Auth = {
                     password_nueva: passwordNueva
                 })
             });
-            
+
             const data = await response.json();
             return data;
+            
         } catch (error) {
-            console.error('Error cambiando contraseña:', error);
+            console.error('❌ Error cambiando contraseña:', error);
             return { success: false, error: 'Error al conectar con el servidor' };
         }
     },
@@ -119,12 +127,6 @@ const Auth = {
         localStorage.removeItem('nexpixel_usuario');
         API.setToken(null);
         this.usuarioActual = null;
-        window.location.reload();
-    },
-
-    // Esta función ya no es necesaria, pero la dejamos por compatibilidad
-    async verificarAdmin() {
-        // El backend ya tiene un admin por defecto
-        console.log('Verificación de admin manejada por el backend');
+        window.location.href = 'index.html';
     }
 };
