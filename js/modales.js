@@ -25,9 +25,12 @@ function abrirModalLogin() {
                     <div class="form-group">
                         <input type="email" id="login-email" placeholder="Email" required>
                     </div>
-                    <div class="form-group">
-                        <input type="password" id="login-password" placeholder="Contraseña" required>
-                    </div>
+                    <div class="form-group password-container">
+    <input type="password" id="login-password" placeholder="Contraseña" required>
+    <button type="button" onclick="togglePassword('login-password', this)">
+        <i class="fa-solid fa-eye"></i>
+    </button>
+</div>
                     <button type="submit" class="btn-modal">Entrar</button>
                 </form>
                 <div class="modal-switch">
@@ -44,9 +47,12 @@ function abrirModalLogin() {
         <div class="form-group">
             <input type="email" id="reg-email" placeholder="Email" required>
         </div>
-        <div class="form-group">
-            <input type="password" id="reg-password" placeholder="Contraseña" required oninput="validarPasswordModal()">
-        </div>
+        <div class="form-group password-container">
+    <input type="password" id="reg-password" placeholder="Contraseña" required oninput="validarPasswordModal()">
+    <button type="button" onclick="togglePassword('reg-password', this)">
+        <i class="fa-solid fa-eye"></i>
+    </button>
+</div>
         <div class="password-requirements" id="password-requirements">
             <p>Requisitos:</p>
             <div class="requirement" id="req-length">✓ 6+ caracteres</div>
@@ -127,18 +133,29 @@ function abrirModalPerfil() {
                 </div>
                 
                 <h3 style="color:#4d8cff; margin:20px 0 10px;">🔐 Cambiar contraseña</h3>
-                <div class="form-group">
-                    <label>Contraseña actual</label>
-                    <input type="password" id="perfil-password-actual" placeholder="Ingresa tu contraseña actual">
-                </div>
-                <div class="form-group">
-                    <label>Nueva contraseña</label>
-                    <input type="password" id="perfil-password-nueva" placeholder="Mínimo 6 caracteres">
-                </div>
-                <div class="form-group">
-                    <label>Confirmar nueva contraseña</label>
-                    <input type="password" id="perfil-password-confirmar" placeholder="Repite la nueva contraseña">
-                </div>
+                <div class="form-group password-container">
+    <label>Contraseña actual</label>
+    <input type="password" id="perfil-password-actual" placeholder="Ingresa tu contraseña actual">
+    <button type="button" onclick="togglePassword('perfil-password-actual', this)">
+        <i class="fa-solid fa-eye"></i>
+    </button>
+</div>
+
+<div class="form-group password-container">
+    <label>Nueva contraseña</label>
+    <input type="password" id="perfil-password-nueva" placeholder="Mínimo 6 caracteres">
+    <button type="button" onclick="togglePassword('perfil-password-nueva', this)">
+        <i class="fa-solid fa-eye"></i>
+    </button>
+</div>
+
+<div class="form-group password-container">
+    <label>Confirmar nueva contraseña</label>
+    <input type="password" id="perfil-password-confirmar" placeholder="Repite la nueva contraseña">
+    <button type="button" onclick="togglePassword('perfil-password-confirmar', this)">
+        <i class="fa-solid fa-eye"></i>
+    </button>
+</div>
                 
                 <div class="foto-upload-modal" onclick="document.getElementById('perfil-foto').click()">
                     📷 Cambiar foto
@@ -498,6 +515,22 @@ window.iniciarSesionModal = iniciarSesionModal;
 window.registrarUsuarioModal = registrarUsuarioModal;
 window.guardarPerfil = guardarPerfil;
 window.eliminarCuenta = eliminarCuenta;
+function togglePassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const icon = btn.querySelector('i');
+
+    if (!input || !icon) return;
+
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
 
 // Cambiar contraseña desde el perfil
 async function cambiarPasswordModal() {
