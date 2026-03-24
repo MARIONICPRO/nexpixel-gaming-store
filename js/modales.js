@@ -1,6 +1,115 @@
-// =============================================
-// MODALES DE LOGIN, REGISTRO Y PERFIL
-// =============================================
+function validarNombreModal(nombre) {
+    if (!nombre || nombre.trim() === '') {
+        return { valid: false, error: 'El nombre es obligatorio' };
+    }
+    
+    if (nombre.trim().length < 3) {
+        return { valid: false, error: 'El nombre debe tener al menos 3 caracteres' };
+    }
+    
+    if (nombre.trim().length > 100) {
+        return { valid: false, error: 'El nombre no puede tener más de 100 caracteres' };
+    }
+    
+    return { valid: true };
+}
+
+function validarEmailModal(email) {
+    if (!email) {
+        return { valid: false, error: 'El email es obligatorio' };
+    }
+    
+    email = email.trim();
+    
+    // Validar que tenga @
+    if (!email.includes('@')) {
+        return { valid: false, error: 'Email inválido. Debe contener un @' };
+    }
+    
+    // Separar local y dominio
+    const partes = email.split('@');
+    if (partes.length !== 2) {
+        return { valid: false, error: 'Email inválido. Formato: usuario@dominio.com' };
+    }
+    
+    const local = partes[0];
+    const dominio = partes[1];
+    
+    // Validar que local no esté vacío
+    if (!local) {
+        return { valid: false, error: 'Email inválido. Falta el nombre de usuario' };
+    }
+    
+    // Validar que el dominio tenga al menos un punto
+    if (!dominio || !dominio.includes('.')) {
+        return { valid: false, error: 'Email inválido. El dominio debe contener un punto (ej: @gmail.com)' };
+    }
+    
+    // Validar que el punto no esté al inicio o final del dominio
+    if (dominio.startsWith('.') || dominio.endsWith('.')) {
+        return { valid: false, error: 'Email inválido. El dominio no puede comenzar o terminar con punto' };
+    }
+    
+    // Validar que después del último punto haya al menos 2 caracteres
+    const ultimoPunto = dominio.lastIndexOf('.');
+    const extension = dominio.substring(ultimoPunto + 1);
+    
+    if (extension.length < 2) {
+        return { valid: false, error: 'Email inválido. La extensión debe tener al menos 2 caracteres (ej: .com, .es)' };
+    }
+    
+    return { valid: true };
+}
+
+// Validar teléfono (obligatorio, 10 dígitos, empieza con 3)
+function validarTelefonoModal(telefono) {
+    if (!telefono) {
+        return { valid: false, error: 'El teléfono es obligatorio' };
+    }
+    
+    // Eliminar espacios, guiones, paréntesis
+    const telefonoLimpio = telefono.replace(/\D/g, '');
+    
+    if (telefonoLimpio.length !== 10) {
+        return { valid: false, error: 'Teléfono inválido. Debe tener 10 dígitos (ej: 3123456789)' };
+    }
+    
+    if (!telefonoLimpio.startsWith('3')) {
+        return { valid: false, error: 'Teléfono inválido. Debe ser un celular colombiano que empiece con 3' };
+    }
+    
+    return { valid: true, telefonoLimpio };
+}
+
+// Validar contraseña (devuelve objeto con valid y error)
+function validarPasswordModal() {
+    const password = document.getElementById('reg-password')?.value || '';
+    const reqLength = document.getElementById('req-length');
+    const reqUppercase = document.getElementById('req-uppercase');
+    const reqNumber = document.getElementById('req-number');
+
+    const lengthValid = password.length >= 6;
+    const uppercaseValid = /[A-Z]/.test(password);
+    const numberValid = /[0-9]/.test(password);
+
+    // Actualizar UI
+    if (reqLength) {
+        reqLength.className = lengthValid ? 'requirement valid' : 'requirement invalid';
+    }
+    if (reqUppercase) {
+        reqUppercase.className = uppercaseValid ? 'requirement valid' : 'requirement invalid';
+    }
+    if (reqNumber) {
+        reqNumber.className = numberValid ? 'requirement valid' : 'requirement invalid';
+    }
+    
+    const isValid = lengthValid && uppercaseValid && numberValid;
+    
+    return {
+        valid: isValid,
+        error: isValid ? '' : 'La contraseña debe tener al menos 6 caracteres, una mayúscula y un número'
+    };
+}
 
 // Abrir modal de login
 function abrirModalLogin() {
@@ -26,11 +135,11 @@ function abrirModalLogin() {
                         <input type="email" id="login-email" placeholder="Email" required>
                     </div>
                     <div class="form-group password-container">
-    <input type="password" id="login-password" placeholder="Contraseña" required>
-    <button type="button" onclick="togglePassword('login-password', this)">
-        <i class="fa-solid fa-eye"></i>
-    </button>
-</div>
+                        <input type="password" id="login-password" placeholder="Contraseña" required>
+                        <button type="button" onclick="togglePassword('login-password', this)">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
                     <button type="submit" class="btn-modal">Entrar</button>
                 </form>
                 <div class="modal-switch">
@@ -38,60 +147,265 @@ function abrirModalLogin() {
                 </div>
             </div>
 
-<div class="modal-form" id="registro-form">
-    <h2>Crear Cuenta</h2>
-    <form onsubmit="return registrarUsuarioModal(event)">
-        <div class="form-group">
-            <input type="text" id="reg-nombre" placeholder="Nombre completo" required>
-        </div>
-        <div class="form-group">
-            <input type="email" id="reg-email" placeholder="Email" required>
-        </div>
-        <div class="form-group password-container">
-    <input type="password" id="reg-password" placeholder="Contraseña" required oninput="validarPasswordModal()">
-    <button type="button" onclick="togglePassword('reg-password', this)">
-        <i class="fa-solid fa-eye"></i>
-    </button>
-</div>
-        <div class="password-requirements" id="password-requirements">
-            <p>Requisitos:</p>
-            <div class="requirement" id="req-length">✓ 6+ caracteres</div>
-            <div class="requirement" id="req-uppercase">✓ 1 mayúscula</div>
-            <div class="requirement" id="req-number">✓ 1 número</div>
-        </div>
-        <div class="form-group">
-            <input type="tel" id="reg-telefono" placeholder="Teléfono (opcional)"> // 👈 NUEVO
-        </div>
-        <div class="form-group">
-            <select id="reg-tipo" onchange="toggleProveedorCampos()">
-                <option value="cliente">Cliente</option>
-                <option value="proveedor">Proveedor</option>
-            </select>
-        </div>
-        <div id="proveedor-campos" style="display:none;">
-            <div class="form-group">
-                <input type="text" id="reg-empresa" placeholder="Nombre de empresa">
+            <div class="modal-form" id="registro-form">
+                <h2>Crear Cuenta</h2>
+                <form onsubmit="return registrarUsuarioModal(event)">
+                    <div class="form-group">
+                        <input type="text" id="reg-nombre" placeholder="Nombre completo" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="reg-email" placeholder="Email (ejemplo@dominio.com)" required>
+                        <small id="email-error" style="color: #e94560; font-size: 0.8rem; display: none;"></small>
+                    </div>
+                    <div class="form-group password-container">
+                        <input type="password" id="reg-password" placeholder="Contraseña" required oninput="validarPasswordModal()">
+                        <button type="button" onclick="togglePassword('reg-password', this)">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="password-requirements" id="password-requirements">
+                        <p>Requisitos:</p>
+                        <div class="requirement" id="req-length">✓ 6+ caracteres</div>
+                        <div class="requirement" id="req-uppercase">✓ 1 mayúscula</div>
+                        <div class="requirement" id="req-number">✓ 1 número</div>
+                    </div>
+                    <div class="form-group">
+                        <input type="tel" id="reg-telefono" placeholder="Teléfono (ej: 3123456789)" required>
+                        <small id="telefono-error" style="color: #e94560; font-size: 0.8rem; display: none;"></small>
+                    </div>
+                    <div class="form-group">
+                        <select id="reg-tipo" onchange="toggleProveedorCampos()" required>
+                            <option value="cliente">Cliente</option>
+                            <option value="proveedor">Proveedor</option>
+                        </select>
+                    </div>
+                    <div id="proveedor-campos" style="display:none;">
+                        <div class="form-group">
+                            <input type="text" id="reg-empresa" placeholder="Nombre de empresa">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="reg-nit" placeholder="NIT">
+                        </div>
+                    </div>
+                    <div class="foto-upload-modal" onclick="document.getElementById('reg-foto').click()">
+                        📷 Subir foto de perfil
+                    </div>
+                    <input type="file" id="reg-foto" accept="image/*" style="display:none;" onchange="previewFotoModal(event)">
+                    <img id="foto-preview-modal" class="foto-preview-modal">
+                    <button type="submit" class="btn-modal">Crear Cuenta</button>
+                </form>
+                <div class="modal-switch">
+                    ¿Ya tienes cuenta? <a onclick="cambiarTabModal('login')">Inicia sesión</a>
+                </div>
             </div>
-            <div class="form-group">
-                <input type="text" id="reg-nit" placeholder="NIT">
-            </div>
-        </div>
-        <div class="foto-upload-modal" onclick="document.getElementById('reg-foto').click()">
-            📷 Subir foto de perfil
-        </div>
-        <input type="file" id="reg-foto" accept="image/*" style="display:none;" onchange="previewFotoModal(event)">
-        <img id="foto-preview-modal" class="foto-preview-modal">
-        <button type="submit" class="btn-modal">Crear Cuenta</button>
-        
-    </form>
-    <div class="modal-switch">
-        ¿Ya tienes cuenta? <a onclick="cambiarTabModal('login')">Inicia sesión</a>
-    </div>
-</div>
         </div>
     `;
     modal.classList.add('active');
 }
+
+// Registrar usuario desde modal - VERSIÓN CON VALIDACIONES COMPLETAS
+// Registrar usuario desde modal - VERSIÓN CORREGIDA
+async function registrarUsuarioModal(event) {
+    event.preventDefault();
+    console.log('📝 INICIO DE REGISTRO');
+
+    // Limpiar errores previos
+    const emailError = document.getElementById('email-error');
+    const telefonoError = document.getElementById('telefono-error');
+    if (emailError) emailError.style.display = 'none';
+    if (telefonoError) telefonoError.style.display = 'none';
+    
+    // 1. VALIDAR NOMBRE
+    const nombre = document.getElementById('reg-nombre').value;
+    const nombreValidation = validarNombreModal(nombre);
+    if (!nombreValidation.valid) {
+        mostrarNotificacion(nombreValidation.error, 'error');
+        return false;
+    }
+    
+    // 2. VALIDAR EMAIL
+    const email = document.getElementById('reg-email').value;
+    const emailValidation = validarEmailModal(email);
+    console.log('📧 Validación email:', emailValidation); // Debug
+    if (!emailValidation.valid) {
+        if (emailError) {
+            emailError.textContent = emailValidation.error;
+            emailError.style.display = 'block';
+        }
+        mostrarNotificacion(emailValidation.error, 'error');
+        return false;
+    }
+    
+    // 3. VALIDAR CONTRASEÑA
+    const passwordValidation = validarPasswordModal();
+    console.log('🔐 Validación contraseña:', passwordValidation); // Debug
+    if (!passwordValidation.valid) {
+        mostrarNotificacion(passwordValidation.error, 'error');
+        return false;
+    }
+    const password = document.getElementById('reg-password').value;
+    
+    // 4. VALIDAR TELÉFONO
+    const telefono = document.getElementById('reg-telefono').value;
+    const telefonoValidation = validarTelefonoModal(telefono);
+    console.log('📱 Validación teléfono:', telefonoValidation); // Debug
+    if (!telefonoValidation.valid) {
+        if (telefonoError) {
+            telefonoError.textContent = telefonoValidation.error;
+            telefonoError.style.display = 'block';
+        }
+        mostrarNotificacion(telefonoValidation.error, 'error');
+        return false;
+    }
+    
+    // 5. VALIDAR TIPO DE USUARIO
+    const tipoUsuario = document.getElementById('reg-tipo').value;
+    if (!tipoUsuario) {
+        mostrarNotificacion('Debes seleccionar un tipo de usuario', 'error');
+        return false;
+    }
+    
+    // 6. Si es proveedor, validar empresa y NIT
+    if (tipoUsuario === 'proveedor') {
+        const empresa = document.getElementById('reg-empresa')?.value;
+        const nit = document.getElementById('reg-nit')?.value;
+        
+        if (!empresa || empresa.trim() === '') {
+            mostrarNotificacion('Para registrarte como proveedor, debes ingresar el nombre de la empresa', 'error');
+            return false;
+        }
+        
+        if (!nit || nit.trim() === '') {
+            mostrarNotificacion('Para registrarte como proveedor, debes ingresar el NIT', 'error');
+            return false;
+        }
+    }
+
+    // Crear FormData
+    const formData = new FormData();
+
+    // Agregar campos validados
+    formData.append('nombre', nombre.trim());
+    formData.append('email', email.toLowerCase().trim());
+    formData.append('password', password);
+    formData.append('tipo_usuario', tipoUsuario);
+    formData.append('telefono', telefonoValidation.telefonoLimpio);
+
+    if (tipoUsuario === 'proveedor') {
+        const empresa = document.getElementById('reg-empresa')?.value;
+        const nit = document.getElementById('reg-nit')?.value;
+        if (empresa) formData.append('empresa', empresa.trim());
+        if (nit) formData.append('nit', nit.trim());
+    }
+
+    // Agregar foto si existe
+    const fotoInput = document.getElementById('reg-foto');
+    if (fotoInput && fotoInput.files && fotoInput.files.length > 0) {
+        console.log('📸 Foto seleccionada:', fotoInput.files[0].name);
+        formData.append('foto', fotoInput.files[0]);
+    }
+
+    console.log('📤 Enviando petición a:', `${API_URL}/auth/registro`);
+
+    try {
+        const response = await fetch(`${API_URL}/auth/registro`, {
+            method: 'POST',
+            body: formData
+        });
+
+        console.log('📥 Respuesta status:', response.status);
+
+        const data = await response.json();
+        console.log('📥 Respuesta data:', data);
+
+        if (response.ok && data.success) {
+            if (data.token) API.setToken(data.token);
+
+            Auth.usuarioActual = data.usuario;
+            localStorage.setItem('nexpixel_usuario', JSON.stringify(data.usuario));
+
+            cerrarModal();
+            await renderizarSidebar();
+            mostrarNotificacion('✅ Cuenta creada exitosamente', 'success');
+        } else {
+            // Manejar error de email duplicado
+            if (data.code === '23505' || (data.error && data.error.includes('duplicate'))) {
+                mostrarNotificacion('❌ Este correo electrónico ya está registrado. Por favor inicia sesión o usa otro email.', 'error');
+                // Opcional: cambiar a la pestaña de login
+                setTimeout(() => {
+                    cambiarTabModal('login');
+                    const loginEmail = document.getElementById('login-email');
+                    if (loginEmail) loginEmail.value = email;
+                }, 2000);
+            } else {
+                mostrarNotificacion(data.error || 'Error al registrar', 'error');
+            }
+        }
+    } catch (error) {
+        console.error('❌ Error en registro:', error);
+        mostrarNotificacion('Error al conectar con el servidor', 'error');
+    }
+
+    return false;
+}
+
+// Iniciar sesión desde modal - VERSIÓN CON VALIDACIÓN
+async function iniciarSesionModal(event) {
+    event.preventDefault();
+    console.log('🚀 Iniciando sesión...');
+
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+    
+    // Validar email
+    const emailValidation = validarEmailModal(email);
+    if (!emailValidation.valid) {
+        mostrarNotificacion(emailValidation.error, 'error');
+        return false;
+    }
+
+    const result = await Auth.login(email, password);
+
+    if (result.success) {
+        console.log('✅ Login exitoso, actualizando sidebar...');
+        cerrarModal();
+        
+        // Actualizar sidebar y carrito
+        await renderizarSidebar();
+        if (typeof Carrito !== 'undefined' && Carrito.sincronizarCarritoLocal) {
+            await Carrito.sincronizarCarritoLocal();
+        }
+        
+        mostrarNotificacion('✅ Sesión iniciada correctamente', 'success');
+        console.log('🎉 Todo listo!');
+    } else {
+        mostrarNotificacion(result.error || 'Error al iniciar sesión', 'error');
+    }
+
+    return false;
+}
+
+// Función para mostrar/ocultar contraseña
+function togglePassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const icon = btn.querySelector('i');
+
+    if (!input || !icon) return;
+
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
+
+// Resto de las funciones (abrirModalRegistro, abrirModalPerfil, etc.) se mantienen igual...
+// ... pero asegúrate de exportar las nuevas funciones
+
 
 // Abrir modal de registro directamente
 function abrirModalRegistro() {
@@ -206,24 +520,6 @@ function toggleProveedorCampos() {
     }
 }
 
-// Validar contraseña en tiempo real
-function validarPasswordModal() {
-    const password = document.getElementById('reg-password').value;
-    const reqLength = document.getElementById('req-length');
-    const reqUppercase = document.getElementById('req-uppercase');
-    const reqNumber = document.getElementById('req-number');
-
-    if (reqLength) {
-        reqLength.className = password.length >= 6 ? 'requirement valid' : 'requirement invalid';
-    }
-    if (reqUppercase) {
-        reqUppercase.className = /[A-Z]/.test(password) ? 'requirement valid' : 'requirement invalid';
-    }
-    if (reqNumber) {
-        reqNumber.className = /[0-9]/.test(password) ? 'requirement valid' : 'requirement invalid';
-    }
-}
-
 // Previsualizar foto de perfil
 function previewFotoModal(event) {
     const preview = document.getElementById('foto-preview-modal');
@@ -253,110 +549,10 @@ function previewFotoPerfil(event) {
     }
 }
 // Iniciar sesión desde modal - VERSIÓN CORREGIDA
-async function iniciarSesionModal(event) {
-    event.preventDefault();
-    console.log('🚀 Iniciando sesión...');
 
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
-
-    const result = await Auth.login(email, password);
-
-    if (result.success) {
-        console.log('✅ Login exitoso, actualizando sidebar...');
-        cerrarModal();
-        
-        // 👇 FORZAR ACTUALIZACIÓN DE LA SIDEBAR
-        await renderizarSidebar();
-        await Carrito.inicializar();
-        
-        mostrarNotificacion('Sesión iniciada correctamente');
-        console.log('🎉 Todo listo!');
-    } else {
-        mostrarNotificacion(result.error || 'Error al iniciar sesión', 'error');
-    }
-
-    return false;
-}
 
 // Registrar usuario desde modal - VERSIÓN CORREGIDA
-async function registrarUsuarioModal(event) {
-    event.preventDefault();
-    console.log('📝 INICIO DE REGISTRO');
 
-    const password = document.getElementById('reg-password').value;
-
-    if (!/^(?=.*[A-Z])(?=.*\d).{6,}$/.test(password)) {
-        mostrarNotificacion('La contraseña debe tener al menos 6 caracteres, una mayúscula y un número', 'error');
-        return false;
-    }
-
-    // Crear FormData
-    const formData = new FormData();
-
-    // Agregar campos
-    formData.append('nombre', document.getElementById('reg-nombre').value);
-    formData.append('email', document.getElementById('reg-email').value);
-    formData.append('password', password);
-    formData.append('tipo_usuario', document.getElementById('reg-tipo').value);
-
-    const telefono = document.getElementById('reg-telefono')?.value;
-    if (telefono) formData.append('telefono', telefono);
-
-    if (document.getElementById('reg-tipo').value === 'proveedor') {
-        const empresa = document.getElementById('reg-empresa')?.value;
-        const nit = document.getElementById('reg-nit')?.value;
-        if (empresa) formData.append('empresa', empresa);
-        if (nit) formData.append('nit', nit);
-    }
-
-    // 👇 CORREGIDO: Obtener la foto directamente del input
-    const fotoInput = document.getElementById('reg-foto');
-    console.log('3️⃣ Input de foto:', fotoInput);
-
-    if (fotoInput && fotoInput.files && fotoInput.files.length > 0) {
-        console.log('4️⃣ Foto encontrada:', fotoInput.files[0].name);
-        console.log('4️⃣ Tamaño:', fotoInput.files[0].size);
-        console.log('4️⃣ Tipo:', fotoInput.files[0].type);
-        formData.append('foto', fotoInput.files[0]);
-    } else {
-        console.log('4️⃣ No hay foto seleccionada');
-        // Mostrar advertencia pero continuar
-        mostrarNotificacion('No se seleccionó foto de perfil', 'info');
-    }
-
-    console.log('5️⃣ Enviando petición a:', `${API_URL}/auth/registro`);
-
-    try {
-        const response = await fetch(`${API_URL}/auth/registro`, {
-            method: 'POST',
-            body: formData
-        });
-
-        console.log('6️⃣ Respuesta status:', response.status);
-
-        const data = await response.json();
-        console.log('7️⃣ Respuesta data:', data);
-
-        if (data.success) {
-            if (data.token) API.setToken(data.token);
-
-            Auth.usuarioActual = data.usuario;
-            localStorage.setItem('nexpixel_usuario', JSON.stringify(data.usuario));
-
-            cerrarModal();
-            await renderizarSidebar();
-            mostrarNotificacion('✅ Cuenta creada exitosamente');
-        } else {
-            mostrarNotificacion(data.error || 'Error al registrar', 'error');
-        }
-    } catch (error) {
-        console.error('❌ Error en registro:', error);
-        mostrarNotificacion('Error al conectar con el servidor', 'error');
-    }
-
-    return false;
-}
 
 // Guardar cambios de perfil - VERSIÓN CON FOTO
 // Guardar cambios de perfil - VERSIÓN CON CAMBIO DE CONTRASEÑA
@@ -438,11 +634,11 @@ async function guardarPerfil(event) {
             localStorage.setItem('nexpixel_usuario', JSON.stringify(data.usuario));
 
             cerrarModalPerfil();
-            
+
             await renderizarSidebar();
-            
+
             mostrarNotificacion('✅ Perfil actualizado correctamente');
-            
+
             if (passwordNueva) {
                 mostrarNotificacion('🔑 Contraseña actualizada', 'success');
             }
@@ -459,20 +655,20 @@ async function guardarPerfil(event) {
 // Eliminar cuenta - VERSIÓN CORREGIDA CON /eliminar
 async function eliminarCuenta() {
     console.log('🗑️ Iniciando proceso de eliminación de cuenta...');
-    
+
     const token = localStorage.getItem('nexpixel_token');
     if (!token) {
         console.error('❌ No hay token de autenticación');
         alert('Error: No has iniciado sesión correctamente');
         return;
     }
-    
+
     if (!confirm('⚠️ ¿Estás seguro de eliminar tu cuenta? Esta acción no se puede deshacer.')) {
         return;
     }
-    
+
     console.log('🗑️ Eliminando cuenta con token:', token.substring(0, 20) + '...');
-    
+
     try {
         // 👇 VERIFICA QUE ESTA LÍNEA SEA /eliminar
         const response = await fetch(`${API_URL}/auth/eliminar`, {
@@ -484,7 +680,7 @@ async function eliminarCuenta() {
         });
 
         console.log('📥 Status:', response.status);
-        
+
         const data = await response.json();
         console.log('📥 Respuesta:', data);
 
@@ -508,13 +704,16 @@ window.cerrarModal = cerrarModal;
 window.cerrarModalPerfil = cerrarModalPerfil;
 window.cambiarTabModal = cambiarTabModal;
 window.toggleProveedorCampos = toggleProveedorCampos;
-window.validarPasswordModal = validarPasswordModal;
 window.previewFotoModal = previewFotoModal;
 window.previewFotoPerfil = previewFotoPerfil;
 window.iniciarSesionModal = iniciarSesionModal;
 window.registrarUsuarioModal = registrarUsuarioModal;
 window.guardarPerfil = guardarPerfil;
 window.eliminarCuenta = eliminarCuenta;
+window.validarEmailModal = validarEmailModal;
+window.validarTelefonoModal = validarTelefonoModal;
+window.validarNombreModal = validarNombreModal;
+window.validarPasswordModal = validarPasswordModal;
 function togglePassword(inputId, btn) {
     const input = document.getElementById(inputId);
     const icon = btn.querySelector('i');

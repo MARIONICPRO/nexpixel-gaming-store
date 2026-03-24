@@ -112,11 +112,6 @@ async function agregarAlCarrito(id) {
 }
 
 async function manejarClickCompra(productoId) {
-    if (!Auth.usuarioActual) {
-        mostrarNotificacion('Debes iniciar sesión', 'error');
-        abrirModalLogin();
-        return;
-    }
     await agregarAlCarrito(productoId);
 }
 
