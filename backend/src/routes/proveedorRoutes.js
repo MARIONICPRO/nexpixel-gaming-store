@@ -10,6 +10,7 @@ router.use(verificarRol(['proveedor']));
 
 // Productos
 router.get('/productos', proveedorController.obtenerMisProductos);
+router.get('/productos/:id', proveedorController.obtenerProductoPorId);
 router.post('/productos', proveedorController.crearProducto);
 router.put('/productos/:id', proveedorController.actualizarProducto);
 router.delete('/productos/:id', proveedorController.eliminarProducto);

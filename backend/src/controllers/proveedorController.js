@@ -614,5 +614,44 @@ export const proveedorController = {
         error: 'Error al obtener categorías' 
       });
     }
+  },
+  // ============================================
+// OBTENER PRODUCTO POR ID (PROVEEDOR)
+// ============================================
+async obtenerProductoPorId(req, res) {
+  try {
+    const { id } = req.params;
+    const proveedorId = req.usuario.id_usuario; // 👈 mismo patrón que usas en todo el archivo
+
+    const { data: producto, error } = await supabase
+      .from('producto')
+      .select(`
+        *,
+        categoria: id_categoria (nombre_grupo),
+        plataforma: id_plataforma (nombre_plataforma)
+      `)
+      .eq('id_producto', id)
+      .eq('id_proveedor', proveedorId) // 👈 seguridad: solo sus propios productos
+      .single();
+
+    if (error || !producto) {
+      return res.status(404).json({
+        success: false,
+        error: 'Producto no encontrado'
+      });
+    }
+
+    res.json({
+      success: true,
+      producto
+    });
+
+  } catch (error) {
+    console.error('❌ Error obteniendo producto:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error al obtener producto'
+    });
   }
+},
 };
