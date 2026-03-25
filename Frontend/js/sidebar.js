@@ -27,13 +27,13 @@ async function renderizarSidebar() {
         if (usuario.tipo_usuario === 'admin') {
             dashboardButtons = `
                 <a href="dashboard-admin.html" class="menu-item" onclick="cerrarSidebar()">
-                    <span class="menu-icon">👑</span> Panel Administrador
+                    <span class="menu-icon"><i class="fa-solid fa-crown"></i></span> Panel Administrador
                 </a>
             `;
         } else if (usuario.tipo_usuario === 'proveedor') {
             dashboardButtons = `
                 <a href="dashboard-prove.html" class="menu-item" onclick="cerrarSidebar()">
-                    <span class="menu-icon">🏢</span> Panel Proveedor
+                    <span class="menu-icon"><i class="fa-solid fa-building"></i></span> Panel Proveedor
                 </a>
             `;
         }
@@ -51,11 +51,11 @@ async function renderizarSidebar() {
         </div>
         <div class="user-name">${usuario.nombre}</div>
         <div class="user-email">${usuario.email}</div>
-        <div class="user-role">${usuario.tipo_usuario === 'admin' ? '👑 Administrador' :
-                usuario.tipo_usuario === 'proveedor' ? '🏢 Proveedor' : '👤 Cliente'
+        <div class="user-role">${usuario.tipo_usuario === 'admin' ? '<i class="fa-solid fa-crown"></i> Administrador' :
+                usuario.tipo_usuario === 'proveedor' ? '<i class="fa-solid fa-building"></i> Proveedor' : '<i class="fa-solid fa-user"></i> Cliente'
             }</div>
-        <button class="btn-editar-perfil" onclick="abrirModalPerfil()">✏️ Editar perfil</button>
-        <button class="btn-sidebar-logout" onclick="cerrarSesion()">🚪 Cerrar sesión</button>
+        <button class="btn-editar-perfil" onclick="abrirModalPerfil()"><i class="fa-solid fa-pen"></i> Editar perfil</button>
+        <button class="btn-sidebar-logout" onclick="cerrarSesion()"><i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión</button>
     </div>
 `;
     } else {
@@ -79,19 +79,19 @@ async function renderizarSidebar() {
         ${perfilHTML}
         <div class="sidebar-menu">
             <a href="index.html" class="menu-item ${paginaActual === 'index.html' ? 'active' : ''}" onclick="cerrarSidebar()">
-                <span class="menu-icon">🏠</span> Inicio
+                <span class="menu-icon"><i class="fa-solid fa-house"></i></span> Inicio
             </a>
             <a href="juegos.html" class="menu-item ${paginaActual === 'juegos.html' ? 'active' : ''}" onclick="cerrarSidebar()">
-                <span class="menu-icon">🎮</span> Juegos
+                <span class="menu-icon"><i class="fa-solid fa-gamepad"></i></span> Juegos
             </a>
             <a href="tarjetas.html" class="menu-item ${paginaActual === 'tarjetas.html' ? 'active' : ''}" onclick="cerrarSidebar()">
-                <span class="menu-icon">💳</span> Tarjetas
+                <span class="menu-icon"><i class="fa-solid fa-credit-card"></i></span> Tarjetas
             </a>
             <a href="contacto.html" class="menu-item ${paginaActual === 'contacto.html' ? 'active' : ''}" onclick="cerrarSidebar()">
-                <span class="menu-icon">📞</span> Contacto
+                <span class="menu-icon"><i class="fa-solid fa-headset"></i></span> Contacto
             </a>
             <a href="carrito.html" class="menu-item ${paginaActual === 'carrito.html' ? 'active' : ''}" onclick="cerrarSidebar()">
-                <span class="menu-icon">🛒</span> Carrito
+                <span class="menu-icon"><i class="fa-solid fa-cart-shopping"></i></span> Carrito
                 <span class="carrito-badge" id="sidebar-carrito-contador">${Carrito?.items?.length || 0}</span>
             </a>
             ${dashboardButtons} <!-- 👈 NUEVO: Botones insertados aquí -->

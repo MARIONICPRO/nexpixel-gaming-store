@@ -1,34 +1,50 @@
 /* ============================================
-   NEXPIXEL - PÁGINA PRINCIPAL
+    NEXPIXEL - PÁGINA PRINCIPAL (ESTÉTICA MEJORADA)
    ============================================ */
 
+/* 1. CONTENEDOR BIENVENIDO (HERO) - EL CAMBIO PRINCIPAL */
 .hero {
     text-align: center;
-    padding: 4rem 2rem;
-    background: linear-gradient(135deg, rgba(10, 30, 60, 0.8) 0%, rgba(20, 50, 100, 0.8) 100%);
-    border-radius: 15px;
+    padding: 5rem 2rem;
+    /* Gradiente radial más profundo y moderno */
+    background: radial-gradient(circle at center, rgba(42, 111, 219, 0.2) 0%, rgba(10, 15, 31, 0.95) 100%);
+    border-radius: 20px;
     margin-bottom: 3rem;
-    border: 1px solid var(--color-primario);
-    backdrop-filter: blur(10px);
-    box-shadow: var(--shadow);
+    border: 1px solid rgba(77, 140, 255, 0.4); /* Borde neón sutil */
+    backdrop-filter: blur(15px);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(77, 140, 255, 0.1);
+    position: relative;
 }
 
 .hero h1 {
-    font-size: 3rem;
+    font-size: 3.5rem;
+    font-weight: 800;
     margin-bottom: 1rem;
-    background: var(--gradient-button);
+    /* Efecto de texto cromado/blanco brillante */
+    background: linear-gradient(180deg, #FFFFFF 0%, #AACCFF 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    text-shadow: 0 0 20px rgba(42, 111, 219, 0.5);
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 2px;
 }
 
 .hero p {
-    font-size: 1.2rem;
-    color: var(--color-texto-claro);
+    font-size: 1.3rem;
+    color: #aaccff;
+    font-weight: 300;
+    letter-spacing: 1px;
 }
 
-/* Carrusel */
+/* 2. ICONOS DE LOS TÍTULOS (AHORA BLANCOS) */
+h2 i {
+    color: #ffffff; /* Iconos en blanco como pediste */
+    margin-right: 12px;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6)); /* Brillo blanco */
+}
+
+/* 3. MANTENIENDO TU ESTRUCTURA ORIGINAL DEL CARRUSEL */
 .carruel-section {
     margin-bottom: 4rem;
 }
@@ -104,6 +120,7 @@
     font-size: 1.1rem;
 }
 
+/* BOTONES DEL CARRUSEL (ORIGINALES SIN CAMBIOS) */
 .carrusel-btn {
     position: absolute;
     top: 50%;
@@ -130,15 +147,10 @@
     box-shadow: 0 0 20px rgba(42, 111, 219, 0.8);
 }
 
-.carrusel-btn.prev {
-    left: 10px;
-}
+.carrusel-btn.prev { left: 10px; }
+.carrusel-btn.next { right: 10px; }
 
-.carrusel-btn.next {
-    right: 10px;
-}
-
-/* Recomendaciones */
+/* RECOMENDACIONES */
 .recomendaciones h2 {
     font-size: 2rem;
     margin-bottom: 2rem;
@@ -148,25 +160,16 @@
     text-shadow: 0 0 10px rgba(42, 111, 219, 0.5);
 }
 
-/* Responsive */
+/* RESPONSIVE ORIGINAL */
 @media screen and (max-width: 1024px) {
-    .carrusel-item {
-        flex: 0 0 calc(33.333% - 14px);
-    }
+    .carrusel-item { flex: 0 0 calc(33.333% - 14px); }
 }
 
 @media screen and (max-width: 768px) {
-    .hero h1 {
-        font-size: 2rem;
-    }
-
-    .carrusel-item {
-        flex: 0 0 calc(50% - 10px);
-    }
+    .hero h1 { font-size: 2.2rem; }
+    .carrusel-item { flex: 0 0 calc(50% - 10px); }
 }
 
 @media screen and (max-width: 480px) {
-    .carrusel-item {
-        flex: 0 0 100%;
-    }
+    .carrusel-item { flex: 0 0 100%; }
 }

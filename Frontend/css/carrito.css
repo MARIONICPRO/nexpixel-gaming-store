@@ -587,3 +587,118 @@ body.carrito-page {
         object-fit: cover !important;
     }
 }
+
+
+/* ============================================
+   MEJORAS DE ICONOS Y ESTILO NEXPIXEL
+   =========================================== */
+   /* 1. Iconos para los labels del formulario de pago */
+.panel-pago .form-group label {
+    display: block;
+    color: #aaccff;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.panel-pago .form-group label::before {
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    margin-right: 8px;
+    color: #4d8cff;
+}
+
+label[for="pago-nombre"]::before, .form-group:nth-child(1) label::before { content: "\f007"; } /* User icon */
+label[for="pago-documento"]::before, .form-group:nth-child(2) label::before { content: "\f2bb"; } /* ID card icon */
+label[for="pago-email"]::before, .form-group:nth-child(3) label::before { content: "\f0e0"; } /* Envelope icon */
+    /* Configuración base para que todos los iconos carguen */
+.metodo-pago::before {
+    font-family: "Font Awesome 6 Free"; /* Fuente estándar gratuita */
+    font-weight: 900;                  /* OBLIGATORIO para que no salga el cuadro tachado */
+    display: block;
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+    transition: transform 0.3s;
+}
+
+/* Nequi - Icono de Celular */
+.metodo-pago[data-metodo="nequi"]::before {
+    content: "\f3cd"; 
+    color: #ff00c1;
+}
+
+/* Daviplata - Icono de Billetera */
+.metodo-pago[data-metodo="daviplata"]::before {
+    content: "\f81d";
+    color: #ed1c24;
+}
+
+/* Visa - USAMOS LA FAMILIA BRANDS */
+.metodo-pago[data-metodo="visa"]::before {
+    content: "\f1f0"; 
+    font-family: "Font Awesome 6 Brands"; /* CAMBIO AQUÍ: Visa es una marca */
+    color: #1a1f71;
+}
+
+/* Efecty - Icono de Dinero */
+.metodo-pago[data-metodo="efecty"]::before {
+    content: "\f53d";
+    color: #ffcc00;
+}
+
+
+/* 3. Estilo extra al botón confirmar */
+.btn-confirmar::after {
+    content: "\f1d8"; /* Paper plane icon */
+    font-family: "Font Awesome 6 Free";
+    margin-left: 10px;
+    transition: transform 0.3s;
+}
+
+.btn-confirmar:hover::after {
+    transform: translateX(5px);
+}
+
+/* 4. Mejoras visuales a los inputs */
+.panel-pago input {
+    border-left: 4px solid #4d8cff; /* Acento lateral estilo gamer */
+}
+
+/* 5. Efecto Glow en el total */
+.total-pagar {
+    border: 1px solid #4d8cff;
+    box-shadow: inset 0 0 15px rgba(77, 140, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.total-pagar::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(77, 140, 255, 0.2), transparent);
+    transition: 0.5s;
+}
+
+.total-pagar:hover::before {
+    left: 100%;
+}
+
+/* 6. Icono de basura para eliminar */
+.btn-eliminar-item::before {
+    content: "\f2ed"; 
+    font-family: "Font Awesome 6 Free";
+    margin-right: 5px;
+}
+
+/* 7. Estilo de scrollbar para los productos (si hay muchos) */
+.carrito-items::-webkit-scrollbar {
+    width: 6px;
+}
+.carrito-items::-webkit-scrollbar-thumb {
+    background: #4d8cff;
+    border-radius: 10px;
+}

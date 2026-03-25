@@ -308,3 +308,10 @@
         display: none;
     }
 }
+.menu-icon {
+    width: 30px; /* Ancho fijo para que el texto quede alineado verticalmente */
+    display: inline-block;
+    text-align: center;
+    font-size: 1.2rem;
+    color: #ffffff; /* Color azul NexPixel */
+}

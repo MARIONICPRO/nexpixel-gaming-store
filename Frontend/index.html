@@ -14,7 +14,7 @@
 
 <body>
     <!-- Botón menú hamburguesa para móvil -->
-    <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">☰</button>
+    <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
     <div class="sidebar" id="sidebar"></div>
 
     <div class="content">
@@ -24,22 +24,22 @@
         </section>
 
         <section class="carruel-section">
-            <h2>🎮 Juegos recién llegados</h2>
+            <h2><i class="fa-solid fa-gamepad"></i> Juegos recién llegados</h2>
             <div class="carrusel-container">
-                <button class="carrusel-btn prev" onclick="moverCarrusel(-1)">❮</button>
+                <button class="carrusel-btn prev" onclick="moverCarrusel(-1)"><i class="fa-solid fa-chevron-left"></i></button>
                 <div class="carrusel-track" id="carrusel-recientes"></div>
-                <button class="carrusel-btn next" onclick="moverCarrusel(1)">❯</button>
+                <button class="carrusel-btn next" onclick="moverCarrusel(1)"><i class="fa-solid fa-chevron-right"></i></button>
             </div>
         </section>
 
         <section class="recomendaciones">
-            <h2>✨ Recomendaciones para ti</h2>
+            <h2><i class="fa-solid fa-star"></i> Recomendaciones para ti</h2>
             <div id="recomendaciones-container" class="productos-grid"></div>
         </section>
     </div>
 
     <a href="carrito.html" class="cart-floating" id="cartFloating">
-        🛒
+        <i class="fa-solid fa-cart-shopping"></i>
         <span class="cart-badge" id="cartCount">0</span>
     </a>
 
