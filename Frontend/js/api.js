@@ -49,7 +49,7 @@ class ApiClient {
             const response = await fetch(url, config);
             console.log('📥 Status respuesta:', response.status);
             console.log('📥 Status text:', response.statusText);
-            
+
             const data = await response.json();
             console.log('📥 Datos recibidos:', data);
 
@@ -65,11 +65,15 @@ class ApiClient {
         }
     }
 
-    // ===== AUTH =====
+    // EN api.js - Método login
     async login(email, password) {
+        // ✅ CONVERTIR EMAIL A MINÚSCULAS ANTES DE ENVIAR
         const data = await this.request('/auth/login', {
             method: 'POST',
-            body: JSON.stringify({ email, password }),
+            body: JSON.stringify({
+                email: email.toLowerCase(),
+                password
+            }),
         });
         if (data.token) {
             this.setToken(data.token);
@@ -77,17 +81,21 @@ class ApiClient {
         return data;
     }
 
+    // Método register
     async register(userData) {
+        // ✅ CONVERTIR EMAIL A MINÚSCULAS ANTES DE ENVIAR
         const data = await this.request('/auth/registro', {
             method: 'POST',
-            body: JSON.stringify(userData),
+            body: JSON.stringify({
+                ...userData,
+                email: userData.email.toLowerCase()
+            }),
         });
         if (data.token) {
             this.setToken(data.token);
         }
         return data;
     }
-
     async getPerfil() {
         return this.request('/auth/perfil');
     }
