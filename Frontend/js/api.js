@@ -2,7 +2,6 @@
 // API Client para NexPixel
 // ============================================
 
-const API_URL = 'http://localhost:3000/api';
 
 class ApiClient {
     constructor() {

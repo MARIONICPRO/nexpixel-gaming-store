@@ -1,4 +1,6 @@
-
+// ============================================
+// MAIN.JS - NEXPIXEL (VERSIÓN CORREGIDA)
+// ============================================
 
 // ===== VARIABLES GLOBALES =====
 let posicionCarrusel = 0;
@@ -8,14 +10,14 @@ let filtrosVisibles = true;
 // ===== INICIALIZACIÓN =====
 async function inicializarApp() {
     console.log('🚀 Inicializando NexPixel...');
-    
+
     await Auth.init();
     await Carrito.inicializar();
     await renderizarSidebar();
-    
+
     const path = window.location.pathname;
     console.log('📄 Página actual:', path);
-    
+
     if (path.includes('index.html') || path === '/') {
         try {
             const response = await API.getJuegosRecientes(8);
@@ -24,27 +26,29 @@ async function inicializarApp() {
         } catch (error) {
             console.error('Error cargando juegos recientes:', error);
         }
-        
-        IARecomendaciones.cargarRecomendaciones('recomendaciones-container', 8);
+
+        if (typeof IARecomendaciones !== 'undefined') {
+            IARecomendaciones.cargarRecomendaciones('recomendaciones-container', 4);
+        }
     }
-    
+
     if (path.includes('juegos.html')) {
         const juegos = await Productos.cargarJuegos();
         Productos.renderizarJuegos(juegos, 'juegos-grid');
         Productos.cargarFiltrosPlataformas('filtro-plataformas');
         inicializarFiltros();
     }
-    
+
     if (path.includes('tarjetas.html')) {
         const tarjetas = await Productos.cargarTarjetas();
         Productos.renderizarTarjetas(tarjetas, 'tarjetas-grid');
         inicializarFiltros();
     }
-    
+
     if (path.includes('contacto.html')) {
         // Solo sidebar
     }
-    
+
     if (path.includes('carrito.html')) {
         if (!Auth.usuarioActual) {
             mostrarNotificacion('Debes iniciar sesión', 'error');
@@ -53,7 +57,7 @@ async function inicializarApp() {
             Carrito.renderizarCarrito();
         }
     }
-    
+
     if (path.includes('producto.html')) {
         const urlParams = new URLSearchParams(window.location.search);
         const productoId = urlParams.get('id');
@@ -61,32 +65,18 @@ async function inicializarApp() {
             const producto = await Productos.buscarProducto(productoId);
             if (producto) {
                 Productos.renderizarProducto(producto, 'producto-container');
-                
-                try {
-                    const response = await API.getProductosSimilares(productoId, 4);
-                    const simContainer = document.getElementById('productos-similares');
-                    if (simContainer) {
-                        if (response.productos && response.productos.length > 0) {
-                            Productos.renderizarJuegos(response.productos, 'productos-similares');
-                        } else {
-                            simContainer.innerHTML = '<p style="text-align: center; color: #aaccff;">No hay productos similares</p>';
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error cargando productos similares:', error);
-                    const simContainer = document.getElementById('productos-similares');
-                    if (simContainer) {
-                        simContainer.innerHTML = '<p style="text-align: center; color: #aaccff;">Error al cargar productos similares</p>';
-                    }
+
+                if (typeof IARecomendaciones !== 'undefined' && IARecomendaciones.cargarSimilares) {
+                    IARecomendaciones.cargarSimilares(productoId, 'productos-similares', 4);
                 }
             }
         }
     }
-    
+
     if (path.includes('dashboard-admin.html')) {
         cargarDashboardAdmin();
     }
-    
+
     if (path.includes('dashboard-prove.html')) {
         cargarDashboardProveedor();
     }
@@ -152,12 +142,12 @@ function moverCarrusel(direccion) {
 async function aplicarFiltros() {
     const plataformas = Array.from(document.querySelectorAll('#filtro-plataformas input:checked')).map(i => i.value);
     const precioMax = document.getElementById('precio-range')?.value;
-    
+
     const filtros = {
         plataforma: plataformas.length ? plataformas : undefined,
         precio_max: precioMax ? parseInt(precioMax) : undefined
     };
-    
+
     const path = window.location.pathname;
     if (path.includes('juegos.html')) {
         const juegos = await Productos.cargarJuegos(filtros);
@@ -176,7 +166,6 @@ function ordenarProductos() {
     aplicarFiltros();
 }
 
-// ===== FUNCIÓN PARA ACTUALIZAR EL VALOR DEL RANGO DE PRECIO =====
 function actualizarPrecio() {
     const range = document.getElementById('precio-range');
     const valor = document.getElementById('precio-valor');
@@ -189,24 +178,24 @@ function actualizarPrecio() {
 function buscarJuegos() {
     const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
     const juegos = window.juegosData || [];
-    
-    const filtrados = juegos.filter(juego => 
+
+    const filtrados = juegos.filter(juego =>
         juego.nombre_producto?.toLowerCase().includes(searchTerm) ||
         juego.plataforma?.nombre_plataforma?.toLowerCase().includes(searchTerm)
     );
-    
+
     Productos.renderizarJuegos(filtrados, 'juegos-grid');
 }
 
 function buscarTarjetas() {
     const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
     const tarjetas = window.tarjetasData || [];
-    
-    const filtrados = tarjetas.filter(tarjeta => 
+
+    const filtrados = tarjetas.filter(tarjeta =>
         tarjeta.nombre_producto?.toLowerCase().includes(searchTerm) ||
         tarjeta.plataforma?.nombre_plataforma?.toLowerCase().includes(searchTerm)
     );
-    
+
     Productos.renderizarTarjetas(filtrados, 'tarjetas-grid');
 }
 
@@ -226,20 +215,20 @@ function cerrarSidebar() {
     if (sidebar) sidebar.classList.remove('active');
 }
 
-window.addEventListener('resize', function() {
+window.addEventListener('resize', function () {
     if (window.innerWidth > 768) {
         const sidebar = document.getElementById('sidebar');
         if (sidebar) sidebar.classList.remove('active');
-        
+
         const filtros = document.querySelector('.filtros');
         if (filtros) filtros.classList.remove('active');
     }
 });
 
-document.addEventListener('click', function(event) {
+document.addEventListener('click', function (event) {
     const sidebar = document.getElementById('sidebar');
     const menuToggle = document.getElementById('menuToggle');
-    
+
     if (window.innerWidth <= 768 && sidebar && menuToggle) {
         if (!sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
             sidebar.classList.remove('active');
@@ -252,11 +241,11 @@ function toggleFiltrosPanel() {
     const filtrosPanel = document.getElementById('filtrosPanel');
     const container = document.querySelector('.juegos-container, .tarjetas-container');
     const toggleBtn = document.getElementById('toggleFiltrosBtn');
-    
+
     if (!filtrosPanel) return;
-    
+
     filtrosVisibles = !filtrosVisibles;
-    
+
     if (filtrosVisibles) {
         filtrosPanel.classList.remove('hidden');
         container?.classList.remove('without-filters');
@@ -278,30 +267,30 @@ function toggleFiltrosPanel() {
         }
         localStorage.setItem('filtrosVisibles', 'false');
     }
-    
+
     window.dispatchEvent(new Event('resize'));
 }
 
 function inicializarFiltros() {
-    if (!window.location.pathname.includes('juegos.html') && 
+    if (!window.location.pathname.includes('juegos.html') &&
         !window.location.pathname.includes('tarjetas.html')) {
         return;
     }
-    
+
     const guardado = localStorage.getItem('filtrosVisibles');
-    
+
     if (guardado === null) {
         filtrosVisibles = window.innerWidth > 768;
     } else {
         filtrosVisibles = guardado === 'true';
     }
-    
+
     const filtrosPanel = document.getElementById('filtrosPanel');
     const container = document.querySelector('.juegos-container, .tarjetas-container');
     const toggleBtn = document.getElementById('toggleFiltrosBtn');
-    
+
     if (!filtrosPanel) return;
-    
+
     if (!filtrosVisibles) {
         filtrosPanel.classList.add('hidden');
         container?.classList.remove('with-filters');
@@ -328,7 +317,7 @@ function adaptarFiltrosAResolucion() {
         const filtrosPanel = document.getElementById('filtrosPanel');
         const container = document.querySelector('.juegos-container, .tarjetas-container');
         const toggleBtn = document.getElementById('toggleFiltrosBtn');
-        
+
         if (filtrosPanel) {
             filtrosPanel.classList.add('hidden');
             container?.classList.remove('with-filters');
@@ -348,15 +337,15 @@ function adaptarFiltrosAResolucion() {
 // ===== MÉTODOS DE PAGO =====
 function seleccionarMetodo(metodo) {
     console.log('Método seleccionado:', metodo);
-    
+
     document.querySelectorAll('.metodo-pago').forEach(el => {
         el.classList.remove('seleccionado');
     });
-    
+
     if (event && event.currentTarget) {
         event.currentTarget.classList.add('seleccionado');
     }
-    
+
     metodoSeleccionado = metodo;
     mostrarCamposEspecificos(metodo);
 }
@@ -364,10 +353,10 @@ function seleccionarMetodo(metodo) {
 function mostrarCamposEspecificos(metodo) {
     const contenedor = document.getElementById('campos-especificos');
     if (!contenedor) return;
-    
+
     let html = '';
-    
-    switch(metodo) {
+
+    switch (metodo) {
         case 'visa':
             html = `
                 <h4>💳 Información de la tarjeta</h4>
@@ -375,7 +364,6 @@ function mostrarCamposEspecificos(metodo) {
                     <label>Número de tarjeta</label>
                     <input type="text" id="tarjeta-numero" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatearNumeroTarjeta(this)">
                 </div>
-                
                 <div class="campos-tarjeta-grid">
                     <div class="form-group">
                         <label>Fecha de expiración</label>
@@ -386,12 +374,10 @@ function mostrarCamposEspecificos(metodo) {
                         <input type="text" id="tarjeta-cvv" placeholder="123" maxlength="4">
                     </div>
                 </div>
-                
                 <div class="form-group">
                     <label>Nombre en la tarjeta</label>
                     <input type="text" id="tarjeta-nombre" placeholder="Como aparece en la tarjeta">
                 </div>
-                
                 <div class="form-group">
                     <label>Número de cuotas</label>
                     <select id="tarjeta-cuotas" class="filtro-select">
@@ -403,7 +389,6 @@ function mostrarCamposEspecificos(metodo) {
                 </div>
             `;
             break;
-            
         case 'nequi':
             html = `
                 <h4>📱 Pago con Nequi</h4>
@@ -415,12 +400,9 @@ function mostrarCamposEspecificos(metodo) {
                     <label>Documento del titular</label>
                     <input type="text" id="nequi-documento" placeholder="Documento de identidad">
                 </div>
-                <p style="color: #ccc; font-size: 0.9rem;">
-                    Te enviaremos un código de confirmación a tu celular.
-                </p>
+                <p style="color: #ccc; font-size: 0.9rem;">Te enviaremos un código de confirmación a tu celular.</p>
             `;
             break;
-            
         case 'daviplata':
             html = `
                 <h4>📱 Pago con Daviplata</h4>
@@ -432,12 +414,9 @@ function mostrarCamposEspecificos(metodo) {
                     <label>Documento del titular</label>
                     <input type="text" id="daviplata-documento" placeholder="Documento de identidad">
                 </div>
-                <p style="color: #ccc; font-size: 0.9rem;">
-                    Te enviaremos un código de confirmación a tu celular.
-                </p>
+                <p style="color: #ccc; font-size: 0.9rem;">Te enviaremos un código de confirmación a tu celular.</p>
             `;
             break;
-            
         case 'efecty':
             html = `
                 <h4>🏦 Pago en Efecty</h4>
@@ -454,11 +433,9 @@ function mostrarCamposEspecificos(metodo) {
                 </p>
             `;
             break;
-            
         default:
             html = '';
     }
-    
     contenedor.innerHTML = html;
 }
 
@@ -481,23 +458,22 @@ function validarCamposPago() {
         mostrarNotificacion('Selecciona un método de pago', 'error');
         return false;
     }
-    
+
     const nombre = document.getElementById('pago-nombre')?.value;
     const documento = document.getElementById('pago-documento')?.value;
     const email = document.getElementById('pago-email')?.value;
-    
+
     if (!nombre || !documento || !email) {
         mostrarNotificacion('Completa todos los datos personales', 'error');
         return false;
     }
-    
-    switch(metodoSeleccionado) {
+
+    switch (metodoSeleccionado) {
         case 'visa':
             const tarjetaNumero = document.getElementById('tarjeta-numero')?.value.replace(/\s/g, '');
             const tarjetaExp = document.getElementById('tarjeta-expiracion')?.value;
             const tarjetaCvv = document.getElementById('tarjeta-cvv')?.value;
             const tarjetaNombre = document.getElementById('tarjeta-nombre')?.value;
-            
             if (!tarjetaNumero || tarjetaNumero.length < 15) {
                 mostrarNotificacion('Número de tarjeta inválido', 'error');
                 return false;
@@ -515,12 +491,10 @@ function validarCamposPago() {
                 return false;
             }
             break;
-            
         case 'nequi':
         case 'daviplata':
             const celular = document.getElementById(`${metodoSeleccionado}-celular`)?.value;
             const doc = document.getElementById(`${metodoSeleccionado}-documento`)?.value;
-            
             if (!celular || celular.length < 10) {
                 mostrarNotificacion('Número de celular inválido', 'error');
                 return false;
@@ -530,11 +504,9 @@ function validarCamposPago() {
                 return false;
             }
             break;
-            
         case 'efecty':
             const efectyNombre = document.getElementById('efecty-nombre')?.value;
             const efectyDoc = document.getElementById('efecty-documento')?.value;
-            
             if (!efectyNombre) {
                 mostrarNotificacion('Ingresa el nombre del pagador', 'error');
                 return false;
@@ -545,7 +517,6 @@ function validarCamposPago() {
             }
             break;
     }
-    
     return true;
 }
 
@@ -554,26 +525,21 @@ async function confirmarPago() {
         abrirModalLogin();
         return;
     }
-    
     if (!validarCamposPago()) {
         return;
     }
-    
     let mensaje = '';
-    switch(metodoSeleccionado) {
+    switch (metodoSeleccionado) {
         case 'visa': mensaje = '✅ Pago con tarjeta procesado'; break;
         case 'nequi': mensaje = '✅ Código enviado a tu Nequi'; break;
         case 'daviplata': mensaje = '✅ Código enviado a tu Daviplata'; break;
         case 'efecty': mensaje = '✅ Código de pago en Efecty generado'; break;
         default: mensaje = '✅ Pago confirmado';
     }
-    
     mostrarNotificacion(mensaje);
-    
     if (typeof Carrito !== 'undefined' && Carrito.vaciar) {
         await Carrito.vaciar();
     }
-    
     setTimeout(() => {
         window.location.href = 'index.html';
     }, 2000);
@@ -590,7 +556,7 @@ function enviarMensaje(event) {
 // ===== EVENT LISTENERS =====
 document.addEventListener('DOMContentLoaded', inicializarApp);
 
-window.addEventListener('resize', function() {
+window.addEventListener('resize', function () {
     clearTimeout(window.resizeTimer);
     window.resizeTimer = setTimeout(adaptarFiltrosAResolucion, 250);
 });
@@ -605,7 +571,7 @@ window.cerrarSesion = cerrarSesion;
 window.moverCarrusel = moverCarrusel;
 window.aplicarFiltros = aplicarFiltros;
 window.ordenarProductos = ordenarProductos;
-window.actualizarPrecio = actualizarPrecio;  // 👈 NUEVA FUNCIÓN AGREGADA
+window.actualizarPrecio = actualizarPrecio;
 window.enviarMensaje = enviarMensaje;
 window.abrirModalLogin = abrirModalLogin;
 window.abrirModalRegistro = abrirModalRegistro;

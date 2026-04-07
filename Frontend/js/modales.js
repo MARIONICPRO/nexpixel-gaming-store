@@ -125,7 +125,19 @@ function togglePassword(inputId, btn) {
         icon.classList.add('fa-eye');
     }
 }
-
+// 👇 AGREGA LA FUNCIÓN AQUÍ
+function toggleProveedorCampos() {
+    const tipoSelect = document.getElementById('reg-tipo');
+    const proveedorCampos = document.getElementById('proveedor-campos');
+    
+    if (tipoSelect && proveedorCampos) {
+        if (tipoSelect.value === 'proveedor') {
+            proveedorCampos.style.display = 'block';
+        } else {
+            proveedorCampos.style.display = 'none';
+        }
+    }
+}
 function cerrarModal() {
     document.getElementById('auth-modal').classList.remove('active');
 }

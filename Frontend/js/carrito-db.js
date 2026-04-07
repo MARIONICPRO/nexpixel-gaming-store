@@ -145,56 +145,103 @@ const Carrito = {
         localStorage.setItem('carrito_local', JSON.stringify(this.items));
     },
 
-    async actualizarCantidad(itemId, nuevaCantidad) {
-        try {
-            if (nuevaCantidad <= 0) {
-                await this.eliminar(itemId);
-                return;
-            }
+   async actualizarCantidad(itemId, nuevaCantidad) {
+    if (nuevaCantidad <= 0) {
+        await this.eliminar(itemId);
+        return;
+    }
 
-            const response = await fetch(`${API_URL}/carrito/actualizar`, {
-                method: 'PUT',
-                headers: API.getHeaders(),
-                body: JSON.stringify({
-                    itemId,
-                    cantidad: nuevaCantidad
-                })
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                await this.cargarItems();
-                mostrarNotificacion('Cantidad actualizada');
-            } else {
-                mostrarNotificacion(data.error || 'Error al actualizar', 'error');
-            }
-        } catch (error) {
-            console.error('Error actualizando cantidad:', error);
-            mostrarNotificacion('Error al actualizar cantidad', 'error');
+    // Si no hay usuario logueado, actualizar localStorage
+    if (!Auth.usuarioActual) {
+        let carritoLocal = this.obtenerCarritoLocal();
+        const item = carritoLocal.find(i => i.id === itemId);
+        if (item) {
+            item.cantidad = nuevaCantidad;
+            localStorage.setItem('carrito_local', JSON.stringify(carritoLocal));
+            this.items = carritoLocal;
+            this.actualizarUI();
         }
-    },
+        return;
+    }
 
-    async eliminar(itemId) {
-        try {
-            const response = await fetch(`${API_URL}/carrito/eliminar/${itemId}`, {
-                method: 'DELETE',
-                headers: API.getHeaders()
-            });
+    // Usuario logueado - actualizar en backend
+    try {
+        const token = localStorage.getItem('nexpixel_token');
+        
+        const response = await fetch(`${API_URL}/carrito/actualizar`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                itemId,
+                cantidad: nuevaCantidad
+            })
+        });
 
-            const data = await response.json();
+        const data = await response.json();
 
-            if (data.success) {
-                await this.cargarItems();
-                mostrarNotificacion('Producto eliminado del carrito');
-            } else {
-                mostrarNotificacion(data.error || 'Error al eliminar', 'error');
-            }
-        } catch (error) {
-            console.error('Error eliminando item:', error);
-            mostrarNotificacion('Error al eliminar', 'error');
+        if (response.ok && data.success) {
+            await this.cargarItems();
+            mostrarNotificacion('Cantidad actualizada', 'success');
+        } else if (response.status === 401) {
+            localStorage.removeItem('nexpixel_token');
+            localStorage.removeItem('nexpixel_usuario');
+            mostrarNotificacion('Sesión expirada. Inicia sesión nuevamente', 'error');
+            setTimeout(() => abrirModalLogin(), 500);
+        } else {
+            mostrarNotificacion(data.error || 'Error al actualizar', 'error');
         }
-    },
+    } catch (error) {
+        console.error('Error actualizando cantidad:', error);
+        mostrarNotificacion('Error al actualizar cantidad', 'error');
+    }
+},
+
+async eliminar(itemId) {
+    // Si no hay usuario logueado, eliminar del localStorage
+    if (!Auth.usuarioActual) {
+        let carritoLocal = this.obtenerCarritoLocal();
+        carritoLocal = carritoLocal.filter(item => item.id !== itemId);
+        localStorage.setItem('carrito_local', JSON.stringify(carritoLocal));
+        this.items = carritoLocal;
+        this.actualizarUI();
+        mostrarNotificacion('Producto eliminado del carrito', 'success');
+        return;
+    }
+
+    // Usuario logueado - eliminar del backend
+    try {
+        const token = localStorage.getItem('nexpixel_token');
+        
+        const response = await fetch(`${API_URL}/carrito/eliminar/${itemId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            // Recargar los items del carrito después de eliminar
+            await this.cargarItems();
+            mostrarNotificacion('Producto eliminado del carrito', 'success');
+        } else if (response.status === 401) {
+            localStorage.removeItem('nexpixel_token');
+            localStorage.removeItem('nexpixel_usuario');
+            mostrarNotificacion('Sesión expirada. Inicia sesión nuevamente', 'error');
+            setTimeout(() => abrirModalLogin(), 500);
+        } else {
+            mostrarNotificacion(data.error || 'Error al eliminar', 'error');
+        }
+    } catch (error) {
+        console.error('Error eliminando item:', error);
+        mostrarNotificacion('Error al conectar con el servidor', 'error');
+    }
+},
 
     async vaciar() {
         if (!Auth.usuarioActual) return;

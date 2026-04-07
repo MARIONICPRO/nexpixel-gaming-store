@@ -1,61 +1,39 @@
 // ============================================
-// IA-DB.JS - VERSIÓN PARA NODE.JS (USA API)
+// IA-DB.JS - VERSIÓN CON CLASES DE TU CSS GLOBAL
 // ============================================
+
+const API_URL = 'http://localhost:3000/api';
 
 const IARecomendaciones = {
     // ===== CARGAR RECOMENDACIONES =====
-    async cargarRecomendaciones(containerId, limite = 8) {
+    async cargarRecomendaciones(containerId, limite = 4) {
         const container = document.getElementById(containerId);
         if (!container) return;
 
         try {
-            let productos = [];
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Cargando recomendaciones...</p></div>';
             
-            if (Auth.usuarioActual) {
-                // Usuario logueado - recomendaciones personalizadas
-                // Por ahora, usamos productos populares como fallback
-                const response = await API.getProductosPopulares(limite);
-                productos = response.productos || [];
-                
-                // Aquí podrías implementar un endpoint específico para recomendaciones
-                // const response = await API.getRecomendaciones(limite);
-            } else {
-                // Usuario anónimo - productos populares
-                const response = await API.getProductosPopulares(limite);
-                productos = response.productos || [];
+            const usuarioId = Auth.usuarioActual?.id_usuario || null;
+            let url = `${API_URL}/ia/recomendaciones?limite=${limite}`;
+            if (usuarioId) {
+                url += `&usuarioId=${usuarioId}`;
             }
-
-            this.renderizarRecomendaciones(productos, container);
+            
+            console.log('📡 Cargando recomendaciones:', url);
+            const response = await fetch(url);
+            const data = await response.json();
+            
+            if (data.success && data.productos) {
+                this.renderizarRecomendaciones(data.productos, container);
+            } else {
+                const fallbackRes = await fetch(`${API_URL}/ia/populares?limite=${limite}`);
+                const fallbackData = await fallbackRes.json();
+                this.renderizarRecomendaciones(fallbackData.productos || [], container);
+            }
         } catch (error) {
-            console.error('Error cargando recomendaciones:', error);
-            container.innerHTML = '<p style="color: #e94560; text-align: center;">Error cargando recomendaciones</p>';
+            console.error('❌ Error:', error);
+            container.innerHTML = '<p style="color: #e94560; text-align: center;">⚠️ Error cargando recomendaciones</p>';
         }
-    },
-
-    // ===== RENDERIZAR RECOMENDACIONES =====
-    renderizarRecomendaciones(productos, container) {
-        if (!productos || productos.length === 0) {
-            container.innerHTML = '<p style="text-align: center;">No hay recomendaciones disponibles</p>';
-            return;
-        }
-
-        let html = '';
-        productos.forEach(prod => {
-            html += `
-                <div class="producto-card" onclick="verProducto(${prod.id_producto})">
-                    <img src="${prod.imagen_url || 'assets/img/default-game.jpg'}" 
-                         alt="${prod.nombre_producto}" 
-                         class="producto-img"
-                         onerror="this.src='assets/img/default-game.jpg'">
-                    <div class="producto-info">
-                        <h3>${prod.nombre_producto}</h3>
-                        <p class="producto-precio">$${formatearPrecio(prod.precio)}</p>
-                    </div>
-                </div>
-            `;
-        });
-
-        container.innerHTML = html;
     },
 
     // ===== CARGAR PRODUCTOS SIMILARES =====
@@ -64,40 +42,80 @@ const IARecomendaciones = {
         if (!container) return;
 
         try {
-            const response = await API.getProductosSimilares(productoId, limite);
-            const similares = response.productos || [];
-            this.renderizarRecomendaciones(similares, container);
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Cargando productos similares...</p></div>';
+            
+            const response = await fetch(`${API_URL}/ia/productos/${productoId}/similares?limite=${limite}`);
+            const data = await response.json();
+            
+            if (data.success && data.productos && data.productos.length > 0) {
+                this.renderizarRecomendaciones(data.productos, container);
+            } else {
+                container.innerHTML = '<p style="text-align: center; color: #aaccff;">No hay productos similares disponibles</p>';
+            }
         } catch (error) {
-            console.error('Error cargando productos similares:', error);
-            container.innerHTML = '<p style="color: #aaccff; text-align: center;">No hay productos similares</p>';
+            console.error('❌ Error cargando similares:', error);
+            container.innerHTML = '<p style="text-align: center; color: #e94560;">Error al cargar productos similares</p>';
         }
     },
 
-    // ===== REGISTRAR INTERACCIÓN (vista, click, etc) =====
+    // ===== RENDERIZAR RECOMENDACIONES (USANDO CLASES DE TU CSS) =====
+    renderizarRecomendaciones(productos, container) {
+        if (!productos || productos.length === 0) {
+            container.innerHTML = '<p style="text-align: center; color: #aaccff;">✨ No hay recomendaciones disponibles</p>';
+            return;
+        }
+
+        // Usar la clase 'productos-grid' de tu CSS
+        let html = '<div class="productos-grid">';
+        
+        productos.slice(0, 4).forEach(prod => {
+            html += `
+                <div class="producto-card" onclick="verProducto(${prod.id_producto})">
+                    <img src="${prod.imagen_url || 'assets/img/default-game.jpg'}" 
+                         alt="${prod.nombre_producto}" 
+                         class="producto-img"
+                         onerror="this.src='assets/img/default-game.jpg'">
+                    <div class="producto-info">
+                        <h3>${this.truncarTexto(prod.nombre_producto, 30)}</h3>
+                        <div class="producto-plataforma">${prod.categoria || 'Videojuego'}</div>
+                        <div class="producto-precio">$${formatearPrecio(prod.precio)}</div>
+                        <button class="btn-agregar" onclick="event.stopPropagation(); agregarAlCarrito(${prod.id_producto})">
+                            Agregar al carrito
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        container.innerHTML = html;
+    },
+
+    // ===== TRUNCAR TEXTO =====
+    truncarTexto(texto, maxLength) {
+        if (!texto) return '';
+        return texto.length > maxLength ? texto.substring(0, maxLength) + '...' : texto;
+    },
+
+    // ===== REGISTRAR INTERACCIÓN =====
     async registrarInteraccion(productoId, tipo) {
         if (!Auth.usuarioActual) return;
         
         try {
-            await fetch(`${API_URL}/interacciones`, {
+            await fetch(`${API_URL}/ia/interaccion`, {
                 method: 'POST',
-                headers: API.getHeaders(),
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    productoId,
-                    tipo
+                    usuarioId: Auth.usuarioActual.id_usuario,
+                    productoId: parseInt(productoId),
+                    tipoInteraccion: tipo
                 })
             });
         } catch (error) {
-            console.error('Error registrando interacción:', error);
+            console.error('Error:', error);
         }
     }
 };
-
-// Asegurarse de que formatearPrecio existe
-if (typeof window.formatearPrecio !== 'function') {
-    window.formatearPrecio = function(precio) {
-        return new Intl.NumberFormat('es-CO').format(precio);
-    };
-}
 
 // Exponer globalmente
 window.IARecomendaciones = IARecomendaciones;
