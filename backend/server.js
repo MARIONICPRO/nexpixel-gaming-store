@@ -12,7 +12,7 @@ import productoRoutes from './src/routes/productoRoutes.js';
 import carritoRoutes from './src/routes/carritoRoutes.js';
 import compraRoutes from './src/routes/compraRoutes.js';
 import proveedorRoutes from './src/routes/proveedorRoutes.js';
-import iaRoutes from './src/routes/iaRoutes.js'; // 👈 LÍNEA 1: IMPORTAR RUTAS IA
+import iaRoutes from './src/routes/iaRoutes.js'; 
 
 dotenv.config();
 
@@ -41,7 +41,7 @@ app.use('/api/productos', productoRoutes);
 app.use('/api/carrito', carritoRoutes);
 app.use('/api/compras', compraRoutes);
 app.use('/api/proveedor', proveedorRoutes);
-app.use('/api/ia', iaRoutes); // 👈 LÍNEA 2: USAR RUTAS IA
+app.use('/api/ia', iaRoutes); 
 
 // Ruta de prueba
 app.get('/api/health', (req, res) => {
@@ -56,7 +56,7 @@ app.get('/api/health', (req, res) => {
       carrito: '/api/carrito',
       compras: '/api/compras',
       proveedor: '/api/proveedor',
-      ia: '/api/ia' // 👈 Agrega esto también si quieres
+      ia: '/api/ia' 
     }
   });
 });

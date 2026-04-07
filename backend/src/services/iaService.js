@@ -86,15 +86,25 @@ class IAService {
       if (compras) {
         compras.forEach(item => {
           if (item.producto) {
-            productosMap.set(item.producto.id_producto, item.producto);
+            productosMap.set(item.producto.id_producto, {
+              id_producto: item.producto.id_producto,
+              nombre_producto: item.producto.nombre_producto,
+              precio: item.producto.precio,
+              categoria: item.producto.categoria?.nombre_grupo || 'General'
+            });
           }
         });
       }
       
       if (interacciones) {
         interacciones.forEach(item => {
-          if (item.producto) {
-            productosMap.set(item.producto.id_producto, item.producto);
+          if (item.producto && !productosMap.has(item.producto.id_producto)) {
+            productosMap.set(item.producto.id_producto, {
+              id_producto: item.producto.id_producto,
+              nombre_producto: item.producto.nombre_producto,
+              precio: item.producto.precio,
+              categoria: item.producto.categoria?.nombre_grupo || 'General'
+            });
           }
         });
       }
@@ -110,7 +120,7 @@ class IAService {
     }
   }
   
-  // Obtener productos populares (CORREGIDO - sin descripcion_corta)
+  // 🔥 CORREGIDO: Obtener productos populares (SIN default-game.jpg)
   async getProductosPopulares(limite) {
     try {
       console.log(`📊 Obteniendo ${limite} productos populares`);
@@ -133,12 +143,13 @@ class IAService {
       
       if (error) throw error;
       
+      // 🔥 CAMBIO IMPORTANTE: usar null en lugar de la ruta problemática
       const productos = (data || []).map(p => ({
         id_producto: p.id_producto,
         nombre_producto: p.nombre_producto,
         precio: p.precio,
         descripcion: p.descripcion || '',
-        imagen_url: p.imagen_url || '/assets/img/default-game.jpg',
+        imagen_url: p.imagen_url || null,  // ✅ null, no string
         stock: p.stock,
         categoria: p.categoria?.nombre_grupo || 'General'
       }));
@@ -152,7 +163,7 @@ class IAService {
     }
   }
   
-  // Obtener catálogo disponible
+  // Obtener catálogo disponible (incluye imagen_url)
   async getCatalogoDisponible() {
     try {
       const { data, error } = await supabase
@@ -161,6 +172,7 @@ class IAService {
           id_producto,
           nombre_producto,
           precio,
+          imagen_url,
           categoria (nombre_grupo)
         `)
         .eq('estado', 'activo')
@@ -178,7 +190,7 @@ class IAService {
     }
   }
   
-  // Recomendar usando IA
+  // 🔥 CORREGIDO: Recomendar usando IA (SIN default-game.jpg)
   async recomendarConIA(productosVistos, catalogo, limite) {
     try {
       // Filtrar productos que no ha visto
@@ -186,6 +198,7 @@ class IAService {
       const catalogoFiltrado = catalogo.filter(p => !idsVistos.has(p.id_producto));
       
       if (catalogoFiltrado.length === 0) {
+        console.log('⚠️ No hay productos nuevos para recomendar');
         return [];
       }
       
@@ -206,7 +219,7 @@ El usuario ha visto/comprado: ${nombresVistos}
 Catálogo disponible (elige SOLO de aquí):
 ${catalogoTexto}
 
-Recomienda ${limite} juegos de este catálogo.
+Recomienda ${limite} juegos DIFERENTES a los que ya ha visto.
 Devuelve SOLO los IDs separados por coma.
 Ejemplo: "5,12,8,3"`;
       
@@ -219,7 +232,7 @@ Ejemplo: "5,12,8,3"`;
       const idsNumeros = ids.map(Number).slice(0, limite);
       
       // Filtrar productos
-      const recomendados = catalogoLimitado.filter(p => idsNumeros.includes(p.id_producto));
+      let recomendados = catalogoLimitado.filter(p => idsNumeros.includes(p.id_producto));
       
       // Si faltan, completar
       if (recomendados.length < limite) {
@@ -229,11 +242,12 @@ Ejemplo: "5,12,8,3"`;
         recomendados.push(...restantes);
       }
       
+      // 🔥 CAMBIO IMPORTANTE: usar null en lugar de la ruta problemática
       const resultados = recomendados.map(p => ({
         id_producto: p.id_producto,
         nombre_producto: p.nombre_producto,
         precio: p.precio,
-        imagen_url: '/assets/img/default-game.jpg',
+        imagen_url: p.imagen_url || null,  // ✅ null, no string
         categoria: p.categoria?.nombre_grupo || 'General'
       }));
       
@@ -269,7 +283,7 @@ Ejemplo: "5,12,8,3"`;
     }
   }
   
-  // Obtener productos similares
+  // 🔥 CORREGIDO: Obtener productos similares (SIN default-game.jpg)
   async getProductosSimilares(productoId, limite = 4) {
     try {
       const { data: productoOriginal, error: prodError } = await supabase
@@ -303,11 +317,12 @@ Ejemplo: "5,12,8,3"`;
       
       if (error) throw error;
       
+      // 🔥 CAMBIO IMPORTANTE: usar null en lugar de la ruta problemática
       return (similares || []).map(p => ({
         id_producto: p.id_producto,
         nombre_producto: p.nombre_producto,
         precio: p.precio,
-        imagen_url: p.imagen_url || '/assets/img/default-game.jpg',
+        imagen_url: p.imagen_url || null,  // ✅ null, no string
         categoria: p.categoria?.nombre_grupo || 'General'
       }));
       
