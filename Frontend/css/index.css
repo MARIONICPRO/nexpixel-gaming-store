@@ -310,3 +310,64 @@ h2 i {
         height: 200px !important;
     }
 }
+/* ===== RAZONAMIENTO IA ===== */
+.ia-razonamiento-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.ia-razonamiento-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.ia-razonamiento-icon {
+    font-size: 28px;
+}
+
+.ia-razonamiento-title {
+    color: white;
+    margin: 0;
+    font-size: 18px;
+}
+
+.ia-badge {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: white;
+    font-weight: 500;
+}
+
+.ia-razonamiento-text {
+    color: white;
+    margin: 0;
+    line-height: 1.6;
+    font-size: 15px;
+}
+
+.ia-razonamiento-footer {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

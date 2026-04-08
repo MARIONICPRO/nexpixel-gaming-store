@@ -279,3 +279,55 @@ body {
         padding-top: 70px;
     }
 }
+/* Agregar a tu archivo CSS */
+.btn-action.btn-warning {
+    background-color: #f59e0b;
+    color: white;
+}
+
+.btn-action.btn-warning:hover {
+    background-color: #d97706;
+}
+
+.btn-action.btn-success {
+    background-color: #10b981;
+    color: white;
+}
+
+.btn-action.btn-success:hover {
+    background-color: #059669;
+}
+
+.btn-action.btn-primary {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.btn-action.btn-primary:hover {
+    background-color: #2563eb;
+}
+
+.search-bar, .filtros-bar {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.search-bar input, .filtros-bar input, .filtros-bar select {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #2a2a3e;
+    background: #1a1a2e;
+    color: white;
+    flex: 1;
+}
+
+.badge-inactivo {
+    background-color: #ef4444;
+    color: white;
+}
+
+.badge-activo {
+    background-color: #10b981;
+    color: white;
+}

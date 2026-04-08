@@ -13,12 +13,29 @@ export const getRecomendaciones = async (req, res) => {
     // Llamar al servicio de IA
     const recomendaciones = await iaService.getRecomendaciones(usuarioId, limite);
     
-    // Responder con los productos recomendados
+    // 🔥 EXTRAER RAZONAMIENTO (viene como propiedad del array)
+    let razonamiento = '';
+    let productos = recomendaciones;
+    
+    // Si recomendaciones es un array y tiene propiedad razonamiento
+    if (recomendaciones && Array.isArray(recomendaciones)) {
+      if (recomendaciones.razonamiento) {
+        razonamiento = recomendaciones.razonamiento;
+        // Crear nuevo array sin la propiedad razonamiento
+        productos = recomendaciones.map(item => ({ ...item }));
+        delete productos.razonamiento;
+      }
+    }
+    
+    console.log('🧠 Razonamiento enviado al frontend:', razonamiento || 'No hay razonamiento');
+    
+    // Responder con los productos recomendados Y el razonamiento
     res.json({
       success: true,
-      productos: recomendaciones,
+      productos: productos,
+      razonamiento: razonamiento,  // ← CLAVE: enviar razonamiento
       fuente: 'IA con jsllm7',
-      cantidad: recomendaciones.length,
+      cantidad: productos.length,
       timestamp: new Date().toISOString()
     });
     

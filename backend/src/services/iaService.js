@@ -4,37 +4,49 @@ import { supabase } from '../config/db-config.js';
 
 class IAService {
   
-  // Obtener recomendaciones para el usuario
-  async getRecomendaciones(usuarioId = null, limite = 8) {
-    try {
-      console.log(`🤖 Generando recomendaciones para usuario: ${usuarioId || 'anónimo'}`);
-      
-      if (!usuarioId) {
-        return await this.getProductosPopulares(limite);
-      }
-      
-      const productosVistos = await this.getProductosVistos(usuarioId);
-      
-      if (productosVistos.length === 0) {
-        console.log('📊 Usuario nuevo, mostrando productos populares');
-        return await this.getProductosPopulares(limite);
-      }
-      
-      const catalogo = await this.getCatalogoDisponible();
-      
-      if (catalogo.length === 0) {
-        return [];
-      }
-      
-      const recomendaciones = await this.recomendarConIA(productosVistos, catalogo, limite);
-      
-      return recomendaciones.length > 0 ? recomendaciones : await this.getProductosPopulares(limite);
-      
-    } catch (error) {
-      console.error('❌ Error en recomendaciones:', error);
-      return await this.getProductosPopulares(limite);
+// 🔥 MODIFICADO: Obtener recomendaciones CON RAZONAMIENTO
+async getRecomendaciones(usuarioId = null, limite = 8) {
+  try {
+    console.log(`🤖 Generando recomendaciones para usuario: ${usuarioId || 'anónimo'}`);
+    
+    if (!usuarioId) {
+      const productos = await this.getProductosPopulares(limite);
+      productos.razonamiento = 'Mostrando productos más populares de la tienda';
+      return productos;
     }
+    
+    const productosVistos = await this.getProductosVistos(usuarioId);
+    
+    if (productosVistos.length === 0) {
+      console.log('📊 Usuario nuevo, mostrando productos populares');
+      const productos = await this.getProductosPopulares(limite);
+      productos.razonamiento = 'Eres nuevo en NexPixel. Te mostramos nuestros juegos más vendidos';
+      return productos;
+    }
+    
+    const catalogo = await this.getCatalogoDisponible();
+    
+    if (catalogo.length === 0) {
+      return [];
+    }
+    
+    const recomendaciones = await this.recomendarConIA(productosVistos, catalogo, limite);
+    
+    if (recomendaciones.length > 0) {
+      return recomendaciones;
+    }
+    
+    const populares = await this.getProductosPopulares(limite);
+    populares.razonamiento = 'No pudimos generar recomendaciones personalizadas. Mostrando productos populares';
+    return populares;
+    
+  } catch (error) {
+    console.error('❌ Error en recomendaciones:', error);
+    const populares = await this.getProductosPopulares(limite);
+    populares.razonamiento = 'Error en el sistema de recomendaciones. Mostrando productos populares';
+    return populares;
   }
+}
   
   // Obtener productos que el usuario ya ha visto o comprado
   async getProductosVistos(usuarioId) {
@@ -191,28 +203,30 @@ class IAService {
   }
   
   // 🔥 CORREGIDO: Recomendar usando IA (SIN default-game.jpg)
-  async recomendarConIA(productosVistos, catalogo, limite) {
-    try {
-      // Filtrar productos que no ha visto
-      const idsVistos = new Set(productosVistos.map(p => p.id_producto));
-      const catalogoFiltrado = catalogo.filter(p => !idsVistos.has(p.id_producto));
-      
-      if (catalogoFiltrado.length === 0) {
-        console.log('⚠️ No hay productos nuevos para recomendar');
-        return [];
-      }
-      
-      // Limitar catálogo para no sobrecargar
-      const catalogoLimitado = catalogoFiltrado.slice(0, 40);
-      
-      // Preparar nombres de productos vistos
-      const nombresVistos = productosVistos.slice(0, 8).map(p => p.nombre_producto).join(', ');
-      
-      const catalogoTexto = catalogoLimitado.map(p => 
-        `${p.id_producto}: ${p.nombre_producto} (${p.categoria?.nombre_grupo || 'General'}) - $${p.precio}`
-      ).join('\n');
-      
-      const prompt = `Eres un recomendador de videojuegos para NexPixel.
+// 🔥 MODIFICADO: Recomendar usando IA CON RAZONAMIENTO
+async recomendarConIA(productosVistos, catalogo, limite) {
+  try {
+    // Filtrar productos que no ha visto
+    const idsVistos = new Set(productosVistos.map(p => p.id_producto));
+    const catalogoFiltrado = catalogo.filter(p => !idsVistos.has(p.id_producto));
+    
+    if (catalogoFiltrado.length === 0) {
+      console.log('⚠️ No hay productos nuevos para recomendar');
+      return [];
+    }
+    
+    // Limitar catálogo para no sobrecargar
+    const catalogoLimitado = catalogoFiltrado.slice(0, 40);
+    
+    // Preparar nombres de productos vistos
+    const nombresVistos = productosVistos.slice(0, 8).map(p => p.nombre_producto).join(', ');
+    
+    const catalogoTexto = catalogoLimitado.map(p => 
+      `${p.id_producto}: ${p.nombre_producto} (${p.categoria?.nombre_grupo || 'General'}) - $${p.precio}`
+    ).join('\n');
+    
+    // 🔥 NUEVO PROMPT CON RAZONAMIENTO
+    const prompt = `Eres un recomendador de videojuegos para NexPixel.
 
 El usuario ha visto/comprado: ${nombresVistos}
 
@@ -220,45 +234,68 @@ Catálogo disponible (elige SOLO de aquí):
 ${catalogoTexto}
 
 Recomienda ${limite} juegos DIFERENTES a los que ya ha visto.
-Devuelve SOLO los IDs separados por coma.
-Ejemplo: "5,12,8,3"`;
-      
-      console.log('🤖 Consultando IA...');
-      const respuestaIA = await jsllm7(prompt);
-      console.log('💬 Respuesta IA:', respuestaIA);
-      
-      // Extraer IDs
-      const ids = respuestaIA.match(/\d+/g) || [];
-      const idsNumeros = ids.map(Number).slice(0, limite);
-      
-      // Filtrar productos
-      let recomendados = catalogoLimitado.filter(p => idsNumeros.includes(p.id_producto));
-      
-      // Si faltan, completar
-      if (recomendados.length < limite) {
-        const restantes = catalogoLimitado
-          .filter(p => !idsNumeros.includes(p.id_producto))
-          .slice(0, limite - recomendados.length);
-        recomendados.push(...restantes);
-      }
-      
-      // 🔥 CAMBIO IMPORTANTE: usar null en lugar de la ruta problemática
-      const resultados = recomendados.map(p => ({
-        id_producto: p.id_producto,
-        nombre_producto: p.nombre_producto,
-        precio: p.precio,
-        imagen_url: p.imagen_url || null,  // ✅ null, no string
-        categoria: p.categoria?.nombre_grupo || 'General'
-      }));
-      
-      console.log(`✨ IA recomendó ${resultados.length} productos`);
-      return resultados;
-      
-    } catch (error) {
-      console.error('❌ Error en IA:', error);
-      return [];
+
+Formato de respuesta (OBLIGATORIO):
+PRIMERO: Los IDs separados por coma
+LUEGO: Un "|"
+DESPUÉS: Tu razonamiento explicando POR QUÉ recomiendas esos juegos
+
+Ejemplo correcto:
+"15,23,42,67 | El usuario juega RPG y acción, por eso le recomiendo Elden Ring (RPG desafiante), Spider-Man 2 (acción+mundo abierto), God of War (acción narrativa) y Horizon (mundo abierto+acción)"`;
+
+    console.log('🤖 Consultando IA con razonamiento...');
+    const respuestaIA = await jsllm7(prompt);
+    console.log('💬 Respuesta IA completa:', respuestaIA);
+    
+    // 🔥 EXTRAER IDs Y RAZONAMIENTO
+    let ids = [];
+    let razonamiento = '';
+    
+    if (respuestaIA.includes('|')) {
+      const [idsPart, razonamientoPart] = respuestaIA.split('|');
+      ids = idsPart.match(/\d+/g) || [];
+      razonamiento = razonamientoPart.trim();
+    } else {
+      // Fallback si no usa el formato correcto
+      ids = respuestaIA.match(/\d+/g) || [];
+      razonamiento = 'Recomendaciones basadas en tu historial de juegos';
     }
+    
+    const idsNumeros = ids.map(Number).slice(0, limite);
+    
+    // Filtrar productos
+    let recomendados = catalogoLimitado.filter(p => idsNumeros.includes(p.id_producto));
+    
+    // Si faltan, completar
+    if (recomendados.length < limite) {
+      const restantes = catalogoLimitado
+        .filter(p => !idsNumeros.includes(p.id_producto))
+        .slice(0, limite - recomendados.length);
+      recomendados.push(...restantes);
+    }
+    
+    // 🔥 RESULTADOS CON RAZONAMIENTO INCLUIDO
+    const resultados = recomendados.map(p => ({
+      id_producto: p.id_producto,
+      nombre_producto: p.nombre_producto,
+      precio: p.precio,
+      imagen_url: p.imagen_url || null,
+      categoria: p.categoria?.nombre_grupo || 'General'
+    }));
+    
+    // 🔥 AÑADIR RAZONAMIENTO A LOS RESULTADOS
+    resultados.razonamiento = razonamiento;
+    
+    console.log(`✨ IA recomendó ${resultados.length} productos`);
+    console.log(`🧠 Razonamiento: ${razonamiento}`);
+    
+    return resultados;
+    
+  } catch (error) {
+    console.error('❌ Error en IA:', error);
+    return [];
   }
+}
   
   // Registrar interacción del usuario
   async registrarInteraccion(usuarioId, productoId, tipo) {
