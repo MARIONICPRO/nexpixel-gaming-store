@@ -305,3 +305,50 @@ body::after {
         right: 20px;
     }
 }
+
+/* Versión simplificada (manteniendo tu estilo original) */
+.ia-razonamiento-card-purple {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.ia-razonamiento-card-purple .ia-razonamiento-title {
+    color: white;
+}
+
+.ia-razonamiento-card-purple .ia-razonamiento-text {
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.ia-razonamiento-card-purple .ia-razonamiento-text strong {
+    color: #ffd700;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+    .ia-razonamiento-card,
+    .ia-razonamiento-card-purple {
+        padding: 16px;
+    }
+    
+    .ia-razonamiento-header {
+        gap: 8px;
+    }
+    
+    .ia-razonamiento-icon {
+        font-size: 24px;
+    }
+    
+    .ia-razonamiento-title {
+        font-size: 1rem;
+    }
+    
+    .ia-razonamiento-text {
+        font-size: 13px;
+        line-height: 1.5;
+    }
+}

@@ -125,19 +125,6 @@ function togglePassword(inputId, btn) {
         icon.classList.add('fa-eye');
     }
 }
-// 👇 AGREGA LA FUNCIÓN AQUÍ
-function toggleProveedorCampos() {
-    const tipoSelect = document.getElementById('reg-tipo');
-    const proveedorCampos = document.getElementById('proveedor-campos');
-    
-    if (tipoSelect && proveedorCampos) {
-        if (tipoSelect.value === 'proveedor') {
-            proveedorCampos.style.display = 'block';
-        } else {
-            proveedorCampos.style.display = 'none';
-        }
-    }
-}
 function cerrarModal() {
     document.getElementById('auth-modal').classList.remove('active');
 }
@@ -251,11 +238,6 @@ function abrirModalLogin() {
                         <input type="tel" id="reg-telefono" placeholder="Teléfono (ej: 3123456789)" required>
                         <small id="telefono-error" style="color: #e94560; font-size: 0.8rem; display: none;"></small>
                     </div>
-                    <div class="form-group">
-                        <select id="reg-tipo" onchange="toggleProveedorCampos()" required>
-                            <option value="cliente">Cliente</option>
-                        </select>
-                    </div>
                     <div id="proveedor-campos" style="display:none;">
                         <div class="form-group">
                             <input type="text" id="reg-empresa" placeholder="Nombre de empresa">
@@ -297,7 +279,7 @@ async function registrarUsuarioModal(event) {
     const email = document.getElementById('reg-email')?.value;
     const password = document.getElementById('reg-password')?.value;
     const telefono = document.getElementById('reg-telefono')?.value;
-    const tipo = 'cliente'; // 👈 SIEMPRE CLIENTE
+    const fotoInput = document.getElementById('reg-foto');
 
     if (!nombre || !email || !password || !telefono) {
         mostrarNotificacion('Todos los campos son obligatorios', 'error');
@@ -312,26 +294,32 @@ async function registrarUsuarioModal(event) {
         return false;
     }
 
-    const datos = {
-        nombre: nombre.trim(),
-        email: email.toLowerCase().trim(),
-        password: password,
-        tipo_usuario: tipo,  // 👈 SIEMPRE 'cliente'
-        telefono: telefonoNumero
-    };
+    // ✅ USAR FormData (NO JSON)
+    const formData = new FormData();
+    formData.append('nombre', nombre.trim());
+    formData.append('email', email.toLowerCase().trim());
+    formData.append('password', password);
+    formData.append('tipo_usuario', 'cliente');
+    formData.append('telefono', telefonoNumero);
 
-    console.log('📤 Enviando:', datos);
+    // ✅ Agregar foto si existe
+    if (fotoInput && fotoInput.files && fotoInput.files.length > 0) {
+        console.log('📸 Foto seleccionada:', fotoInput.files[0].name);
+        formData.append('foto', fotoInput.files[0]);
+    } else {
+        console.log('📸 No se seleccionó foto');
+    }
+
+    console.log('📤 Enviando FormData...');
 
     try {
         const response = await fetch('http://localhost:3000/api/auth/registro', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(datos)
+            body: formData  // 👈 NO USAR JSON, ENVIAR FormData
         });
 
         const data = await response.json();
+        console.log('📥 Respuesta:', data);
 
         if (response.ok && data.success) {
             if (data.token) API.setToken(data.token);
@@ -604,7 +592,6 @@ window.abrirModalPerfil = abrirModalPerfil;
 window.cerrarModal = cerrarModal;
 window.cerrarModalPerfil = cerrarModalPerfil;
 window.cambiarTabModal = cambiarTabModal;
-window.toggleProveedorCampos = toggleProveedorCampos;
 window.previewFotoModal = previewFotoModal;
 window.previewFotoPerfil = previewFotoPerfil;
 window.iniciarSesionModal = iniciarSesionModal;

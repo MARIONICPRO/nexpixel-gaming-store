@@ -276,3 +276,115 @@
         grid-template-columns: 1fr;
     }
 }
+/* ===== RAZONAMIENTO IA - VERSIÓN MEJORADA ===== */
+.ia-razonamiento-card {
+    background: linear-gradient(135deg, #1a2f4f 0%, #0f1a2e 100%);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 30px;
+    border: 1px solid rgba(77, 140, 255, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    animation: fadeInUp 0.5s ease-out;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efecto de brillo superior */
+.ia-razonamiento-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #4d8cff, #667eea, #4d8cff);
+}
+
+.ia-razonamiento-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.ia-razonamiento-icon {
+    font-size: 32px;
+    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.2));
+}
+
+.ia-razonamiento-title {
+    color: #4d8cff;
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.ia-badge {
+    background: linear-gradient(135deg, #4d8cff, #2a6fdb);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ia-razonamiento-text {
+    color: #e0e0e0;
+    margin: 0;
+    line-height: 1.7;
+    font-size: 15px;
+    text-align: justify;
+}
+
+/* Resaltar nombres de juegos */
+.ia-razonamiento-text strong {
+    color: #4d8cff;
+    font-weight: 600;
+}
+
+/* Estilo para listas dentro del razonamiento */
+.ia-razonamiento-text ul,
+.ia-razonamiento-text ol {
+    margin: 12px 0 0 20px;
+    padding-left: 0;
+}
+
+.ia-razonamiento-text li {
+    margin: 8px 0;
+    color: #ccc;
+}
+
+.ia-razonamiento-text li strong {
+    color: #4d8cff;
+}
+
+.ia-razonamiento-footer {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(77, 140, 255, 0.2);
+    font-size: 12px;
+    color: #aaccff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ia-razonamiento-footer::before {
+    content: "🧠";
+    font-size: 14px;
+}
+
+/* Animación */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

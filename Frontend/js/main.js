@@ -67,7 +67,8 @@ async function inicializarApp() {
                 Productos.renderizarProducto(producto, 'producto-container');
 
                 if (typeof IARecomendaciones !== 'undefined' && IARecomendaciones.cargarSimilares) {
-                    IARecomendaciones.cargarSimilares(productoId, 'productos-similares', 4);
+                   // 👇 CARGAR RECOMENDACIONES IA (con razonamiento)
+                await IARecomendaciones.cargarRecomendaciones('recomendaciones-ia-container', 4);
                 }
             }
         }
