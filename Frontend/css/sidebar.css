@@ -225,6 +225,7 @@
 }
 
 .btn-sidebar-logout {
+    background-color: rgb(46, 161, 255);
     border: 1px solid rgba(244, 67, 54, 0.3);
     color: #ff8a80;
 }

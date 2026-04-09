@@ -62,13 +62,13 @@ async cargarRecomendaciones(containerId, limite = 4) {
                     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
                 ">
                     <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                        <span style="font-size: 28px;">🧠</span>
+                        <span style="font-size: 28px;"><i class="fa-solid fa-brain"></i></span>
                         <h3 style="color: white; margin: 0; font-size: 18px;">¿Por qué te recomendamos esto?</h3>
                         <span style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 12px; color: white;">IA Generativa</span>
                     </div>
                     <p style="color: white; margin: 0; line-height: 1.6; font-size: 15px;">${razonamiento}</p>
                     <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.2); font-size: 13px; color: rgba(255,255,255,0.8);">
-                        📊 Basado en tu historial de compras y visualizaciones
+                        <i class="fa-brands fa-think-peaks"></i> Basado en tu historial de compras y visualizaciones
                     </div>
                 </div>
             `;

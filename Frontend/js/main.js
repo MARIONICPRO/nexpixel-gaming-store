@@ -56,6 +56,9 @@ async function inicializarApp() {
         } else {
             Carrito.renderizarCarrito();
         }
+          if (typeof IARecomendaciones !== 'undefined') {
+            IARecomendaciones.cargarRecomendaciones('recomendaciones-container', 4);
+        }
     }
 
     if (path.includes('producto.html')) {
