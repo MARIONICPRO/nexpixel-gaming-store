@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NexPixel - Inicio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/sidebar.css">
@@ -19,16 +20,29 @@
 
     <div class="content">
         <section class="hero">
-            <h1>Bienvenido a NexPixel</h1>
-            <p>La mejor tienda de videojuegos y tarjetas digitales</p>
+            <div class="hero-content">
+
+                <img src="../Logo.png" alt="NexPixel Logo" class="hero-logo">
+
+                <div class="hero-text">
+                    <h1>
+                        BIENVENIDO A
+                        <span class="brand">NEXPIXEL</span>
+                    </h1>
+                    <p>La mejor tienda de videojuegos y tarjetas digitales</p>
+                </div>
+
+            </div>
         </section>
 
         <section class="carruel-section">
             <h2><i class="fa-solid fa-gamepad"></i> Juegos recién llegados</h2>
             <div class="carrusel-container">
-                <button class="carrusel-btn prev" onclick="moverCarrusel(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                <button class="carrusel-btn prev" onclick="moverCarrusel(-1)"><i
+                        class="fa-solid fa-chevron-left"></i></button>
                 <div class="carrusel-track" id="carrusel-recientes"></div>
-                <button class="carrusel-btn next" onclick="moverCarrusel(1)"><i class="fa-solid fa-chevron-right"></i></button>
+                <button class="carrusel-btn next" onclick="moverCarrusel(1)"><i
+                        class="fa-solid fa-chevron-right"></i></button>
             </div>
         </section>
 
@@ -47,7 +61,7 @@
     <div class="modal-overlay" id="auth-modal"></div>
     <div class="modal-overlay" id="perfil-modal"></div>
 
-    <!-- ✅ SCRIPTS CORRECTOS PARA NODE.JS -->
+
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/sidebar.js"></script>

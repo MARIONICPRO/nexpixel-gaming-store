@@ -3,50 +3,100 @@
    ============================================ */
 
 /* 1. CONTENEDOR BIENVENIDO (HERO) - EL CAMBIO PRINCIPAL */
+/* Texto general */
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Títulos */
+h1, h2, h3 {
+  font-family: 'Orbitron', sans-serif;
+}
 .hero {
-    text-align: center;
-    padding: 5rem 2rem;
-    /* Gradiente radial más profundo y moderno */
-    background: radial-gradient(circle at center, rgba(42, 111, 219, 0.2) 0%, rgba(10, 15, 31, 0.95) 100%);
-    border-radius: 20px;
-    margin-bottom: 3rem;
-    border: 1px solid rgba(77, 140, 255, 0.4); /* Borde neón sutil */
-    backdrop-filter: blur(15px);
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(77, 140, 255, 0.1);
     position: relative;
+    overflow: hidden;
 }
 
-.hero h1 {
-    font-size: 3.5rem;
-    font-weight: 800;
-    margin-bottom: 1rem;
-    /* Efecto de texto cromado/blanco brillante */
-    background: linear-gradient(180deg, #FFFFFF 0%, #AACCFF 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
-    text-transform: uppercase;
-    letter-spacing: 2px;
+.hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    backdrop-filter: blur(8px);
+    background: rgba(0,0,0,0.4);
+    z-index: -1;
 }
 
-.hero p {
-    font-size: 1.3rem;
-    color: #aaccff;
-    font-weight: 300;
-    letter-spacing: 1px;
+.hero-content {
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+    max-width: 1000px; 
 }
 
-/* 2. ICONOS DE LOS TÍTULOS (AHORA BLANCOS) */
-h2 i {
-    color: #ffffff; /* Iconos en blanco como pediste */
-    margin-right: 12px;
-    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6)); /* Brillo blanco */
+.hero-logo {
+    width: 420px;
+    flex-shrink: 0; 
+     transition: all 0.3s ease;
+    filter: drop-shadow(0 0 10px rgba(77,140,255,0.4));
 }
 
+.hero-logo:hover {
+    transform: scale(1.05) rotate(2deg);
+    filter: drop-shadow(0 0 25px rgba(77,140,255,0.9));
+}
+.hero-text {
+  text-align: left;
+}
+.hero-text h1 {
+  font-size: 3rem;
+}
+
+.hero-text p {
+  font-size: 1.2rem;
+}
+.hero-text h1 {
+  text-shadow: 0 0 10px rgba(100, 180, 255, 0.6);
+}
+@media (max-width: 768px) {
+  .hero-content {
+    flex-direction: column;  
+    text-align: center;
+  }
+
+  .hero-text {
+    text-align: center;
+  }
+}
+.brand {
+  background: linear-gradient(90deg, #3aa0ff, #7bff7b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  filter: drop-shadow(0 0 8px rgba(58,160,255,0.4));
+}
+.scroll-indicator {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    opacity: 0.7;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translate(-50%, 0); }
+    50% { transform: translate(-50%, -10px); }
+}
 /* 3. MANTENIENDO TU ESTRUCTURA ORIGINAL DEL CARRUSEL */
 .carruel-section {
     margin-bottom: 4rem;
+}
+.carrusel-mensaje.vacio {
+    color: #aaa;
+}
+.carrusel-mensaje.error {
+    color: #ff4d4f;
 }
 
 .carruel-section h2 {
@@ -66,6 +116,8 @@ h2 i {
     border: 1px solid var(--color-primario);
     background: rgba(10, 20, 40, 0.5);
     backdrop-filter: blur(5px);
+     min-height: unset;
+    height: auto;
 }
 
 .carrusel-track {
@@ -107,7 +159,11 @@ h2 i {
     margin-bottom: 0.3rem;
     color: white;
 }
-
+.carrusel-track:empty {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 .carrusel-plataforma {
     color: var(--color-primario-claro);
     font-size: 0.9rem;
@@ -281,6 +337,7 @@ h2 i {
         height: 160px !important;
     }
 }
+
 
 @media (max-width: 768px) {
     #recomendaciones-container .productos-grid {

@@ -1,5 +1,12 @@
 /* ===== TARJETAS CSS COMPLETO - VERSIÓN AZUL ===== */
+body {
+  font-family: 'Poppins', sans-serif;
+}
 
+/* Títulos */
+h1, h2, h3 {
+  font-family: 'Orbitron', sans-serif;
+}
 /* Contenedor principal - SOPORTA FILTROS OCULTABLES */
 .tarjetas-container {
     display: grid;

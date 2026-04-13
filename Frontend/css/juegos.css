@@ -1,6 +1,14 @@
 /* ===== JUEGOS CSS COMPLETO - VERSIÓN AZUL ===== */
 
 /* Contenedor principal - SOPORTA FILTROS OCULTABLES */
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Títulos */
+h1, h2, h3 {
+  font-family: 'Orbitron', sans-serif;
+}
 .juegos-container {
     display: grid;
     transition: all 0.3s ease;

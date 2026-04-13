@@ -20,9 +20,22 @@ async function inicializarApp() {
 
     if (path.includes('index.html') || path === '/') {
         try {
-            const response = await API.getJuegosRecientes(8);
-            const juegosRecientes = response.productos || [];
-            Productos.renderizarCarrusel(juegosRecientes, 'carrusel-recientes');
+            const track = document.getElementById('carrusel-recientes');
+
+try {
+    const response = await API.getJuegosRecientes(8);
+    const juegosRecientes = response.productos || [];
+
+    if (!juegosRecientes.length) {
+        mostrarCarruselVacio(track);
+    } else {
+        Productos.renderizarCarrusel(juegosRecientes, 'carrusel-recientes');
+    }
+
+} catch (error) {
+    console.error('Error cargando juegos recientes:', error);
+    mostrarCarruselError(track);
+}
         } catch (error) {
             console.error('Error cargando juegos recientes:', error);
         }
@@ -567,6 +580,37 @@ window.addEventListener('resize', function () {
 
 setTimeout(inicializarFiltros, 500);
 
+function mostrarCarruselVacio(track) {
+    if (!track) return;
+
+    track.innerHTML = `
+        <div class="carrusel-mensaje vacio">
+            <i class="fa-solid fa-box-open"></i>
+            <p>No hay juegos recientes disponibles</p>
+        </div>
+    `;
+
+    ocultarBotonesCarrusel();
+}
+
+function mostrarCarruselError(track) {
+    if (!track) return;
+
+    track.innerHTML = `
+        <div class="carrusel-mensaje error">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <p>Error al cargar los juegos</p>
+        </div>
+    `;
+
+    ocultarBotonesCarrusel();
+}
+
+function ocultarBotonesCarrusel() {
+    document.querySelectorAll('.carrusel-btn').forEach(btn => {
+        btn.style.display = 'none';
+    });
+} 
 // ===== EXPORTAR FUNCIONES GLOBALES =====
 window.verProducto = verProducto;
 window.agregarAlCarrito = agregarAlCarrito;

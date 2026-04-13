@@ -2,7 +2,14 @@
    NEXPIXEL - SIDEBAR UNIFICADA
    DEGRADADO SUTIL + BARRA BLANCA
    ============================================ */
+body {
+  font-family: 'Poppins', sans-serif;
+}
 
+/* Títulos */
+h1, h2, h3 {
+  font-family: 'Orbitron', sans-serif;
+}
 /* ===== VARIABLES (si no están en style.css) ===== */
 :root {
     --color-primario: #2a6fdb;
@@ -18,7 +25,7 @@
     top: 0;
     width: 280px;
     height: 100vh;
-    background: linear-gradient(rgb(56, 56, 118),rgb(65, 204, 255));
+    background: linear-gradient(180deg, #0a1a2f 0%, #0f2a3f 100%);
     border-right: 1px solid rgba(77, 140, 255, 0.2);
     padding: 2rem 1rem;
     display: flex;
@@ -35,6 +42,12 @@
     margin-bottom: 2rem;
     padding-bottom: 1rem;
     border-bottom: 1px solid rgba(77, 140, 255, 0.2);
+}
+.sidebar-logo .nex,
+.sidebar-logo .pixel {
+  background: linear-gradient(90deg, #3aa0ff, #7bff7b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .sidebar-logo h1 {
@@ -213,6 +226,9 @@
     color: #4d8cff;
     background: rgba(77, 140, 255, 0.05);
 }
+.btn-sidebar-logout i {
+  margin-right: 8px;
+}
 
 .btn-sidebar-register {
     border: 1px solid rgba(77, 140, 255, 0.5);
@@ -225,17 +241,25 @@
 }
 
 .btn-sidebar-logout {
-    background-color: rgb(46, 161, 255);
-    border: 1px solid rgba(244, 67, 54, 0.3);
-    color: #ff8a80;
-}
+  background: rgba(244, 67, 54, 0.1);
+  border: 1px solid rgba(244, 67, 54, 0.4);
+  color: #ff6b6b;
 
+  padding: 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
 .btn-sidebar-logout:hover {
-    border-color: #f44336;
-    color: #f44336;
-    background: rgba(244, 67, 54, 0.05);
-}
+  background: rgba(244, 67, 54, 0.2);
+  border-color: #f44336;
+  color: #ffffff;
 
+  transform: scale(1.03);
+}
+.btn-sidebar-logout:active {
+  transform: scale(0.97);
+}
 /* ===== BOTÓN CERRAR SIDEBAR (MÓVIL) ===== */
 .close-sidebar {
     display: none;

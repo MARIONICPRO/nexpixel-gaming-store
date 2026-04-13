@@ -73,7 +73,7 @@ async function renderizarSidebar() {
 
     sidebar.innerHTML = `
         <div class="sidebar-logo">
-            <h1>NexPixel</h1>
+            <h1><span class="nex">Nex</span><span class="pixel">Pixel</span></h1>
             <p>Videojuegos Digitales</p>
         </div>
         ${perfilHTML}

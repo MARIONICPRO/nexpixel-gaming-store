@@ -1,7 +1,14 @@
 /* ============================================
    NEXPIXEL - DASHBOARD ADMIN (VERSIÓN CORREGIDA)
    ============================================ */
+body {
+  font-family: 'Poppins', sans-serif;
+}
 
+/* Títulos */
+h1, h2, h3 {
+  font-family: 'Orbitron', sans-serif;
+}
 /* Contenedor principal */
 .dashboard-header {
     margin-bottom: 2rem;
