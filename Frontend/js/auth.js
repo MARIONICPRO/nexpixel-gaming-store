@@ -92,11 +92,6 @@ const Auth = {
             return { success: false, error: emailValidation.error };
         }
         const emailNormalizado = emailValidation.email;
-        if (usuario.tipo_usuario === 'proveedor' && !usuario.verificado) {
-            return res.status(403).json({
-                error: 'Tu cuenta no ha sido verificada por el administrador'
-            });
-        }
 
         try {
             console.log('🔍 Intentando login con:', emailNormalizado);
@@ -112,6 +107,11 @@ const Auth = {
 
                 if (typeof Carrito !== 'undefined' && Carrito.sincronizarCarritoLocal) {
                     await Carrito.sincronizarCarritoLocal();
+                }
+
+                // Actualizar UI
+                if (typeof Auth !== 'undefined' && Auth.actualizarUI) {
+                    Auth.actualizarUI();
                 }
 
                 return { success: true, usuario: response.usuario };
