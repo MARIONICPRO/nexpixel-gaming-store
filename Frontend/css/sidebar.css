@@ -1,15 +1,4 @@
-/* ============================================
-   NEXPIXEL - SIDEBAR UNIFICADA
-   DEGRADADO SUTIL + BARRA BLANCA
-   ============================================ */
-body {
-  font-family: 'Poppins', sans-serif;
-}
 
-/* Títulos */
-h1, h2, h3 {
-  font-family: 'Orbitron', sans-serif;
-}
 /* ===== VARIABLES (si no están en style.css) ===== */
 :root {
     --color-primario: #2a6fdb;
@@ -241,6 +230,7 @@ h1, h2, h3 {
 }
 
 .btn-sidebar-logout {
+    margin-top: 1rem;
   background: rgba(244, 67, 54, 0.1);
   border: 1px solid rgba(244, 67, 54, 0.4);
   color: #ff6b6b;

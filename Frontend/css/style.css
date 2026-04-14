@@ -1,9 +1,18 @@
 /* ============================================
-   NEXPIXEL - ESTILOS GLOBALES (VERSIÓN FINAL CORREGIDA)
+   NEXPIXEL - ESTILOS GLOBALES 
    ============================================ */
+body {
+  font-family: 'Poppins', sans-serif;
+}
 
+/* Títulos */
+h1, h2, h3 {
+  font-family: 'Orbitron', sans-serif;
+}
 /* ===== VARIABLES GLOBALES ===== */
 :root {
+    --font-body: 'Poppins', sans-serif;
+  --font-display: 'Orbitron', sans-serif;
     --color-fondo: #0a0f1f;
     --color-fondo-claro: #1a1f35;
     --color-primario: #2a6fdb;
@@ -46,7 +55,7 @@ body::before {
     inset: 0;
     background: url('https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=2000&q=80') center/cover no-repeat;
     z-index: -2;
-    filter: blur(2px) brightness(0.6);
+    filter: blur(0px) brightness(0.6);
 }
 
 body::after {

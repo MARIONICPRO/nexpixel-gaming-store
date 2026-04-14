@@ -90,7 +90,7 @@ async function cargarMisProductos() {
             container.innerHTML = `
                 <div style="text-align: center; padding: 3rem;">
                     <p>No tienes productos aún</p>
-                    <button class="btn-nuevo" onclick="cambiarTabProveedor('nuevo')">➕ Añadir producto</button>
+                    <button class="btn-nuevo" onclick="cambiarTabProveedor('nuevo')"><i class="fa-solid fa-plus"></i> Añadir producto</button>
                 </div>
             `;
             return;

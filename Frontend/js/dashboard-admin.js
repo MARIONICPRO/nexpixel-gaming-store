@@ -9,7 +9,7 @@ let currentTab = 'usuarios';
 // INICIALIZACIÓN
 // ============================================
 async function cargarDashboardAdmin() {
-    console.log('🖥️ Cargando dashboard admin...');
+    console.log('<i class="fa-solid fa-desktop"></i> Cargando dashboard admin...');
 
     if (!Auth.usuarioActual || Auth.usuarioActual.tipo_usuario !== 'admin') {
         window.location.href = 'index.html';
@@ -85,9 +85,9 @@ async function cargarTablaUsuarios(search = '') {
         let html = `
             <div class="search-bar">
                 <div style="display: flex; gap: 10px;">
-                    <input type="text" id="search-usuario" placeholder="🔍 Buscar por nombre o email..." value="${escapeHtml(search)}" style="flex: 1;">
-                    <button class="btn-buscar" onclick="buscarUsuarios()">🔍 Buscar</button>
-                    <button class="btn-limpiar" onclick="limpiarBusquedaUsuarios()">✖ Limpiar</button>
+                    <input type="text" id="search-usuario" placeholder=" Buscar por nombre o email..." value="${escapeHtml(search)}" style="flex: 1;">
+                    <button class="btn-buscar" onclick="buscarUsuarios()"> <i class="fa-solid fa-magnifying-glass"></i> Buscar</button>
+                    <button class="btn-limpiar" onclick="limpiarBusquedaUsuarios()"><i class="fa-solid fa-xmark"></i> Limpiar</button>
                 </div>
             </div>`;
 
@@ -128,22 +128,22 @@ async function cargarTablaUsuarios(search = '') {
                     <td>${u.id_usuario}</td>
                     <td>${u.nombre || '-'}</td>
                     <td>${u.email}</td>
-                    <td><span class="badge badge-${u.tipo_usuario}">${u.tipo_usuario === 'cliente' ? '👤 Cliente' : u.tipo_usuario === 'proveedor' ? '🏪 Proveedor' : '👑 Admin'}</span></td>
+                    <td><span class="badge badge-${u.tipo_usuario}">${u.tipo_usuario === 'cliente' ? '<i class="fa-solid fa-user"></i> Cliente' : u.tipo_usuario === 'proveedor' ? '<i class="fa-solid fa-gamepad"></i> Proveedor' : '<i class="fa-solid fa-crown"></i> Admin'}</span></td>
                     <td style="min-width: 140px;">
                         <select class="rol-select" data-id="${u.id_usuario}" data-rol-actual="${u.tipo_usuario}" style="background: #1a1a2e; border: 1px solid #2d2d44; color: white; padding: 6px 10px; border-radius: 6px; width: 100%;">
                             ${opcionesRol}
                         </select>
-                        <button class="btn-action btn-primary btn-cambiar-rol" data-id="${u.id_usuario}" style="margin-top: 5px; width: 100%;">🔄 Cambiar</button>
+                        <button class="btn-action btn-primary btn-cambiar-rol" data-id="${u.id_usuario}" style="margin-top: 5px; width: 100%;"><i class="fa-solid fa-right-left"></i>  Cambiar</button>
                     </td>
-                    <td><span class="badge badge-${estado}">${estado === 'activo' ? '✅ Activo' : '❌ Inactivo'}</span></td>
-                    <td>${u.verificado ? '✅' : '❌'}</td>
+                    <td><span class="badge badge-${estado}">${estado === 'activo' ? ' Activo' : '<i class="fa-solid fa-xmark"></i> Inactivo'}</span></td>
+                    <td>${u.verificado ? '<i class="fa-solid fa-circle-check"></i>' : '<i class="fa-solid fa-circle-xmark"></i>'}</td>
                     <td>${new Date(u.fecha_registro).toLocaleDateString()}</td>
                     <td>
                         ${esActivo
-                            ? `<button class="btn-action btn-warning" onclick="inactivarUsuario(${u.id_usuario})" title="Inactivar">🔒 Inactivar</button>`
-                            : `<button class="btn-action btn-success" onclick="activarUsuario(${u.id_usuario})" title="Activar">🔓 Activar</button>`
+                            ? `<button class="btn-action btn-warning" onclick="inactivarUsuario(${u.id_usuario})" title="Inactivar"><i class="fa-solid fa-ban"></i> Inactivar</button>`
+                            : `<button class="btn-action btn-success" onclick="activarUsuario(${u.id_usuario})" title="Activar"><i class="fa-solid fa-lock-open"></i> Activar</button>`
                         }
-                        <button class="btn-action btn-delete" onclick="desactivarUsuario(${u.id_usuario})" title="Desactivar">🗑️</button>
+                        <button class="btn-action btn-delete" onclick="desactivarUsuario(${u.id_usuario})" title="Desactivar"><i class="fa-solid fa-trash"></i> Desactivar</button>
                     </td>
                 </tr>
             `;
@@ -206,8 +206,8 @@ async function cargarTablaProveedores(search = '') {
         let html = `
             <div class="search-bar">
                 <div style="display: flex; gap: 10px;">
-                    <input type="text" id="search-proveedor" placeholder="🔍 Buscar por empresa, nombre o email..." value="${escapeHtml(search)}" style="flex: 1;">
-                    <button class="btn-buscar" onclick="buscarProveedores()">🔍 Buscar</button>
+                    <input type="text" id="search-proveedor" placeholder="Buscar por empresa, nombre o email..." value="${escapeHtml(search)}" style="flex: 1;">
+                    <button class="btn-buscar" onclick="buscarProveedores()"><i class="fa-solid fa-magnifying-glass"></i> Buscar</button>
                     <button class="btn-limpiar" onclick="limpiarBusquedaProveedores()">✖ Limpiar</button>
                 </div>
             </div>`;
@@ -236,7 +236,7 @@ async function cargarTablaProveedores(search = '') {
         `;
 
         for (const p of data.proveedores) {
-            let estadoTexto = '✅ Activo';
+            let estadoTexto = 'Activo';
             let estadoClase = 'badge-success';
             let tiempoRestante = '';
 
@@ -246,7 +246,7 @@ async function cargarTablaProveedores(search = '') {
                 estadoClase = 'badge-warning';
                 tiempoRestante = ` hasta ${new Date(p.suspendido_hasta).toLocaleString()}`;
             } else if (p.estado === 'inactivo') {
-                estadoTexto = '❌ Inactivo';
+                estadoTexto = '<i class="fa-solid fa-xmark"></i> Inactivo';
                 estadoClase = 'badge-danger';
             }
 
@@ -256,7 +256,7 @@ async function cargarTablaProveedores(search = '') {
                     <td>${p.email}</td>
                     <td>${p.nit || '-'}</td>
                     <td>${p.telefono || '-'}</td>
-                    <td>${p.verificado ? '✅ Sí' : '❌ No'}</td>
+                    <td>${p.verificado ? '<i class="fa-solid fa-circle-check"></i>' : '<i class="fa-solid fa-circle-xmark"></i>'}</td>
                     <td><span class="badge ${estadoClase}">${estadoTexto}</span>${tiempoRestante}</td>
                     <td style="min-width: 200px;">
                         ${p.estado !== 'inactivo' ? `
@@ -271,9 +271,9 @@ async function cargarTablaProveedores(search = '') {
                         ` : '<span class="text-muted">Usuario inactivo</span>'}
                     </td>
                     <td>
-                        ${!p.verificado && p.estado !== 'inactivo' ? `<button class="btn-action btn-edit" onclick="verificarProveedor(${p.id_usuario})" title="Verificar">✓</button>` : ''}
-                        ${p.estado !== 'inactivo' ? `<button class="btn-action btn-success" onclick="reactivarProveedor(${p.id_usuario})" title="Reactivar">🔄</button>` : ''}
-                        <button class="btn-action btn-delete" onclick="desactivarUsuario(${p.id_usuario})" title="Desactivar">🗑️</button>
+                        ${!p.verificado && p.estado !== 'inactivo' ? `<button class="btn-action btn-edit" onclick="verificarProveedor(${p.id_usuario})" title="Verificar"><i class="fa-solid fa-check"></i></button>` : ''}
+                        ${p.estado !== 'inactivo' ? `<button class="btn-action btn-success" onclick="reactivarProveedor(${p.id_usuario})" title="Reactivar"><i class="fa-solid fa-rotate-left"></i></button>` : ''}
+                        <button class="btn-action btn-delete" onclick="desactivarUsuario(${p.id_usuario})" title="Desactivar"><i class="fa-solid fa-trash-can"></i></button>
                     </td>
                 </tr>
             `;
@@ -320,8 +320,8 @@ async function cargarTablaProductosAdmin(search = '', estado = 'todos') {
         let html = `
             <div class="filtros-bar">
                 <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                    <input type="text" id="search-producto" placeholder="🔍 Buscar producto..." value="${escapeHtml(search)}" style="flex: 1;">
-                    <button class="btn-buscar" onclick="buscarProductos()">🔍 Buscar</button>
+                    <input type="text" id="search-producto" placeholder="Buscar producto..." value="${escapeHtml(search)}" style="flex: 1;">
+                    <button class="btn-buscar" onclick="buscarProductos()"><i class="fa-solid fa-magnifying-glass"></i> Buscar</button>
                     <button class="btn-limpiar" onclick="limpiarBusquedaProductos()">✖ Limpiar</button>
                 </div>
                 <select id="filtro-estado" onchange="buscarProductos()">
@@ -356,10 +356,10 @@ async function cargarTablaProductosAdmin(search = '', estado = 'todos') {
                     <td><span class="badge badge-${p.estado}">${p.estado}</span></td>
                     <td>
                         ${p.estado === 'activo'
-                            ? `<button class="btn-action btn-warning" onclick="desactivarProducto(${p.id_producto})" title="Desactivar">🔒</button>`
-                            : `<button class="btn-action btn-success" onclick="activarProducto(${p.id_producto})" title="Activar">🔓</button>`
+                            ? `<button class="btn-action btn-warning" onclick="desactivarProducto(${p.id_producto})" title="Desactivar"><i class="fa-solid fa-lock"></i></button>`
+                            : `<button class="btn-action btn-success" onclick="activarProducto(${p.id_producto})" title="Activar"><i class="fa-solid fa-lock-open"></i></button>`
                         }
-                        <button class="btn-action btn-edit" onclick="editarProductoAdmin(${p.id_producto})" title="Editar">✏️</button>
+                        <button class="btn-action btn-edit" onclick="editarProductoAdmin(${p.id_producto})" title="Editar"><i class="fa-solid fa-pen-to-square"></i></button>
                     </td>
                 </tr>
             `;
@@ -597,7 +597,7 @@ async function desactivarUsuario(id) {
         const data = await res.json();
 
         if (data.success) {
-            mostrarNotificacion('✅ Usuario desactivado correctamente', 'success');
+            mostrarNotificacion('<i class="fa-solid fa-circle-check"></i> Usuario desactivado correctamente', 'success');
             if (currentTab === 'usuarios') await cargarTablaUsuarios();
             else if (currentTab === 'proveedores') await cargarTablaProveedores();
         } else {
@@ -733,7 +733,7 @@ async function rechazarDevolucion(id) {
         const res = await fetch(`${API_URL}/admin/devoluciones/${id}/rechazar`, { method: 'PUT', headers: API.getHeaders() });
         const data = await res.json();
         if (data.success) {
-            mostrarNotificacion('❌ Devolución rechazada');
+            mostrarNotificacion('<i class="fa-solid fa-xmark"></i> Devolución rechazada');
             cargarTablaDevoluciones();
         }
     } catch (error) { console.error(error); }

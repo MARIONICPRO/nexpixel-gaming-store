@@ -1,17 +1,4 @@
-/* ============================================
-    NEXPIXEL - PÁGINA PRINCIPAL (ESTÉTICA MEJORADA)
-   ============================================ */
 
-/* 1. CONTENEDOR BIENVENIDO (HERO) - EL CAMBIO PRINCIPAL */
-/* Texto general */
-body {
-  font-family: 'Poppins', sans-serif;
-}
-
-/* Títulos */
-h1, h2, h3 {
-  font-family: 'Orbitron', sans-serif;
-}
 .hero {
     position: relative;
     overflow: hidden;

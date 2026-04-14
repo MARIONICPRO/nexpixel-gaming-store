@@ -94,7 +94,7 @@ async function renderizarSidebar() {
                 <span class="menu-icon"><i class="fa-solid fa-cart-shopping"></i></span> Carrito
                 <span class="carrito-badge" id="sidebar-carrito-contador">${Carrito?.items?.length || 0}</span>
             </a>
-            ${dashboardButtons} <!-- 👈 NUEVO: Botones insertados aquí -->
+            ${dashboardButtons} 
         </div>
     `;
 

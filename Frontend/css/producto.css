@@ -1,14 +1,4 @@
-/* ============================================
-   NEXPIXEL - PÁGINA DE DETALLE DE PRODUCTO
-   =========================================== */
-body {
-  font-family: 'Poppins', sans-serif;
-}
 
-/* Títulos */
-h1, h2, h3 {
-  font-family: 'Orbitron', sans-serif;
-}
 /* Contenedor principal del detalle */
 .producto-detalle-page {
     margin-bottom: 3rem;

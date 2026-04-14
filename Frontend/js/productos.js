@@ -92,7 +92,7 @@ const Productos = {
                 <h3>${nombreProducto}</h3>
                 <p class="producto-precio">$${formatearPrecio(juego.precio)}</p>
                 <button class="btn-agregar" onclick="event.stopPropagation(); manejarClickCompra(${juego.id_producto})">
-                    🛒 Añadir al carrito
+                    <i class="fas fa-shopping-cart"></i> Añadir al carrito
                 </button>
             </div>
         `;
@@ -175,7 +175,7 @@ renderizarTarjetas(tarjetas, containerId, pagina = 1, itemsPorPagina = 9) {
                 <h3>${nombreTarjeta}</h3>
                 <p class="producto-precio">$${formatearPrecio(tarjeta.precio)}</p>
                 <button class="btn-comprar" onclick="event.stopPropagation(); manejarClickCompra(${tarjeta.id_producto})">
-                    🛒 Comprar
+                    <i class="fas fa-shopping-cart"></i> Comprar
                 </button>
             </div>
         `;
@@ -323,7 +323,7 @@ renderizarTarjetas(tarjetas, containerId, pagina = 1, itemsPorPagina = 9) {
 
             const onchangeFunc = callbackFunc || 'aplicarFiltros()';
 
-            let html = '<h4>Plataforma</h4>';
+            let html = '';
             plataformas.forEach(p => {
                 html += `
                     <label class="filtro-opcion">

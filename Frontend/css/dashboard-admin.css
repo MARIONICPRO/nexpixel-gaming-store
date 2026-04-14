@@ -1,14 +1,4 @@
-/* ============================================
-   NEXPIXEL — ADMIN PANEL CSS
-   Tema: Dark Space / Cyber Command Center
-   Fuentes: Syne (títulos) + DM Sans (cuerpo)
-   ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
-
-/* ============================================
-   VARIABLES
-   ============================================ */
 :root {
   --bg-void:       #04070f;
   --bg-deep:       #080d1a;
