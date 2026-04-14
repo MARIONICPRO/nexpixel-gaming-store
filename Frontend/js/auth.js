@@ -26,6 +26,7 @@ const Auth = {
         }
     },
 
+
     // Función para validar email (case-insensitive)
     validarEmail(email) {
         // Expresión regular para validar email con dominios comunes
@@ -91,6 +92,11 @@ const Auth = {
             return { success: false, error: emailValidation.error };
         }
         const emailNormalizado = emailValidation.email;
+        if (usuario.tipo_usuario === 'proveedor' && !usuario.verificado) {
+            return res.status(403).json({
+                error: 'Tu cuenta no ha sido verificada por el administrador'
+            });
+        }
 
         try {
             console.log('🔍 Intentando login con:', emailNormalizado);

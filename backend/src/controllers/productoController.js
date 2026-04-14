@@ -4,19 +4,22 @@ export const productoController = {
   // ============================================
   // OBTENER TODOS LOS PRODUCTOS (CON FILTROS)
   // ============================================
-  async obtenerProductos(req, res) {
+async obtenerProductos(req, res) {
     try {
-      const { 
-        tipo, 
-        plataforma, 
-        precio_min, 
-        precio_max, 
+      const {
+        tipo,
+        plataforma,
+        precio_min,
+        precio_max,
         categoria,
         proveedor,
         busqueda,
+        genero,
         limite = 20,
-        pagina = 1 
+        pagina = 1
       } = req.query;
+
+      console.log('📥 Filtros recibidos:', { tipo, plataforma, precio_min, precio_max, busqueda, genero });
 
       let query = supabase
         .from('producto')
@@ -24,48 +27,79 @@ export const productoController = {
           *,
           categoria: id_categoria (id_categoria, nombre_grupo),
           plataforma: id_plataforma (id_plataforma, nombre_plataforma)
-        `, { count: 'exact' })
+        `)
         .eq('estado', 'activo');
 
-      // Aplicar filtros
+      // Aplicar filtros básicos
       if (tipo) query = query.eq('tipo_producto', tipo);
       if (plataforma) query = query.eq('id_plataforma', plataforma);
       if (categoria) query = query.eq('id_categoria', categoria);
       if (proveedor) query = query.eq('id_proveedor', proveedor);
-      if (precio_min) query = query.gte('precio', precio_min);
-      if (precio_max) query = query.lte('precio', precio_max);
+      if (precio_min) query = query.gte('precio', parseFloat(precio_min));
+      if (precio_max) query = query.lte('precio', parseFloat(precio_max));
       
       // Búsqueda por texto
-      if (busqueda) {
+      if (busqueda && busqueda.trim() !== '') {
         query = query.ilike('nombre_producto', `%${busqueda}%`);
+        console.log('🔍 Buscando:', busqueda);
       }
 
-      // Paginación
-      const from = (pagina - 1) * limite;
-      const to = from + limite - 1;
-      
-      const { data, error, count } = await query
-        .range(from, to)
-        .order('fecha_creacion', { ascending: false });
+      // Ejecutar consulta
+      let { data, error } = await query.order('fecha_creacion', { ascending: false });
 
       if (error) throw error;
 
+      // 👈 FILTRAR POR GÉNERO EN MEMORIA (más confiable)
+      if (genero && genero.trim() !== '') {
+        const generosSeleccionados = genero.toLowerCase().split(',').map(g => g.trim());
+        
+        const antes = data.length;
+        data = data.filter(producto => {
+          if (!producto.genero) return false;
+          
+          // Normalizar: convertir a minúsculas y separar por coma
+          const generosProducto = producto.genero.toLowerCase().split(',').map(g => g.trim());
+          
+          // Verificar si hay coincidencia
+          const coincide = generosSeleccionados.some(genSel => 
+            generosProducto.some(genProd => genProd.includes(genSel))
+          );
+          
+          if (coincide) {
+            console.log(`✅ Coincide: ${producto.nombre_producto} -> ${producto.genero}`);
+          }
+          
+          return coincide;
+        });
+        
+        console.log(`🎭 Filtrado por género: ${antes} → ${data.length} productos`);
+        console.log('🎭 Géneros seleccionados:', generosSeleccionados);
+      }
+
+      // Paginación manual
+      const total = data.length;
+      const from = (pagina - 1) * limite;
+      const to = from + limite;
+      const productosPaginados = data.slice(from, to);
+
+      console.log(`✅ Enviando ${productosPaginados.length} de ${total} productos`);
+
       res.json({
         success: true,
-        productos: data || [],
+        productos: productosPaginados,
         paginacion: {
           pagina: parseInt(pagina),
           limite: parseInt(limite),
-          total: count,
-          paginas: Math.ceil(count / limite)
+          total: total,
+          paginas: Math.ceil(total / limite)
         }
       });
 
     } catch (error) {
       console.error('❌ Error obteniendo productos:', error);
-      res.status(500).json({ 
-        success: false, 
-        error: 'Error al obtener productos' 
+      res.status(500).json({
+        success: false,
+        error: 'Error al obtener productos'
       });
     }
   },
@@ -98,9 +132,9 @@ export const productoController = {
 
     } catch (error) {
       console.error('❌ Error obteniendo juegos recientes:', error);
-      res.status(500).json({ 
-        success: false, 
-        error: 'Error al obtener juegos recientes' 
+      res.status(500).json({
+        success: false,
+        error: 'Error al obtener juegos recientes'
       });
     }
   },
@@ -132,9 +166,9 @@ export const productoController = {
 
     } catch (error) {
       console.error('❌ Error obteniendo productos populares:', error);
-      res.status(500).json({ 
-        success: false, 
-        error: 'Error al obtener productos populares' 
+      res.status(500).json({
+        success: false,
+        error: 'Error al obtener productos populares'
       });
     }
   },
@@ -159,9 +193,9 @@ export const productoController = {
         .single();
 
       if (error || !producto) {
-        return res.status(404).json({ 
-          success: false, 
-          error: 'Producto no encontrado' 
+        return res.status(404).json({
+          success: false,
+          error: 'Producto no encontrado'
         });
       }
 
@@ -180,9 +214,9 @@ export const productoController = {
 
     } catch (error) {
       console.error('❌ Error obteniendo producto:', error);
-      res.status(500).json({ 
-        success: false, 
-        error: 'Error al obtener producto' 
+      res.status(500).json({
+        success: false,
+        error: 'Error al obtener producto'
       });
     }
   },
@@ -203,9 +237,9 @@ export const productoController = {
         .single();
 
       if (errorProducto || !producto) {
-        return res.status(404).json({ 
-          success: false, 
-          error: 'Producto no encontrado' 
+        return res.status(404).json({
+          success: false,
+          error: 'Producto no encontrado'
         });
       }
 
@@ -231,9 +265,9 @@ export const productoController = {
 
     } catch (error) {
       console.error('❌ Error obteniendo productos similares:', error);
-      res.status(500).json({ 
-        success: false, 
-        error: 'Error al obtener productos similares' 
+      res.status(500).json({
+        success: false,
+        error: 'Error al obtener productos similares'
       });
     }
   },
@@ -261,9 +295,9 @@ export const productoController = {
 
       // Validar campos obligatorios
       if (!nombre_producto || !precio || !tipo_producto) {
-        return res.status(400).json({ 
-          success: false, 
-          error: 'Nombre, precio y tipo son obligatorios' 
+        return res.status(400).json({
+          success: false,
+          error: 'Nombre, precio y tipo son obligatorios'
         });
       }
 
@@ -302,9 +336,9 @@ export const productoController = {
 
     } catch (error) {
       console.error('❌ Error creando producto:', error);
-      res.status(500).json({ 
-        success: false, 
-        error: 'Error al crear producto' 
+      res.status(500).json({
+        success: false,
+        error: 'Error al crear producto'
       });
     }
   },
@@ -325,18 +359,18 @@ export const productoController = {
         .single();
 
       if (errorExistente || !productoExistente) {
-        return res.status(404).json({ 
-          success: false, 
-          error: 'Producto no encontrado' 
+        return res.status(404).json({
+          success: false,
+          error: 'Producto no encontrado'
         });
       }
 
       // Verificar permisos (solo el propietario o admin puede modificar)
-      if (productoExistente.id_proveedor !== req.usuario.id_usuario && 
-          req.usuario.tipo_usuario !== 'admin') {
-        return res.status(403).json({ 
-          success: false, 
-          error: 'No tienes permiso para modificar este producto' 
+      if (productoExistente.id_proveedor !== req.usuario.id_usuario &&
+        req.usuario.tipo_usuario !== 'admin') {
+        return res.status(403).json({
+          success: false,
+          error: 'No tienes permiso para modificar este producto'
         });
       }
 
@@ -363,9 +397,9 @@ export const productoController = {
 
     } catch (error) {
       console.error('❌ Error actualizando producto:', error);
-      res.status(500).json({ 
-        success: false, 
-        error: 'Error al actualizar producto' 
+      res.status(500).json({
+        success: false,
+        error: 'Error al actualizar producto'
       });
     }
   },
@@ -385,18 +419,18 @@ export const productoController = {
         .single();
 
       if (errorExistente || !productoExistente) {
-        return res.status(404).json({ 
-          success: false, 
-          error: 'Producto no encontrado' 
+        return res.status(404).json({
+          success: false,
+          error: 'Producto no encontrado'
         });
       }
 
       // Verificar permisos
-      if (productoExistente.id_proveedor !== req.usuario.id_usuario && 
-          req.usuario.tipo_usuario !== 'admin') {
-        return res.status(403).json({ 
-          success: false, 
-          error: 'No tienes permiso para eliminar este producto' 
+      if (productoExistente.id_proveedor !== req.usuario.id_usuario &&
+        req.usuario.tipo_usuario !== 'admin') {
+        return res.status(403).json({
+          success: false,
+          error: 'No tienes permiso para eliminar este producto'
         });
       }
 
@@ -415,9 +449,9 @@ export const productoController = {
 
     } catch (error) {
       console.error('❌ Error eliminando producto:', error);
-      res.status(500).json({ 
-        success: false, 
-        error: 'Error al eliminar producto' 
+      res.status(500).json({
+        success: false,
+        error: 'Error al eliminar producto'
       });
     }
   },
@@ -441,9 +475,9 @@ export const productoController = {
 
     } catch (error) {
       console.error('❌ Error obteniendo categorías:', error);
-      res.status(500).json({ 
-        success: false, 
-        error: 'Error al obtener categorías' 
+      res.status(500).json({
+        success: false,
+        error: 'Error al obtener categorías'
       });
     }
   },
@@ -467,9 +501,9 @@ export const productoController = {
 
     } catch (error) {
       console.error('❌ Error obteniendo plataformas:', error);
-      res.status(500).json({ 
-        success: false, 
-        error: 'Error al obtener plataformas' 
+      res.status(500).json({
+        success: false,
+        error: 'Error al obtener plataformas'
       });
     }
   }

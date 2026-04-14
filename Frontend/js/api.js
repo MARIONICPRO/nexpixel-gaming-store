@@ -113,12 +113,21 @@ class ApiClient {
         });
     }
 
-    // ===== PRODUCTOS =====
+    // En api.js
     async getProductos(filtros = {}) {
-        const params = new URLSearchParams(filtros).toString();
-        return this.request(`/productos${params ? '?' + params : ''}`);
-    }
+        const params = new URLSearchParams();
+        Object.keys(filtros).forEach(key => {
+            if (filtros[key] && filtros[key] !== '') {
+                params.append(key, filtros[key]);
+            }
+        });
 
+        const response = await fetch(`${API_URL}/productos?${params.toString()}`, {
+            headers: this.getHeaders()
+        });
+
+        return response.json();
+    }
     async getJuegosRecientes(limite = 8) {
         return this.request(`/productos/recientes?limite=${limite}`);
     }

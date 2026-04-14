@@ -1,42 +1,94 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Juegos - NexPixel</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/sidebar.css">
     <link rel="stylesheet" href="css/modales.css">
     <link rel="stylesheet" href="css/juegos.css">
 </head>
-<body>
-    <!-- Botón menú hamburguesa para móvil -->
-    <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">☰</button>
 
-    <!-- Sidebar -->
+<body>
+    <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">☰</button>
     <div class="sidebar" id="sidebar"></div>
 
-    <!-- Contenido principal -->
     <div class="content">
-        <!-- Header con título y botón de filtros -->
         <div class="page-header">
             <h2><i class="bi bi-controller"></i> Juegos</h2>
-            <button class="filter-toggle-btn" id="toggleFiltrosBtn" onclick="toggleFiltrosPanel()">
-                <span><i class="fa-solid fa-magnifying-glass"></i></span> Filtros
-                <span class="filter-icon">▼</span>
-            </button>
         </div>
 
-        <div class="juegos-container with-filters" id="juegosContainer">
-            <!-- Panel de filtros (ocultable) -->
-            <div class="filtros-panel" id="filtrosPanel">
-                <h3>
-                    Filtrar Juegos
-                    <button class="close-filtros-btn" onclick="toggleFiltrosPanel()">✕</button>
-                </h3>
-                
+        <!-- Botón para abrir modal de filtros en móvil -->
+        <button class="filtros-toggle-btn" id="filtrosToggleBtn" onclick="abrirModalFiltros()">
+            <i class="fa-solid fa-filter"></i> Filtros
+            <span class="filter-icon">▼</span>
+        </button>
+
+        <!-- Overlay -->
+        <div class="filtros-overlay" id="filtrosOverlay" onclick="cerrarModalFiltros()"></div>
+
+        <!-- Modal de filtros para móvil -->
+        <div class="filtros-modal" id="filtrosModal">
+            <div class="filtros-modal-header">
+                <h3>Filtrar Juegos</h3>
+                <button onclick="cerrarModalFiltros()">✕</button>
+            </div>
+            <div class="filtros-modal-content">
+                <div class="filtro-grupo">
+                    <h4>Plataforma</h4>
+                    <div id="filtro-plataformas-mobile"></div>
+                </div>
+
+                <div class="filtro-grupo">
+                    <h4>Género</h4>
+                    <div id="filtro-generos-mobile">
+                        <label class="filtro-opcion">
+                            <input type="checkbox" value="accion" onchange="aplicarFiltros()"> Acción
+                        </label>
+                        <label class="filtro-opcion">
+                            <input type="checkbox" value="aventura" onchange="aplicarFiltros()"> Aventura
+                        </label>
+                        <label class="filtro-opcion">
+                            <input type="checkbox" value="rpg" onchange="aplicarFiltros()"> RPG
+                        </label>
+                        <label class="filtro-opcion">
+                            <input type="checkbox" value="shooter" onchange="aplicarFiltros()"> Shooter
+                        </label>
+                        <label class="filtro-opcion">
+                            <input type="checkbox" value="deportes" onchange="aplicarFiltros()"> Deportes
+                        </label>
+                    </div>
+                </div>
+
+                <div class="filtro-grupo">
+                    <h4>Precio máximo</h4>
+                    <div class="precio-rango">
+                        <input type="range" id="precio-range-mobile" min="0" max="500000" value="500000" step="10000"
+                            oninput="actualizarPrecioMobile()" onchange="aplicarFiltros()">
+                        <div class="precio-valor">
+                            <span>$0</span>
+                            <span id="precio-valor-mobile">$500,000</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="filtros-modal-footer">
+                <button class="btn-cerrar-filtros" onclick="cerrarModalFiltros()">Cerrar</button>
+                <button class="btn-filtrar" onclick="aplicarFiltros(); cerrarModalFiltros()">Aplicar filtros</button>
+            </div>
+        </div>
+
+        <!-- Sidebar de filtros para desktop -->
+        <div class="juegos-container">
+            <div class="filtros-sidebar" id="filtrosSidebar">
+                <h3>Filtrar Juegos</h3>
+
                 <div class="filtro-grupo">
                     <h4>Plataforma</h4>
                     <div id="filtro-plataformas"></div>
@@ -66,7 +118,8 @@
                 <div class="filtro-grupo">
                     <h4>Precio máximo</h4>
                     <div class="precio-rango">
-                        <input type="range" id="precio-range" min="0" max="500000" value="500000" step="10000" oninput="actualizarPrecio()" onchange="aplicarFiltros()">
+                        <input type="range" id="precio-range" min="0" max="500000" value="500000" step="10000"
+                            oninput="actualizarPrecio()" onchange="aplicarFiltros()">
                         <div class="precio-valor">
                             <span>$0</span>
                             <span id="precio-valor">$500,000</span>
@@ -77,11 +130,12 @@
                 <button class="btn-filtrar" onclick="aplicarFiltros()">Aplicar filtros</button>
             </div>
 
-            <!-- Grid de juegos -->
-            <main>
-                <!-- Barra de búsqueda -->
+            <!-- Contenido principal -->
+            <div class="filtros-contenido">
                 <div class="search-section">
-                    <input type="text" class="search-input" id="searchInput" placeholder="Buscar juegos..." oninput="buscarJuegos()">
+                    <!-- Por esto: -->
+                    <input type="text" class="search-input" id="searchInput" placeholder="Buscar juegos..."
+                        oninput="aplicarFiltros()">
                 </div>
 
                 <div class="resultados-header">
@@ -100,21 +154,18 @@
                         <p>Cargando juegos...</p>
                     </div>
                 </div>
-            </main>
+            </div>
         </div>
     </div>
 
-    <!-- Botón flotante carrito -->
     <a href="carrito.html" class="cart-floating" id="cartFloating">
-         <i class="fa-solid fa-cart-shopping"></i>
+        <i class="fa-solid fa-cart-shopping"></i>
         <span class="cart-badge" id="cartCount">0</span>
     </a>
 
-    <!-- Modales -->
     <div class="modal-overlay" id="auth-modal"></div>
     <div class="modal-overlay" id="perfil-modal"></div>
 
-      <!-- ✅ SCRIPTS CORRECTOS PARA NODE.JS -->
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/sidebar.js"></script>
@@ -125,4 +176,5 @@
     <script src="js/compras.js"></script>
     <script src="js/main.js"></script>
 </body>
+
 </html>

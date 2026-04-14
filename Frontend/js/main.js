@@ -22,20 +22,20 @@ async function inicializarApp() {
         try {
             const track = document.getElementById('carrusel-recientes');
 
-try {
-    const response = await API.getJuegosRecientes(8);
-    const juegosRecientes = response.productos || [];
+            try {
+                const response = await API.getJuegosRecientes(8);
+                const juegosRecientes = response.productos || [];
 
-    if (!juegosRecientes.length) {
-        mostrarCarruselVacio(track);
-    } else {
-        Productos.renderizarCarrusel(juegosRecientes, 'carrusel-recientes');
-    }
+                if (!juegosRecientes.length) {
+                    mostrarCarruselVacio(track);
+                } else {
+                    Productos.renderizarCarrusel(juegosRecientes, 'carrusel-recientes');
+                }
 
-} catch (error) {
-    console.error('Error cargando juegos recientes:', error);
-    mostrarCarruselError(track);
-}
+            } catch (error) {
+                console.error('Error cargando juegos recientes:', error);
+                mostrarCarruselError(track);
+            }
         } catch (error) {
             console.error('Error cargando juegos recientes:', error);
         }
@@ -46,12 +46,28 @@ try {
     }
 
     if (path.includes('juegos.html')) {
-        const juegos = await Productos.cargarJuegos();
-        Productos.renderizarJuegos(juegos, 'juegos-grid');
-        Productos.cargarFiltrosPlataformas('filtro-plataformas');
-        inicializarFiltros();
-    }
+        // Cargar filtros de plataformas
+        await Productos.cargarFiltrosPlataformas('filtro-plataformas');
 
+        // Cargar filtros de plataformas para móvil también
+        const containerMobile = document.getElementById('filtro-plataformas-mobile');
+        if (containerMobile) {
+            await Productos.cargarFiltrosPlataformas('filtro-plataformas-mobile', 'aplicarFiltros()');
+        }
+
+        // Inicializar filtros (para recordar estado)
+        inicializarFiltros();
+
+        // 👇 IMPORTANTE: Cargar los juegos iniciales
+        // Esperar un poco para que los filtros se carguen
+        setTimeout(() => {
+            if (typeof aplicarFiltros === 'function') {
+                aplicarFiltros();
+            } else {
+                console.error('aplicarFiltros no está definida');
+            }
+        }, 100);
+    }
     if (path.includes('tarjetas.html')) {
         const tarjetas = await Productos.cargarTarjetas();
         Productos.renderizarTarjetas(tarjetas, 'tarjetas-grid');
@@ -69,7 +85,7 @@ try {
         } else {
             Carrito.renderizarCarrito();
         }
-          if (typeof IARecomendaciones !== 'undefined') {
+        if (typeof IARecomendaciones !== 'undefined') {
             IARecomendaciones.cargarRecomendaciones('recomendaciones-container', 4);
         }
     }
@@ -83,8 +99,7 @@ try {
                 Productos.renderizarProducto(producto, 'producto-container');
 
                 if (typeof IARecomendaciones !== 'undefined' && IARecomendaciones.cargarSimilares) {
-                   // 👇 CARGAR RECOMENDACIONES IA (con razonamiento)
-                await IARecomendaciones.cargarRecomendaciones('recomendaciones-ia-container', 4);
+                    await IARecomendaciones.cargarRecomendaciones('recomendaciones-ia-container', 4);
                 }
             }
         }
@@ -153,67 +168,6 @@ function moverCarrusel(direccion) {
     if (posicionCarrusel > maxPosicion) posicionCarrusel = maxPosicion;
 
     track.style.transform = `translateX(-${posicionCarrusel * itemWidth}px)`;
-}
-
-// ===== FILTROS =====
-async function aplicarFiltros() {
-    const plataformas = Array.from(document.querySelectorAll('#filtro-plataformas input:checked')).map(i => i.value);
-    const precioMax = document.getElementById('precio-range')?.value;
-
-    const filtros = {
-        plataforma: plataformas.length ? plataformas : undefined,
-        precio_max: precioMax ? parseInt(precioMax) : undefined
-    };
-
-    const path = window.location.pathname;
-    if (path.includes('juegos.html')) {
-        const juegos = await Productos.cargarJuegos(filtros);
-        Productos.renderizarJuegos(juegos, 'juegos-grid');
-        const countEl = document.getElementById('resultados-count');
-        if (countEl) countEl.textContent = `${juegos.length} juegos encontrados`;
-    } else if (path.includes('tarjetas.html')) {
-        const tarjetas = await Productos.cargarTarjetas(filtros);
-        Productos.renderizarTarjetas(tarjetas, 'tarjetas-grid');
-        const countEl = document.getElementById('resultados-count');
-        if (countEl) countEl.textContent = `${tarjetas.length} tarjetas encontradas`;
-    }
-}
-
-function ordenarProductos() {
-    aplicarFiltros();
-}
-
-function actualizarPrecio() {
-    const range = document.getElementById('precio-range');
-    const valor = document.getElementById('precio-valor');
-    if (range && valor) {
-        valor.textContent = '$' + formatearPrecio(range.value);
-    }
-}
-
-// ===== BÚSQUEDA =====
-function buscarJuegos() {
-    const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
-    const juegos = window.juegosData || [];
-
-    const filtrados = juegos.filter(juego =>
-        juego.nombre_producto?.toLowerCase().includes(searchTerm) ||
-        juego.plataforma?.nombre_plataforma?.toLowerCase().includes(searchTerm)
-    );
-
-    Productos.renderizarJuegos(filtrados, 'juegos-grid');
-}
-
-function buscarTarjetas() {
-    const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
-    const tarjetas = window.tarjetasData || [];
-
-    const filtrados = tarjetas.filter(tarjeta =>
-        tarjeta.nombre_producto?.toLowerCase().includes(searchTerm) ||
-        tarjeta.plataforma?.nombre_plataforma?.toLowerCase().includes(searchTerm)
-    );
-
-    Productos.renderizarTarjetas(filtrados, 'tarjetas-grid');
 }
 
 // ===== RESPONSIVE =====
@@ -570,16 +524,7 @@ function enviarMensaje(event) {
     return false;
 }
 
-// ===== EVENT LISTENERS =====
-document.addEventListener('DOMContentLoaded', inicializarApp);
-
-window.addEventListener('resize', function () {
-    clearTimeout(window.resizeTimer);
-    window.resizeTimer = setTimeout(adaptarFiltrosAResolucion, 250);
-});
-
-setTimeout(inicializarFiltros, 500);
-
+// ===== CARRUSEL MENSAJES =====
 function mostrarCarruselVacio(track) {
     if (!track) return;
 
@@ -610,27 +555,133 @@ function ocultarBotonesCarrusel() {
     document.querySelectorAll('.carrusel-btn').forEach(btn => {
         btn.style.display = 'none';
     });
-} 
-// ===== EXPORTAR FUNCIONES GLOBALES =====
+}
+
+// ===== AJUSTAR VIEWPORT =====
+function ajustarViewport() {
+    const ancho = window.innerWidth;
+    let escala = 1;
+
+    if (ancho <= 480) {
+        escala = 0.7;
+    } else if (ancho <= 768) {
+        escala = 0.85;
+    } else {
+        escala = 1;
+    }
+
+    const viewport = document.querySelector('meta[name="viewport"]');
+    if (viewport) {
+        viewport.setAttribute('content', `width=device-width, initial-scale=${escala}, maximum-scale=${escala}, user-scalable=yes`);
+    }
+}
+
+// ============================================
+// FUNCIONES PARA MODAL DE FILTROS EN MÓVIL
+// ============================================
+
+function abrirModalFiltros() {
+    const modal = document.getElementById('filtrosModal');
+    const overlay = document.getElementById('filtrosOverlay');
+    if (modal) {
+        modal.classList.add('active');
+        if (overlay) overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function cerrarModalFiltros() {
+    const modal = document.getElementById('filtrosModal');
+    const overlay = document.getElementById('filtrosOverlay');
+    if (modal) {
+        modal.classList.remove('active');
+        if (overlay) overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+function actualizarPrecioMobile() {
+    const range = document.getElementById('precio-range-mobile');
+    const valor = document.getElementById('precio-valor-mobile');
+    const rangeDesktop = document.getElementById('precio-range');
+
+    if (range && valor) {
+        const valorNum = parseInt(range.value);
+        valor.textContent = `$${formatearPrecio(valorNum)}`;
+        if (rangeDesktop) {
+            rangeDesktop.value = valorNum;
+            const valorDesktop = document.getElementById('precio-valor');
+            if (valorDesktop) valorDesktop.textContent = `$${formatearPrecio(valorNum)}`;
+        }
+    }
+}
+
+function sincronizarFiltrosMobile() {
+    const checkboxesDesktop = document.querySelectorAll('#filtro-plataformas input[type="checkbox"]');
+    const checkboxesMobile = document.querySelectorAll('#filtro-plataformas-mobile input[type="checkbox"]');
+
+    checkboxesDesktop.forEach((cb, index) => {
+        if (checkboxesMobile[index]) {
+            checkboxesMobile[index].checked = cb.checked;
+        }
+    });
+
+    const generosDesktop = document.querySelectorAll('#filtro-generos input[type="checkbox"]');
+    const generosMobile = document.querySelectorAll('#filtro-generos-mobile input[type="checkbox"]');
+
+    generosDesktop.forEach((cb, index) => {
+        if (generosMobile[index]) {
+            generosMobile[index].checked = cb.checked;
+        }
+    });
+}
+
+// ===== EVENT LISTENERS =====
+document.addEventListener('DOMContentLoaded', inicializarApp);
+
+window.addEventListener('resize', function () {
+    clearTimeout(window.resizeTimer);
+    window.resizeTimer = setTimeout(adaptarFiltrosAResolucion, 250);
+});
+
+window.addEventListener('resize', ajustarViewport);
+document.addEventListener('DOMContentLoaded', ajustarViewport);
+
+setTimeout(inicializarFiltros, 500);
+
+// ============================================
+// EXPORTAR FUNCIONES GLOBALES
+// ============================================
+
+// Funciones de productos
 window.verProducto = verProducto;
 window.agregarAlCarrito = agregarAlCarrito;
 window.manejarClickCompra = manejarClickCompra;
+
+// Utilidades
 window.cerrarSesion = cerrarSesion;
 window.moverCarrusel = moverCarrusel;
-window.aplicarFiltros = aplicarFiltros;
-window.ordenarProductos = ordenarProductos;
-window.actualizarPrecio = actualizarPrecio;
 window.enviarMensaje = enviarMensaje;
+
+// Modales
 window.abrirModalLogin = abrirModalLogin;
 window.abrirModalRegistro = abrirModalRegistro;
 window.abrirModalPerfil = abrirModalPerfil;
+
+// Sidebar y filtros
 window.toggleSidebar = toggleSidebar;
 window.toggleFiltros = toggleFiltros;
 window.cerrarSidebar = cerrarSidebar;
-window.buscarJuegos = buscarJuegos;
-window.buscarTarjetas = buscarTarjetas;
 window.toggleFiltrosPanel = toggleFiltrosPanel;
+
+// Métodos de pago
 window.seleccionarMetodo = seleccionarMetodo;
 window.formatearNumeroTarjeta = formatearNumeroTarjeta;
 window.formatearExpiracion = formatearExpiracion;
 window.confirmarPago = confirmarPago;
+
+// Modal de filtros móvil
+window.abrirModalFiltros = abrirModalFiltros;
+window.cerrarModalFiltros = cerrarModalFiltros;
+window.actualizarPrecioMobile = actualizarPrecioMobile;
+window.sincronizarFiltrosMobile = sincronizarFiltrosMobile;

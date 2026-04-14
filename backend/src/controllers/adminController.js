@@ -60,7 +60,7 @@ export const adminController = {
       
       let query = supabase
         .from('usuarios')
-        .select('id_usuario, nombre, email, tipo_usuario, foto_perfil, telefono, empresa, nit, verificado, fecha_registro, ultima_conexion, estado')
+        .select('*')
         .order('fecha_registro', { ascending: false });
       
       if (search) {
@@ -150,6 +150,68 @@ export const adminController = {
       res.status(500).json({ success: false, error: error.message });
     }
   },
+  // backend/src/controllers/adminController.js
+
+// Agregar esta función junto a las otras de usuarios
+async cambiarRolUsuario(req, res) {
+    try {
+        const { id } = req.params;
+        const { tipo_usuario } = req.body;
+        
+        // Validar que el rol sea válido
+        const rolesPermitidos = ['cliente', 'proveedor', 'admin'];
+        if (!rolesPermitidos.includes(tipo_usuario)) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Rol no válido. Los roles permitidos son: cliente, proveedor, admin' 
+            });
+        }
+        
+        // No permitir cambiar el propio rol
+        if (req.usuario.id_usuario === parseInt(id)) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'No puedes cambiar tu propio rol' 
+            });
+        }
+        
+        // Verificar que el usuario existe
+        const { data: usuario, error: errorFind } = await supabase
+            .from('usuarios')
+            .select('*')
+            .eq('id_usuario', id)
+            .single();
+        
+        if (errorFind || !usuario) {
+            return res.status(404).json({ 
+                success: false, 
+                error: 'Usuario no encontrado' 
+            });
+        }
+        
+        // Actualizar el rol
+        const { data, error } = await supabase
+            .from('usuarios')
+            .update({ tipo_usuario: tipo_usuario })
+            .eq('id_usuario', id)
+            .select();
+        
+        if (error) throw error;
+        
+        res.json({ 
+            success: true, 
+            message: `Rol cambiado a ${tipo_usuario} correctamente`,
+            usuario: data[0]
+        });
+        
+    } catch (error) {
+        console.error('Error cambiando rol:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: error.message 
+        });
+    }
+},
 
   async eliminarUsuario(req, res) {
     try {
@@ -159,14 +221,29 @@ export const adminController = {
         return res.status(400).json({ success: false, error: 'No puedes eliminarte a ti mismo' });
       }
       
-      const { error } = await supabase
+      // Cambiar estado a 'inactivo' en lugar de eliminar físicamente
+      const { data, error } = await supabase
         .from('usuarios')
-        .delete()
-        .eq('id_usuario', id);
+        .update({ estado: 'inactivo' })
+        .eq('id_usuario', id)
+        .select();
       
-      if (error) throw error;
+      if (error) {
+        // Si el error es porque no existe la columna 'estado'
+        if (error.message.includes('column')) {
+          return res.status(500).json({ 
+            success: false, 
+            error: 'La columna "estado" no existe en la tabla usuarios. Ejecuta el SQL para agregarla.' 
+          });
+        }
+        throw error;
+      }
       
-      res.json({ success: true, message: 'Usuario eliminado correctamente' });
+      if (!data || data.length === 0) {
+        return res.status(404).json({ success: false, error: 'Usuario no encontrado' });
+      }
+      
+      res.json({ success: true, message: 'Usuario desactivado correctamente' });
     } catch (error) {
       console.error('Error eliminando usuario:', error);
       res.status(500).json({ success: false, error: error.message });
@@ -178,7 +255,7 @@ export const adminController = {
   // ============================================
   async getProveedores(req, res) {
     try {
-      const { search = '' } = req.query;
+      const { search } = req.query;
       
       let query = supabase
         .from('usuarios')
@@ -187,15 +264,19 @@ export const adminController = {
         .order('fecha_registro', { ascending: false });
       
       if (search) {
-        query = query.or(`nombre.ilike.%${search}%,email.ilike.%${search}%,empresa.ilike.%${search}%`);
+        query = query.or(`empresa.ilike.%${search}%,nombre.ilike.%${search}%,email.ilike.%${search}%`);
       }
       
       const { data: proveedores, error } = await query;
+      
       if (error) throw error;
       
-      res.json({ success: true, proveedores: proveedores || [] });
+      res.json({
+        success: true,
+        proveedores: proveedores || []
+      });
     } catch (error) {
-      console.error('Error en getProveedores:', error);
+      console.error('Error obteniendo proveedores:', error);
       res.status(500).json({ success: false, error: error.message });
     }
   },
@@ -219,6 +300,66 @@ export const adminController = {
       res.json({ success: true, message: 'Proveedor verificado correctamente' });
     } catch (error) {
       console.error('Error verificando proveedor:', error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  },
+
+  async suspenderProveedor(req, res) {
+    try {
+      const { id } = req.params;
+      const { horas } = req.body;
+      
+      let suspendido_hasta = null;
+      
+      if (horas === -1) {
+        suspendido_hasta = new Date('2099-12-31T23:59:59');
+      } else if (horas > 0) {
+        suspendido_hasta = new Date();
+        suspendido_hasta.setHours(suspendido_hasta.getHours() + horas);
+      }
+      
+      const { error } = await supabase
+        .from('usuarios')
+        .update({ 
+          suspendido_hasta: suspendido_hasta,
+          estado: 'suspendido'
+        })
+        .eq('id_usuario', id)
+        .eq('tipo_usuario', 'proveedor');
+      
+      if (error) throw error;
+      
+      res.json({
+        success: true,
+        message: 'Proveedor suspendido correctamente'
+      });
+    } catch (error) {
+      console.error('Error suspendiendo proveedor:', error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  },
+
+  async reactivarProveedor(req, res) {
+    try {
+      const { id } = req.params;
+      
+      const { error } = await supabase
+        .from('usuarios')
+        .update({ 
+          suspendido_hasta: null,
+          estado: 'activo'
+        })
+        .eq('id_usuario', id)
+        .eq('tipo_usuario', 'proveedor');
+      
+      if (error) throw error;
+      
+      res.json({
+        success: true,
+        message: 'Proveedor reactivado correctamente'
+      });
+    } catch (error) {
+      console.error('Error reactivando proveedor:', error);
       res.status(500).json({ success: false, error: error.message });
     }
   },

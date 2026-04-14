@@ -140,90 +140,101 @@ if (error) {
             });
         }
     },
+// ============================================
+// LOGIN DE USUARIO (VERSIÓN ÚNICA)
+// ============================================
+async login(req, res) {
+    try {
+        const { email, password } = req.body;
 
-    // ============================================
-    // LOGIN DE USUARIO (VERSIÓN ÚNICA)
-    // ============================================
-    async login(req, res) {
-        try {
-            const { email, password } = req.body;
-
-            if (!email || !password) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'Email y contraseña son obligatorios'
-                });
-            }
-
-            // ✅ CONVERTIR EMAIL A MINÚSCULAS
-            const emailLower = email.toLowerCase();
-
-            const { data: usuario, error } = await supabase
-                .from('usuarios')
-                .select('*')
-                .eq('email', emailLower)
-                .single();
-
-            if (error || !usuario) {
-                return res.status(401).json({
-                    success: false,
-                    error: 'Credenciales inválidas'
-                });
-            }
-
-            if (!usuario.password_hash) {
-                return res.status(500).json({
-                    success: false,
-                    error: 'Error en configuración de usuario'
-                });
-            }
-
-            const passwordValida = await bcrypt.compare(password, usuario.password_hash);
-
-            if (!passwordValida) {
-                return res.status(401).json({
-                    success: false,
-                    error: 'Credenciales inválidas'
-                });
-            }
-
-            await supabase
-                .from('usuarios')
-                .update({ ultima_conexion: new Date() })
-                .eq('id_usuario', usuario.id_usuario);
-
-            const token = jwt.sign(
-                { id: usuario.id_usuario, email: usuario.email, tipo: usuario.tipo_usuario },
-                process.env.JWT_SECRET,
-                { expiresIn: process.env.JWT_EXPIRES_IN }
-            );
-
-            console.log('✅ Login exitoso. Foto:', usuario.foto_perfil ? '✅' : '❌');
-
-            res.json({
-                success: true,
-                message: 'Login exitoso',
-                token,
-                usuario: {
-                    id: usuario.id_usuario,
-                    nombre: usuario.nombre,
-                    email: usuario.email,
-                    tipo: usuario.tipo_usuario,
-                    foto: usuario.foto_perfil,
-                    telefono: usuario.telefono,
-                    empresa: usuario.empresa,
-                    verificado: usuario.verificado
-                }
-            });
-
-        } catch (error) {
-            console.error('❌ Error en login:', error);
-            res.status(500).json({
+        if (!email || !password) {
+            return res.status(400).json({
                 success: false,
-                error: 'Error al iniciar sesión'
+                error: 'Email y contraseña son obligatorios'
             });
         }
-    },
+
+        // ✅ CONVERTIR EMAIL A MINÚSCULAS
+        const emailLower = email.toLowerCase();
+
+        const { data: usuario, error } = await supabase
+            .from('usuarios')
+            .select('*')
+            .eq('email', emailLower)
+            .single();
+
+        if (error || !usuario) {
+            return res.status(401).json({
+                success: false,
+                error: 'Credenciales inválidas'
+            });
+        }
+
+        if (!usuario.password_hash) {
+            return res.status(500).json({
+                success: false,
+                error: 'Error en configuración de usuario'
+            });
+        }
+
+        const passwordValida = await bcrypt.compare(password, usuario.password_hash);
+
+        if (!passwordValida) {
+            return res.status(401).json({
+                success: false,
+                error: 'Credenciales inválidas'
+            });
+        }
+
+        // ============================================
+        // 🚫 VALIDAR SUSPENSIÓN (SOLO PARA PROVEEDORES)
+        // ============================================
+        if (usuario.tipo_usuario === 'proveedor' && usuario.suspendido_hasta && new Date(usuario.suspendido_hasta) > new Date()) {
+            const fechaFin = new Date(usuario.suspendido_hasta).toLocaleString();
+            console.log(`⏳ Proveedor ${usuario.email} suspendido hasta ${fechaFin}`);
+            return res.status(403).json({ 
+                success: false, 
+                error: `⚠️ Tu cuenta está suspendida. Podrás acceder nuevamente el ${fechaFin}` 
+            });
+        }
+
+        await supabase
+            .from('usuarios')
+            .update({ ultima_conexion: new Date() })
+            .eq('id_usuario', usuario.id_usuario);
+
+        const token = jwt.sign(
+            { id: usuario.id_usuario, email: usuario.email, tipo: usuario.tipo_usuario },
+            process.env.JWT_SECRET,
+            { expiresIn: process.env.JWT_EXPIRES_IN }
+        );
+
+        console.log('✅ Login exitoso. Foto:', usuario.foto_perfil ? '✅' : '❌');
+
+        res.json({
+            success: true,
+            message: 'Login exitoso',
+            token,
+            usuario: {
+                id: usuario.id_usuario,
+                nombre: usuario.nombre,
+                email: usuario.email,
+                tipo: usuario.tipo_usuario,
+                foto: usuario.foto_perfil,
+                telefono: usuario.telefono,
+                empresa: usuario.empresa,
+                verificado: usuario.verificado
+            }
+        });
+
+    } catch (error) {
+        console.error('❌ Error en login:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Error al iniciar sesión'
+        });
+    }
+},
 
     // ============================================
     // OBTENER PERFIL

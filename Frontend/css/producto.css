@@ -395,3 +395,126 @@ h1, h2, h3 {
         transform: translateY(0);
     }
 }
+
+/* ===== RECOMENDACIONES IA - 4 PRODUCTOS POR FILA ===== */
+
+/* Contenedor de recomendaciones IA */
+#recomendaciones-ia-container {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Grid de recomendaciones - forzar 4 columnas */
+#recomendaciones-ia-container .productos-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 1.5rem !important;
+    width: 100% !important;
+}
+
+/* Tarjetas dentro de recomendaciones */
+#recomendaciones-ia-container .producto-card {
+    background: rgba(16, 36, 64, 0.7) !important;
+    border: 1px solid rgba(77, 140, 255, 0.3) !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+}
+
+#recomendaciones-ia-container .producto-card:hover {
+    transform: translateY(-5px) !important;
+    border-color: #4d8cff !important;
+    box-shadow: 0 10px 25px rgba(77, 140, 255, 0.3) !important;
+}
+
+/* Imágenes */
+#recomendaciones-ia-container .producto-img {
+    width: 100% !important;
+    height: 180px !important;
+    object-fit: cover !important;
+    border-bottom: 1px solid rgba(77, 140, 255, 0.2) !important;
+}
+
+/* Información */
+#recomendaciones-ia-container .producto-info {
+    padding: 12px !important;
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+#recomendaciones-ia-container .producto-info h3 {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    margin: 0 0 5px 0 !important;
+    color: white !important;
+    line-height: 1.4 !important;
+}
+
+/* Precio */
+#recomendaciones-ia-container .producto-precio {
+    font-size: 16px !important;
+    font-weight: bold !important;
+    color: #4d8cff !important;
+    margin: 8px 0 !important;
+}
+
+/* Botón */
+#recomendaciones-ia-container .btn-agregar {
+    width: 100% !important;
+    padding: 8px !important;
+    background: transparent !important;
+    border: 2px solid #2a6fdb !important;
+    color: white !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    font-size: 12px !important;
+    margin-top: auto !important;
+    transition: all 0.3s ease !important;
+}
+
+#recomendaciones-ia-container .btn-agregar:hover {
+    background: #2a6fdb !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    #recomendaciones-ia-container .productos-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 1rem !important;
+    }
+    #recomendaciones-ia-container .producto-img {
+        height: 160px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    #recomendaciones-ia-container .productos-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.8rem !important;
+    }
+    #recomendaciones-ia-container .producto-img {
+        height: 140px !important;
+    }
+    #recomendaciones-ia-container .producto-info h3 {
+        font-size: 12px !important;
+    }
+    #recomendaciones-ia-container .producto-precio {
+        font-size: 14px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    #recomendaciones-ia-container .productos-grid {
+        grid-template-columns: 1fr !important;
+    }
+    #recomendaciones-ia-container .producto-img {
+        height: 200px !important;
+    }
+}
