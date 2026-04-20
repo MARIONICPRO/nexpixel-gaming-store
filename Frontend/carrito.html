@@ -5,10 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carrito - NexPixel</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;400;500;600&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- 👇 AGREGAR ESTA LÍNEA -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/carrito.css">
     <link rel="stylesheet" href="css/modales.css">
@@ -88,21 +90,17 @@
     <div class="modal-overlay" id="auth-modal"></div>
     <div class="modal-overlay" id="perfil-modal"></div>
 
-    <!-- PRIMERO: API client -->
-    <script src="js/api.js"></script>
-
-    <!-- SEGUNDO: Auth (depende de API) -->
-    <script src="js/auth.js"></script>
-
-    <!-- ✅ SCRIPTS CORRECTOS PARA NODE.JS -->
-    <script src="js/api.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/modales.js"></script>
-    <script src="js/productos.js"></script>
-    <script src="js/carrito-db.js"></script>
-    <script src="js/ia-db.js"></script>
-    <script src="js/compras.js"></script>
-    <script src="js/main.js"></script>
+  <!-- 2. Al final del BODY, en este orden: -->
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/pagos.js"></script>
+<script src="js/confirmar-pago.js"></script>
+<script src="js/modales.js"></script>
+<script src="js/productos.js"></script>
+<script src="js/carrito-db.js"></script>
+<script src="js/ia-db.js"></script>
+<script src="js/compras.js"></script>
+<script src="js/main.js"></script>
 </body>
 
 </html>

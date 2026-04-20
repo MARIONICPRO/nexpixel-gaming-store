@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmación de Pago - NexPixel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .confirmacion-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 40px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .confirmacion-icono { 
+            font-size: 64px; 
+            margin-bottom: 20px; 
+        }
+        .confirmacion-titulo { 
+            font-size: 28px; 
+            margin-bottom: 20px; 
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+        }
+        .confirmacion-mensaje { 
+            color: #aaa; 
+            margin-bottom: 30px; 
+            line-height: 1.6; 
+        }
+        .confirmacion-detalles {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        .detalle-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #ddd;
+        }
+        .btn-volver {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(45deg, #8A2BE2, #FF1493);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: transform 0.3s;
+            margin: 5px;
+        }
+        .btn-volver:hover { 
+            transform: translateY(-2px); 
+        }
+        .estado-aprobado { color: #4CAF50; }
+        .estado-pendiente { color: #FFA500; }
+        .estado-rechazado { color: #f44336; }
+    </style>
+</head>
+<body>
+    <div class="confirmacion-container">
+        <div id="confirmacion-content">
+            <div class="confirmacion-icono">⏳</div>
+            <h2 class="confirmacion-titulo">Procesando tu pago...</h2>
+            <p class="confirmacion-mensaje">Estamos verificando el estado de tu transacción.</p>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+    </script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/carrito-db.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const transactionState = urlParams.get('transactionState');
+        const referenceCode = urlParams.get('referenceCode');
+        const transactionId = urlParams.get('transactionId');
+        const message = urlParams.get('message');
+        
+        async function procesarRespuesta() {
+            const container = document.getElementById('confirmacion-content');
+            
+            const estados = {
+                '4': { 
+                    icono: '✅', 
+                    titulo: '¡Pago Exitoso!', 
+                    clase: 'estado-aprobado', 
+                    mensaje: 'Tu pago ha sido procesado correctamente. Recibirás un correo con los códigos de tus juegos.' 
+                },
+                '6': { 
+                    icono: '❌', 
+                    titulo: 'Pago Rechazado', 
+                    clase: 'estado-rechazado',
+                    mensaje: 'Lo sentimos, tu pago fue rechazado. Intenta nuevamente.' 
+                },
+                '7': { 
+                    icono: '⏰', 
+                    titulo: 'Pago Pendiente', 
+                    clase: 'estado-pendiente',
+                    mensaje: 'Tu pago está siendo procesado. Te notificaremos cuando se confirme.' 
+                }
+            };
+            
+            const estado = estados[transactionState] || {
+                icono: '❓',
+                titulo: 'Estado Desconocido',
+                clase: 'estado-pendiente',
+                mensaje: message || 'Estamos procesando tu solicitud.'
+            };
+            
+            container.innerHTML = `
+                <div class="confirmacion-icono">${estado.icono}</div>
+                <h2 class="confirmacion-titulo ${estado.clase}">${estado.titulo}</h2>
+                <p class="confirmacion-mensaje">${estado.mensaje}</p>
+                
+                <div class="confirmacion-detalles">
+                    <div class="detalle-item">
+                        <span>Referencia:</span>
+                        <strong>${referenceCode || 'N/A'}</strong>
+                    </div>
+                    <div class="detalle-item">
+                        <span>ID Transacción:</span>
+                        <strong>${transactionId || 'Pendiente'}</strong>
+                    </div>
+                    <div class="detalle-item">
+                        <span>Estado:</span>
+                        <strong class="${estado.clase}">${estado.titulo}</strong>
+                    </div>
+                </div>
+                
+                <div>
+                    <a href="index.html" class="btn-volver">Volver al Inicio</a>
+                    <a href="mis-compras.html" class="btn-volver" style="background: #333;">Ver Mis Compras</a>
+                </div>
+            `;
+            
+            if (transactionState === '4') {
+                if (typeof Auth !== 'undefined' && Auth.usuarioActual) {
+                    if (typeof Carrito !== 'undefined') {
+                        await Carrito.vaciar();
+                    }
+                } else {
+                    localStorage.removeItem('carrito_local');
+                }
+            }
+            
+            sessionStorage.removeItem('ultimo_pedido_ref');
+            sessionStorage.removeItem('ultimo_pedido_id');
+        }
+        
+        procesarRespuesta();
+    </script>
+</body>
+</html>

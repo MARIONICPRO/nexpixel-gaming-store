@@ -12,7 +12,8 @@ import productoRoutes from './src/routes/productoRoutes.js';
 import carritoRoutes from './src/routes/carritoRoutes.js';
 import compraRoutes from './src/routes/compraRoutes.js';
 import proveedorRoutes from './src/routes/proveedorRoutes.js';
-import iaRoutes from './src/routes/iaRoutes.js'; 
+import iaRoutes from './src/routes/iaRoutes.js';
+import pagoRoutes from './src/routes/pagoRoutes.js'; // 👈 NUEVO
 
 dotenv.config();
 
@@ -26,7 +27,8 @@ app.use(helmet({
 app.use(cors({
   origin: [
     'http://localhost:5500',
-    'http://127.0.0.1:5500'
+    'http://127.0.0.1:5500',
+    'http://localhost:3000'  // 👈 AGREGADO
   ],
   credentials: true
 }));
@@ -41,7 +43,8 @@ app.use('/api/productos', productoRoutes);
 app.use('/api/carrito', carritoRoutes);
 app.use('/api/compras', compraRoutes);
 app.use('/api/proveedor', proveedorRoutes);
-app.use('/api/ia', iaRoutes); 
+app.use('/api/ia', iaRoutes);
+app.use('/api/pagos', pagoRoutes); // 👈 NUEVO
 
 // Ruta de prueba
 app.get('/api/health', (req, res) => {
@@ -56,7 +59,8 @@ app.get('/api/health', (req, res) => {
       carrito: '/api/carrito',
       compras: '/api/compras',
       proveedor: '/api/proveedor',
-      ia: '/api/ia' 
+      ia: '/api/ia',
+      pagos: '/api/pagos'  // 👈 NUEVO
     }
   });
 });
