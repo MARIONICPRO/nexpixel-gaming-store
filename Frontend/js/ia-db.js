@@ -1,5 +1,5 @@
 // ============================================
-// IA-DB.JS - VERSIÓN CORREGIDA Y FUNCIONAL
+// IA-DB.JS - VERSIÓN CORREGIDA (CONTENEDOR CORRECTO)
 // ============================================
 
 const API_URL = 'http://localhost:3000/api';
@@ -26,11 +26,11 @@ const IARecomendaciones = {
             console.log('📦 Respuesta IA:', data.success ? '✅' : '❌', data.productos?.length || 0, 'productos');
             
             if (data.success && data.productos && data.productos.length > 0) {
-                this.renderizarRecomendaciones(data.productos, container, data.razonamiento);
+                this.renderizarProductos(data.productos, container, data.razonamiento);
             } else {
                 const fallbackRes = await fetch(`${API_URL}/ia/populares?limite=${limite}`);
                 const fallbackData = await fallbackRes.json();
-                this.renderizarRecomendaciones(fallbackData.productos || [], container, '✨ Productos populares en NexPixel');
+                this.renderizarProductos(fallbackData.productos || [], container, '✨ Productos populares en NexPixel');
             }
         } catch (error) {
             console.error('❌ Error:', error);
@@ -49,85 +49,23 @@ const IARecomendaciones = {
         try {
             container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Analizando tu carrito...</p></div>';
             
-            const productosEnCarrito = Carrito.items.map(item => ({
-                id: item.productoId || item.id_producto,
-                nombre: item.producto?.nombre_producto || item.nombre
-            }));
+            const usuarioId = Auth.usuarioActual?.id_usuario || null;
             
-            console.log('🛒 Productos en carrito:', productosEnCarrito.length);
+            console.log('🛒 Cargando recomendaciones para carrito, usuario:', usuarioId);
             
-            // ============================================
-            // CASO 1: CARRITO VACÍO - USAR IA GENERAL
-            // ============================================
-            if (productosEnCarrito.length === 0) {
-                console.log('📭 Carrito vacío, usando IA general');
-                
-                const usuarioId = Auth.usuarioActual?.id_usuario || null;
-                
-                try {
-                    const response = await fetch(`${API_URL}/ia/recomendaciones?limite=${limite}&usuarioId=${usuarioId}`);
-                    const data = await response.json();
-                    
-                    if (data.success && data.productos && data.productos.length > 0) {
-                        console.log('✅ IA general cargada:', data.productos.length, 'productos');
-                        this.renderizarRecomendaciones(data.productos, container, data.razonamiento);
-                        return;
-                    }
-                } catch (error) {
-                    console.error('❌ Error cargando IA general:', error);
-                }
-                
-                // Fallback a populares
-                try {
-                    const popRes = await fetch(`${API_URL}/ia/populares?limite=${limite}`);
-                    const popData = await popRes.json();
-                    this.renderizarRecomendaciones(popData.productos || [], container, '✨ Productos populares en NexPixel');
-                } catch (e) {
-                    console.error('❌ Error en fallback:', e);
-                    container.innerHTML = '<p style="text-align: center; color: #aaccff;">✨ Explora nuestro catálogo</p>';
-                }
+            const response = await fetch(`${API_URL}/ia/recomendaciones?limite=${limite}&usuarioId=${usuarioId}`);
+            const data = await response.json();
+            
+            if (data.success && data.productos && data.productos.length > 0) {
+                console.log('✅ IA cargada:', data.productos.length, 'productos');
+                this.renderizarProductos(data.productos, container, data.razonamiento);
                 return;
             }
             
-            // ============================================
-            // CASO 2: CARRITO CON PRODUCTOS
-            // ============================================
-            console.log('🛒 Buscando similares a productos del carrito');
-            
-            // Usar el primer producto como referencia
-            const primerProducto = productosEnCarrito[0];
-            
-            try {
-                const response = await fetch(`${API_URL}/productos/${primerProducto.id}/similares?limite=${limite}`);
-                const data = await response.json();
-                
-                if (data.success && data.similares && data.similares.length > 0) {
-                    const nombres = productosEnCarrito.map(p => p.nombre).slice(0, 2).join(' y ');
-                    const razonamiento = `Como agregaste "${nombres}" al carrito, también te podría gustar:`;
-                    this.renderizarRecomendaciones(data.similares, container, razonamiento);
-                    return;
-                }
-            } catch (error) {
-                console.log('⚠️ Error buscando similares:', error);
-            }
-            
-            // Fallback: IA general
-            const usuarioId = Auth.usuarioActual?.id_usuario || null;
-            try {
-                const iaRes = await fetch(`${API_URL}/ia/recomendaciones?limite=${limite}&usuarioId=${usuarioId}`);
-                const iaData = await iaRes.json();
-                if (iaData.success && iaData.productos) {
-                    this.renderizarRecomendaciones(iaData.productos, container, iaData.razonamiento);
-                    return;
-                }
-            } catch (e) {
-                console.log('⚠️ Error IA fallback:', e);
-            }
-            
-            // Último recurso: populares
+            // Fallback a populares
             const popRes = await fetch(`${API_URL}/ia/populares?limite=${limite}`);
             const popData = await popRes.json();
-            this.renderizarRecomendaciones(popData.productos || [], container, '✨ Completa tu colección');
+            this.renderizarProductos(popData.productos || [], container, '✨ Productos populares en NexPixel');
             
         } catch (error) {
             console.error('❌ Error en cargarRecomendacionesCarrito:', error);
@@ -143,16 +81,18 @@ const IARecomendaciones = {
         try {
             container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Cargando similares...</p></div>';
             
+            console.log('🎮 Cargando similares para producto:', productoId);
+            
             const response = await fetch(`${API_URL}/productos/${productoId}/similares?limite=${limite}`);
             const data = await response.json();
             
             if (data.success && data.similares && data.similares.length > 0) {
                 const razonamiento = 'Los jugadores que vieron este producto también compraron:';
-                this.renderizarRecomendaciones(data.similares, container, razonamiento);
+                this.renderizarProductos(data.similares, container, razonamiento);
             } else {
                 const popularRes = await fetch(`${API_URL}/ia/populares?limite=${limite}`);
                 const popularData = await popularRes.json();
-                this.renderizarRecomendaciones(popularData.productos || [], container, '✨ También te puede interesar');
+                this.renderizarProductos(popularData.productos || [], container, '✨ También te puede interesar');
             }
         } catch (error) {
             console.error('❌ Error cargando similares:', error);
@@ -160,36 +100,19 @@ const IARecomendaciones = {
         }
     },
 
-    // ===== CARGAR PRODUCTOS SIMILARES =====
+    // ===== CARGAR PRODUCTOS SIMILARES (legado) =====
     async cargarSimilares(productoId, containerId, limite = 4) {
-        const container = document.getElementById(containerId);
-        if (!container) return;
-
-        try {
-            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Cargando productos similares...</p></div>';
-            
-            const response = await fetch(`${API_URL}/productos/${productoId}/similares?limite=${limite}`);
-            const data = await response.json();
-            
-            if (data.success && data.similares && data.similares.length > 0) {
-                this.renderizarSimilares(data.similares, container);
-            } else {
-                container.innerHTML = '<p style="text-align: center; color: #aaccff;">No hay productos similares disponibles</p>';
-            }
-        } catch (error) {
-            console.error('❌ Error cargando similares:', error);
-            container.innerHTML = '<p style="text-align: center; color: #e94560;">Error al cargar productos similares</p>';
-        }
+        await this.cargarRecomendacionesProducto(productoId, containerId, limite);
     },
 
-    // ===== RENDERIZAR RECOMENDACIONES CON RAZONAMIENTO =====
-    renderizarRecomendaciones(productos, container, razonamiento) {
+    // ===== RENDERIZAR PRODUCTOS (ESTILO UNIFICADO) =====
+    renderizarProductos(productos, container, razonamiento) {
         if (!productos || productos.length === 0) {
-            container.innerHTML = '<p style="text-align: center; color: #aaccff;">✨ No hay recomendaciones disponibles</p>';
+            container.innerHTML = '<p style="text-align: center; color: #aaccff;">✨ No hay productos disponibles</p>';
             return;
         }
 
-        let html = '<div class="recomendaciones-wrapper">';
+        let html = '';
 
         // RAZONAMIENTO
         if (razonamiento && razonamiento !== '') {
@@ -208,28 +131,29 @@ const IARecomendaciones = {
             `;
         }
 
-        // GRID DE PRODUCTOS
+        // GRID DE PRODUCTOS - MISMA ESTRUCTURA QUE PRODUCTOS.JS
         html += `<div class="productos-grid">`;
 
         productos.slice(0, 4).forEach(prod => {
-            let imagenUrl = prod.imagen_url || 'assets/img/default-game.jpg';
-            const nombreProducto = prod.nombre_producto || 'Producto';
+            const id = prod.id_producto || prod.id;
+            const nombre = prod.nombre_producto || 'Producto';
             const precio = prod.precio || 0;
-            const categoria = prod.categoria || prod.plataforma?.nombre_plataforma || 'Videojuego';
+            const imagen = prod.imagen_url || 'assets/img/default-game.jpg';
+            const plataforma = prod.plataforma?.nombre_plataforma || prod.categoria || 'Videojuego';
 
             html += `
-            <div class="producto-card" onclick="verProducto(${prod.id_producto})">
+            <div class="producto-card" onclick="verProducto(${id})">
                 <div class="producto-img-container">
-                    <img src="${imagenUrl}" 
-                         alt="${nombreProducto}"
+                    <img src="${imagen}" 
+                         alt="${nombre}"
                          class="producto-img"
                          onerror="this.src='assets/img/default-game.jpg'">
                 </div>
                 <div class="producto-info">
-                    <h3>${this.truncarTexto(nombreProducto, 30)}</h3>
-                    <div class="producto-plataforma">${categoria}</div>
+                    <h3>${this.truncarTexto(nombre, 30)}</h3>
+                    <div class="producto-plataforma">${plataforma}</div>
                     <div class="producto-precio">$${formatearPrecio(precio)}</div>
-                    <button class="btn-agregar" onclick="event.stopPropagation(); agregarAlCarrito(${prod.id_producto})">
+                    <button class="btn-agregar" onclick="event.stopPropagation(); agregarAlCarrito(${id})">
                         <i class="fa-solid fa-cart-plus"></i> Agregar
                     </button>
                 </div>
@@ -237,45 +161,17 @@ const IARecomendaciones = {
             `;
         });
 
-        html += `</div></div>`;
+        html += `</div>`;
         container.innerHTML = html;
     },
 
-    // ===== RENDERIZAR SIMILARES (sin razonamiento) =====
-    renderizarSimilares(productos, container) {
-        if (!productos || productos.length === 0) {
-            container.innerHTML = '<p style="text-align: center; color: #aaccff;">No hay productos similares</p>';
-            return;
-        }
+    // Alias para compatibilidad
+    renderizarRecomendaciones(productos, container, razonamiento) {
+        this.renderizarProductos(productos, container, razonamiento);
+    },
 
-        let html = '<div class="productos-grid">';
-        
-        productos.slice(0, 4).forEach(prod => {
-            let imagenUrl = prod.imagen_url;
-            if (!imagenUrl || imagenUrl === '' || imagenUrl === 'default-game.jpg') {
-                imagenUrl = 'assets/img/default-game.jpg';
-            }
-            
-            html += `
-                <div class="producto-card" onclick="verProducto(${prod.id_producto})">
-                    <img src="${imagenUrl}" 
-                         alt="${prod.nombre_producto}" 
-                         class="producto-img"
-                         onerror="this.src='assets/img/default-game.jpg'">
-                    <div class="producto-info">
-                        <h3>${this.truncarTexto(prod.nombre_producto, 30)}</h3>
-                        <div class="producto-plataforma">${prod.categoria || 'Videojuego'}</div>
-                        <div class="producto-precio">$${formatearPrecio(prod.precio)}</div>
-                        <button class="btn-agregar" onclick="event.stopPropagation(); agregarAlCarrito(${prod.id_producto})">
-                            <i class="fa-solid fa-cart-plus"></i> Agregar
-                        </button>
-                    </div>
-                </div>
-            `;
-        });
-        
-        html += '</div>';
-        container.innerHTML = html;
+    renderizarSimilares(productos, container) {
+        this.renderizarProductos(productos, container, null);
     },
 
     // ===== TRUNCAR TEXTO =====
@@ -287,7 +183,6 @@ const IARecomendaciones = {
     // ===== REGISTRAR INTERACCIÓN =====
     async registrarInteraccion(productoId, tipo) {
         if (!Auth.usuarioActual) return;
-        
         try {
             await fetch(`${API_URL}/ia/interaccion`, {
                 method: 'POST',
@@ -304,71 +199,64 @@ const IARecomendaciones = {
     }
 };
 
-// ===== INICIALIZACIÓN AUTOMÁTICA CORREGIDA =====
-async function inicializarRecomendacionesCarrito() {
-    console.log('🎯 Inicializando recomendaciones del carrito');
+// ===== INICIALIZACIÓN AUTOMÁTICA PARA TODAS LAS PÁGINAS =====
+async function inicializarRecomendaciones() {
+    const path = window.location.pathname;
+    console.log('🎯 Inicializando recomendaciones en:', path);
     
-    // Esperar a que el DOM y Carrito estén listos
-    await new Promise(resolve => setTimeout(resolve, 600));
+    await new Promise(resolve => setTimeout(resolve, 500));
     
-    // Asegurar que Carrito esté inicializado
-    if (typeof Carrito !== 'undefined' && typeof Carrito.inicializar === 'function') {
-        if (!Carrito.items || Carrito.items.length === undefined) {
-            await Carrito.inicializar();
-        }
-    }
-    
-    console.log('📦 Carrito items:', Carrito.items?.length || 0);
-    
-    const container = document.getElementById('recomendaciones-container');
-    if (!container) {
-        console.log('❌ Contenedor "recomendaciones-container" no encontrado');
-        return;
-    }
-    
-    const usuarioId = Auth.usuarioActual?.id_usuario;
-    
-    // SIEMPRE usar IA general cuando el carrito está vacío
-    if (!Carrito.items || Carrito.items.length === 0) {
-        console.log('📭 Carrito vacío, cargando IA general directamente');
-        
-        try {
-            const response = await fetch(`${API_URL}/ia/recomendaciones?limite=4&usuarioId=${usuarioId}`);
-            const data = await response.json();
-            
-            if (data.success && data.productos && data.productos.length > 0) {
-                console.log('✅ IA general cargada:', data.productos.length, 'productos');
-                IARecomendaciones.renderizarRecomendaciones(data.productos, container, data.razonamiento);
-                return;
+    // ============================================
+    // PÁGINA DE PRODUCTO
+    // ============================================
+    if (path.includes('producto.html')) {
+        const container = document.getElementById('recomendaciones-ia-container');
+        if (container) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const productoId = urlParams.get('id');
+            if (productoId) {
+                console.log('🎮 Producto ID:', productoId);
+                IARecomendaciones.cargarRecomendacionesProducto(productoId, 'recomendaciones-ia-container', 4);
             }
-        } catch (error) {
-            console.error('❌ Error cargando IA general:', error);
         }
-        
-        // Fallback a populares solo si IA falla
-        try {
-            const popRes = await fetch(`${API_URL}/ia/populares?limite=4`);
-            const popData = await popRes.json();
-            IARecomendaciones.renderizarRecomendaciones(popData.productos || [], container, '✨ Productos populares en NexPixel');
-        } catch (e) {
-            console.error('❌ Error en fallback:', e);
+    }
+    
+    // ============================================
+    // PÁGINA DEL CARRITO
+    // ============================================
+    if (path.includes('carrito.html')) {
+        const container = document.getElementById('recomendaciones-ia-container');
+        if (container) {
+            console.log('🛒 Cargando recomendaciones para carrito');
+            IARecomendaciones.cargarRecomendacionesCarrito('recomendaciones-ia-container', 4);
+        } else {
+            console.log('❌ Contenedor "recomendaciones-ia-container" no encontrado en carrito');
         }
-    } else {
-        // Carrito con productos - usar lógica de similares
-        console.log('🛒 Carrito con productos, buscando similares');
-        IARecomendaciones.cargarRecomendacionesCarrito('recomendaciones-container', 4);
+    }
+    
+    // ============================================
+    // PÁGINA DE JUEGOS/INDEX
+    // ============================================
+    if (path.includes('juegos.html') || path.includes('index.html') || path === '/' || path.endsWith('/')) {
+        const container = document.getElementById('recomendaciones-container') || 
+                         document.getElementById('recomendaciones-ia-container');
+        if (container) {
+            console.log('🏠 Cargando recomendaciones generales');
+            IARecomendaciones.cargarRecomendaciones(container.id, 4);
+        }
     }
 }
 
-// ===== EJECUTAR INICIALIZACIÓN =====
-if (window.location.pathname.includes('carrito.html')) {
-    document.addEventListener('DOMContentLoaded', inicializarRecomendacionesCarrito);
-    // Backup por si el DOMContentLoaded ya pasó
-    if (document.readyState === 'complete' || document.readyState === 'interactive') {
-        setTimeout(inicializarRecomendacionesCarrito, 300);
-    }
+// ===== EJECUTAR INICIALIZACIÓN CON MÚLTIPLES INTENTOS =====
+document.addEventListener('DOMContentLoaded', inicializarRecomendaciones);
+
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    setTimeout(inicializarRecomendaciones, 300);
 }
+
+// Intentos adicionales para asegurar que cargue
+setTimeout(inicializarRecomendaciones, 600);
+setTimeout(inicializarRecomendaciones, 1000);
 
 // Exponer globalmente
 window.IARecomendaciones = IARecomendaciones;
-window.cargarRecomendacionesCarrito = () => IARecomendaciones.cargarRecomendacionesCarrito('recomendaciones-container', 4);
