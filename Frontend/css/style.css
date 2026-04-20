@@ -459,26 +459,32 @@ p { color: rgba(255,255,255,0.6); }
     cursor: default;
 }
 
-/* ===== BOTÓN FLOTANTE CARRITO ===== */
 .cart-floating {
     position: fixed;
     bottom: 30px;
     right: 30px;
     width: 70px;
     height: 70px;
-    background: var(--gradient-button);
+
+    background: rgba(10, 26, 47, 0.85);
+    backdrop-filter: blur(10px);
+
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+
     font-size: 2rem;
     cursor: pointer;
-    box-shadow: 0 4px 20px rgba(42, 111, 219, 0.5);
-    transition: var(--transition);
+
+
+    border: 1px solid rgba(77, 140, 255, 0.4);
+    box-shadow: 0 0 15px rgba(77, 140, 255, 0.3);
+
+    transition: all 0.3s ease;
     z-index: 999;
     text-decoration: none;
-    color: white;
-    border: 2px solid rgba(255,255,255,0.3);
+    color: #4d8cff;
 }
 
 .cart-floating:hover {
