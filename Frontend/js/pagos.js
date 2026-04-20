@@ -123,8 +123,8 @@ const Pagos = {
 
     enviarFormularioPayU(datos) {
         const payuUrl = this.config.test 
-            ? 'https://sandbox.checkout.payulatam.com/ppp-web-gateway-payu/'
-            : 'https://checkout.payulatam.com/ppp-web-gateway-payu/';
+            ? 'https://sandbox.checkout.payulatam.com/ppp-web-gateway-payu'
+            : 'https://checkout.payulatam.com/ppp-web-gateway-payu';
 
         const form = document.createElement('form');
         form.method = 'POST';

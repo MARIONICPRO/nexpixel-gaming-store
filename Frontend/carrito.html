@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     
-    <!-- 👇 AGREGAR ESTA LÍNEA -->
+    <!-- CryptoJS para firmas de PayU -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     
     <link rel="stylesheet" href="css/style.css">
@@ -32,7 +32,7 @@
             <div class="panel-pago">
                 <h2>Proceso de pago</h2>
 
-                <!-- Campos comunes para todos los métodos -->
+                <!-- Campos comunes -->
                 <div id="campos-comunes">
                     <div class="form-group">
                         <label>Nombre completo</label>
@@ -48,41 +48,33 @@
                     </div>
                 </div>
 
-                <!-- Métodos de pago -->
-                <h3>Método de pago</h3>
-                <div class="metodos-pago">
-                    <div class="metodo-pago" data-metodo="nequi" onclick="seleccionarMetodo('nequi')">
-                        <span>Nequi</span>
-                    </div>
-                    <div class="metodo-pago" data-metodo="daviplata" onclick="seleccionarMetodo('daviplata')">
-                        <span>Daviplata</span>
-                    </div>
-                    <div class="metodo-pago" data-metodo="visa" onclick="seleccionarMetodo('visa')">
-
-                        <span>Visa</span>
-                    </div>
-                    <div class="metodo-pago" data-metodo="efecty" onclick="seleccionarMetodo('efecty')">
-
-                        <span>Efecty</span>
-                    </div>
-                </div>
-
-                <!-- Contenedor para campos específicos según método de pago -->
-                <div id="campos-especificos" class="campos-especificos"></div>
-
-                <!-- Total y botón confirmar -->
+                <!-- Total -->
                 <div class="total-pagar">
                     <span>Total a pagar:</span>
                     <span id="total-pagar">$0</span>
                 </div>
 
-                <button class="btn-confirmar" onclick="confirmarPago()">Confirmar pago</button>
+                <!-- 👇 NUEVO: Botón dedicado de PayU -->
+                <button id="btn-pagar-payu" class="btn-pagar-payu">
+                    <i class="fa-solid fa-credit-card"></i> Pagar con PayU
+                </button>
+                
+                <p class="info-pago">
+                    <i class="fa-solid fa-lock"></i> Pago seguro con PayU<br>
+                    <small>Aceptamos PSE, Nequi, Tarjetas y más</small>
+                </p>
             </div>
         </div>
 
-        <section class="recomendaciones">
-            <h2><i class="fa-solid fa-star"></i> Recomendaciones para ti</h2>
-            <div id="recomendaciones-container" class="productos-grid"></div>
+               <!-- 👇 NUEVA SECCIÓN: RECOMENDACIONES IA CON RAZONAMIENTO -->
+        <section class="recomendaciones-ia">
+            <h2><i class="fa-solid fa-robot"></i> Recomendaciones para ti</h2>
+            <div id="recomendaciones-ia-container" class="recomendaciones-ia-grid">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Cargando recomendaciones personalizadas...</p>
+                </div>
+            </div>
         </section>
 
     </div>
@@ -90,28 +82,16 @@
     <div class="modal-overlay" id="auth-modal"></div>
     <div class="modal-overlay" id="perfil-modal"></div>
 
-<<<<<<< HEAD
-  <!-- 2. Al final del BODY, en este orden: -->
-<script src="js/api.js"></script>
-<script src="js/auth.js"></script>
-<script src="js/pagos.js"></script>
-<script src="js/confirmar-pago.js"></script>
-<script src="js/modales.js"></script>
-<script src="js/productos.js"></script>
-<script src="js/carrito-db.js"></script>
-<script src="js/ia-db.js"></script>
-<script src="js/compras.js"></script>
-<script src="js/main.js"></script>
-=======
+    <!-- SCRIPTS - VERSIÓN CORREGIDA -->
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
+    <script src="js/pagos.js"></script>
+    <script src="js/confirmar-pago.js"></script>
     <script src="js/modales.js"></script>
     <script src="js/productos.js"></script>
     <script src="js/carrito-db.js"></script>
     <script src="js/ia-db.js"></script>
     <script src="js/compras.js"></script>
     <script src="js/main.js"></script>
->>>>>>> d08570c8079d05f30ff8fef2c5ac08251ee3da2e
 </body>
-
 </html>

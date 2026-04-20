@@ -351,35 +351,66 @@ async eliminar(itemId) {
         this.agregarEventoCompra();
     },
 
-    agregarEventoCompra() {
-        const btnComprar = document.getElementById('btn-confirmar-compra');
-        if (!btnComprar) return;
+agregarEventoCompra() {
+    const btnPagarPayU = document.getElementById('btn-pagar-payu');
+    
+    if (!btnPagarPayU) {
+        console.warn('⚠️ Botón de PayU no encontrado');
+        return;
+    }
 
-        // Remover event listeners anteriores
-        const nuevoBtn = btnComprar.cloneNode(true);
-        btnComprar.parentNode.replaceChild(nuevoBtn, btnComprar);
+    // Remover event listeners anteriores
+    const nuevoBtn = btnPagarPayU.cloneNode(true);
+    btnPagarPayU.parentNode.replaceChild(nuevoBtn, btnPagarPayU);
 
-        nuevoBtn.style.display = 'block';
-        nuevoBtn.addEventListener('click', () => {
-            // VERIFICAR LOGIN AL CONFIRMAR COMPRA
-            if (!Auth.usuarioActual) {
-                mostrarNotificacion('Debes iniciar sesión para completar la compra', 'error');
-                abrirModalLogin();
-                return;
-            }
-
-            // Si está logueado, sincronizar carrito local con backend primero
-            this.sincronizarCarritoLocal().then(() => {
-                // Proceder con el pago
-                if (typeof confirmarPago === 'function') {
-                    confirmarPago();
-                } else {
-                    console.error('Función confirmarPago no encontrada');
-                    mostrarNotificacion('Error al procesar la compra', 'error');
-                }
-            });
-        });
-    },
+    nuevoBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        
+        console.log('🖱️ Click en botón Pagar con PayU');
+        
+        // Validar campos
+        const nombre = document.getElementById('pago-nombre')?.value;
+        const documento = document.getElementById('pago-documento')?.value;
+        const email = document.getElementById('pago-email')?.value;
+        
+        if (!nombre || !documento || !email) {
+            mostrarNotificacion('Por favor completa todos los campos', 'error');
+            return;
+        }
+        
+        // Validar email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            mostrarNotificacion('Por favor ingresa un correo válido', 'error');
+            return;
+        }
+        
+        // Verificar login
+        if (!Auth.usuarioActual) {
+            mostrarNotificacion('Debes iniciar sesión para completar la compra', 'error');
+            abrirModalLogin();
+            return;
+        }
+        
+        // Verificar carrito
+        if (this.items.length === 0) {
+            mostrarNotificacion('El carrito está vacío', 'error');
+            return;
+        }
+        
+        // Sincronizar y pagar
+        await this.sincronizarCarritoLocal();
+        
+        if (typeof Pagos !== 'undefined' && Pagos.procesarPago) {
+            await Pagos.procesarPago();
+        } else {
+            console.error('❌ Pagos no disponible');
+            mostrarNotificacion('Error: Sistema de pagos no disponible', 'error');
+        }
+    });
+    
+    console.log('✅ Evento de pago PayU agregado');
+},
 
     async sincronizarCarritoLocal() {
         // Si hay carrito local y usuario logueado, sincronizar
