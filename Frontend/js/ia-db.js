@@ -43,68 +43,57 @@ async cargarRecomendaciones(containerId, limite = 4) {
 },
 
     // ===== RENDERIZAR RECOMENDACIONES CON RAZONAMIENTO =====
-    renderizarRecomendaciones(productos, container, razonamiento) {
-        if (!productos || productos.length === 0) {
-            container.innerHTML = '<p style="text-align: center; color: #aaccff;">✨ No hay recomendaciones disponibles</p>';
-            return;
-        }
+   renderizarRecomendaciones(productos, container, razonamiento) {
+    if (!productos || productos.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: #aaccff;">✨ No hay recomendaciones disponibles</p>';
+        return;
+    }
 
-        let html = '';
+    let html = '<div class="recomendaciones-wrapper">';
 
-        // 🔥 SECCIÓN DE RAZONAMIENTO DE LA IA (si existe)
-        if (razonamiento && razonamiento !== '') {
-            html += `
-                <div class="ia-razonamiento-card" style="
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    border-radius: 16px;
-                    padding: 20px;
-                    margin-bottom: 30px;
-                    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-                ">
-                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                        <span style="font-size: 28px;"><i class="fa-solid fa-brain"></i></span>
-                        <h3 style="color: white; margin: 0; font-size: 18px;">¿Por qué te recomendamos esto?</h3>
-                        <span style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 12px; color: white;">IA Generativa</span>
-                    </div>
-                    <p style="color: white; margin: 0; line-height: 1.6; font-size: 15px;">${razonamiento}</p>
-                    <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.2); font-size: 13px; color: rgba(255,255,255,0.8);">
-                        <i class="fa-brands fa-think-peaks"></i> Basado en tu historial de compras y visualizaciones
-                    </div>
-                </div>
-            `;
-        }
+    // 🔥 RAZONAMIENTO
+    if (razonamiento && razonamiento !== '') {
+        html += `
+        <div class="ia-razonamiento-card">
+            <div class="ia-header">
+                <span class="ia-icon"><i class="fa-solid fa-brain"></i></span>
+                <h3>¿Por qué te recomendamos esto?</h3>
+                <span class="ia-badge">IA Generativa</span>
+            </div>
+            <p class="ia-text">${razonamiento}</p>
+            <div class="ia-footer">
+                <i class="fa-brands fa-think-peaks"></i> Basado en tu historial
+            </div>
+        </div>
+        `;
+    }
 
-        // PRODUCTOS RECOMENDADOS
-        html += '<div class="productos-grid">';
-        
-        productos.slice(0, 4).forEach(prod => {
-            // Manejar imagen con fallback
-            let imagenUrl = prod.imagen_url;
-            if (!imagenUrl || imagenUrl === '' || imagenUrl === 'default-game.jpg') {
-                imagenUrl = 'assets/img/default-game.jpg';
-            }
-            
-            html += `
-                <div class="producto-card" onclick="verProducto(${prod.id_producto})">
-                    <img src="${imagenUrl}" 
-                         alt="${prod.nombre_producto}" 
-                         class="producto-img"
-                         onerror="this.src='assets/img/default-game.jpg'">
-                    <div class="producto-info">
-                        <h3>${this.truncarTexto(prod.nombre_producto, 30)}</h3>
-                        <div class="producto-plataforma">${prod.categoria || 'Videojuego'}</div>
-                        <div class="producto-precio">$${formatearPrecio(prod.precio)}</div>
-                        <button class="btn-agregar" onclick="event.stopPropagation(); agregarAlCarrito(${prod.id_producto})">
-                            Agregar al carrito
-                        </button>
-                    </div>
-                </div>
-            `;
-        });
-        
-        html += '</div>';
-        container.innerHTML = html;
-    },
+    // 🔥 GRID ABIERTO AQUÍ
+    html += `<div class="productos-grid">`;
+
+    productos.slice(0, 4).forEach(prod => {
+        let imagenUrl = prod.imagen_url || 'assets/img/default-game.jpg';
+
+        html += `
+        <div class="producto-card" onclick="verProducto(${prod.id_producto})">
+            <img src="${imagenUrl}" class="producto-img">
+            <div class="producto-info">
+                <h3>${this.truncarTexto(prod.nombre_producto, 30)}</h3>
+                <div class="producto-plataforma">${prod.categoria || 'Videojuego'}</div>
+                <div class="producto-precio">$${formatearPrecio(prod.precio)}</div>
+                <button class="btn-agregar" onclick="event.stopPropagation(); agregarAlCarrito(${prod.id_producto})">
+                    Agregar al carrito
+                </button>
+            </div>
+        </div>
+        `;
+    });
+
+    // 🔥 CIERRE CORRECTO
+    html += `</div></div>`;
+
+    container.innerHTML = html;
+},
 
     // ===== CARGAR PRODUCTOS SIMILARES =====
     async cargarSimilares(productoId, containerId, limite = 4) {

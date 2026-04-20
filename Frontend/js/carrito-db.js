@@ -337,7 +337,7 @@ async eliminar(itemId) {
                             <button class="btn-cantidad" onclick="Carrito.actualizarCantidad(${item.id}, ${(item.cantidad || 1) + 1})">+</button>
                         </div>
                         <span class="carrito-item-subtotal">$${formatearPrecio(subtotal)}</span>
-                        <button class="btn-eliminar-item" onclick="Carrito.eliminar(${item.id})">Eliminar</button>
+                        <button class="btn-eliminar-item" onclick="Carrito.eliminar(${item.id})"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
             </div>

@@ -649,6 +649,14 @@ document.addEventListener('DOMContentLoaded', ajustarViewport);
 
 setTimeout(inicializarFiltros, 500);
 
+document.addEventListener('DOMContentLoaded', async () => {
+
+    await Carrito.inicializar();
+
+
+    IARecomendaciones.cargarRecomendaciones('recomendaciones-container', 4);
+});
+
 // ============================================
 // EXPORTAR FUNCIONES GLOBALES
 // ============================================
