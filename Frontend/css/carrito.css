@@ -740,3 +740,119 @@ label[for="pago-email"]::before, .form-group:nth-child(3) label::before { conten
     margin-top: 5px;
     color: #666;
 }
+.recomendaciones-ia-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr); /* o 3 si quieres */
+    gap: 1rem;
+    width: 100%;
+}
+
+/* IMPORTANTE: romper el min-width global */
+.recomendaciones-ia-grid .producto-card {
+    min-width: 0 !important;
+}
+.ia-razonamiento-card {
+    grid-column: 1 / -1;
+}
+/* ============================================
+   SOBRESCRITURA PARA RECOMENDACIONES EN CARRITO
+   ============================================ */
+
+/* Forzar el grid de recomendaciones a 4 columnas */
+.recomendaciones-ia .productos-grid,
+#recomendaciones-ia-container .productos-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 1rem !important;
+    width: 100% !important;
+    margin: 0 !important;
+}
+
+/* Tarjetas dentro de recomendaciones del carrito */
+.recomendaciones-ia .producto-card,
+#recomendaciones-ia-container .producto-card {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+}
+
+/* Imágenes más compactas en recomendaciones */
+.recomendaciones-ia .producto-img,
+#recomendaciones-ia-container .producto-img {
+    height: 160px !important;
+    width: 100% !important;
+    object-fit: cover !important;
+}
+
+/* Información compacta */
+.recomendaciones-ia .producto-info,
+#recomendaciones-ia-container .producto-info {
+    padding: 0.75rem !important;
+}
+
+.recomendaciones-ia .producto-info h3,
+#recomendaciones-ia-container .producto-info h3 {
+    font-size: 0.85rem !important;
+    min-height: 2.2rem !important;
+    margin-bottom: 0.25rem !important;
+}
+
+.recomendaciones-ia .producto-precio,
+#recomendaciones-ia-container .producto-precio {
+    font-size: 1rem !important;
+    margin: 0.25rem 0 !important;
+}
+
+.recomendaciones-ia .btn-agregar,
+#recomendaciones-ia-container .btn-agregar {
+    padding: 0.4rem !important;
+    font-size: 0.75rem !important;
+}
+
+/* Tarjeta de razonamiento IA */
+.recomendaciones-ia .ia-razonamiento-card,
+#recomendaciones-ia-container .ia-razonamiento-card {
+    grid-column: 1 / -1 !important;
+    margin-bottom: 1rem !important;
+}
+
+/* Sección de recomendaciones */
+.recomendaciones-ia {
+    margin-top: 3rem;
+    width: 100%;
+    overflow-x: visible !important;
+}
+
+/* ===== RESPONSIVE ===== */
+@media screen and (max-width: 1200px) {
+    .recomendaciones-ia .productos-grid,
+    #recomendaciones-ia-container .productos-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .recomendaciones-ia .productos-grid,
+    #recomendaciones-ia-container .productos-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.8rem !important;
+    }
+    
+    .recomendaciones-ia .producto-img,
+    #recomendaciones-ia-container .producto-img {
+        height: 120px !important;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .recomendaciones-ia .productos-grid,
+    #recomendaciones-ia-container .productos-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .recomendaciones-ia .producto-img,
+    #recomendaciones-ia-container .producto-img {
+        height: 180px !important;
+    }
+}

@@ -12,21 +12,21 @@
     <link rel="stylesheet" href="css/tarjetas.css">
 </head>
 <body>
+    <!-- Sidebar global (menú principal) -->
     <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">☰</button>
     <div class="sidebar" id="sidebar"></div>
 
     <div class="content">
         <div class="page-header">
-            <h2><i class="fas fa-credit-card"></i> Tarjetas</h2>
+            <h2><i class="fas fa-credit-card"></i> Tarjetas Digitales</h2>
         </div>
 
-        <!-- Botón para móvil -->
+        <!-- Botón para abrir filtros en móvil -->
         <button class="filtros-toggle-btn" id="filtrosToggleBtn" onclick="abrirModalFiltrosTarjetas()">
-            <i class="fa-solid fa-filter"></i> Filtros
-            <span class="filter-icon">▼</span>
+            <i class="fa-solid fa-filter"></i> Filtrar Tarjetas
         </button>
 
-        <!-- Overlay -->
+        <!-- Overlay para móvil -->
         <div class="filtros-overlay" id="filtrosOverlay" onclick="cerrarModalFiltrosTarjetas()"></div>
 
         <!-- Modal de filtros para móvil -->
@@ -37,10 +37,9 @@
             </div>
             <div class="filtros-modal-content">
                 <div class="filtro-grupo">
-                    
+                    <h4>Plataforma</h4>
                     <div id="filtro-plataformas-tarjetas-mobile"></div>
                 </div>
-
                 <div class="filtro-grupo">
                     <h4>Precio máximo</h4>
                     <div class="precio-rango">
@@ -59,9 +58,10 @@
             </div>
         </div>
 
-        <!-- Sidebar de filtros para desktop -->
+        <!-- Contenedor principal: FILTROS + PRODUCTOS -->
         <div class="tarjetas-container">
-            <div class="filtros-sidebar" id="filtrosSidebar">
+            <!-- Sidebar de filtros (visible en desktop) -->
+            <aside class="filtros-sidebar" id="filtrosSidebar">
                 <h3>Filtrar Tarjetas</h3>
                 
                 <div class="filtro-grupo">
@@ -82,10 +82,10 @@
                 </div>
 
                 <button class="btn-filtrar" onclick="aplicarFiltrosTarjetas()">Aplicar filtros</button>
-            </div>
+            </aside>
 
-            <!-- Contenido principal -->
-            <div class="filtros-contenido">
+            <!-- Contenido principal (productos) -->
+            <main class="filtros-contenido">
                 <div class="search-section">
                     <input type="text" class="search-input" id="searchInputTarjetas" placeholder="Buscar tarjetas..." oninput="buscarTarjetas()">
                 </div>
@@ -106,7 +106,7 @@
                         <p>Cargando tarjetas...</p>
                     </div>
                 </div>
-            </div>
+            </main>
         </div>
     </div>
 
@@ -122,10 +122,77 @@
     <script src="js/auth.js"></script>
     <script src="js/sidebar.js"></script>
     <script src="js/modales.js"></script>
-    <script src="js/productos.js"></script>
+    <script src="js/productos.js"></script> <!-- ← Aquí está toda la lógica -->
     <script src="js/carrito-db.js"></script>
     <script src="js/ia-db.js"></script>
     <script src="js/compras.js"></script>
     <script src="js/main.js"></script>
+
+    <!-- Script mínimo SOLO para inicializar los filtros de tarjetas -->
+    <script>
+        // Inicializar filtros de plataformas para tarjetas
+        if (document.getElementById('filtro-plataformas-tarjetas')) {
+            Productos.cargarFiltrosPlataformas('filtro-plataformas-tarjetas', 'aplicarFiltrosTarjetas()');
+        }
+
+        // Funciones de modal (solo para la UI)
+        function abrirModalFiltrosTarjetas() {
+            const modal = document.getElementById('filtrosModal');
+            const overlay = document.getElementById('filtrosOverlay');
+            if (modal) {
+                modal.classList.add('active');
+                if (overlay) overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                
+                // Cargar filtros en el modal si están vacíos
+                if (document.getElementById('filtro-plataformas-tarjetas-mobile')?.children.length === 0) {
+                    Productos.cargarFiltrosPlataformas('filtro-plataformas-tarjetas-mobile', 'aplicarFiltrosTarjetas()');
+                }
+                
+                // Sincronizar precio
+                const rangeDesktop = document.getElementById('precio-range-tarjetas');
+                const rangeMobile = document.getElementById('precio-range-tarjetas-mobile');
+                if (rangeDesktop && rangeMobile) {
+                    rangeMobile.value = rangeDesktop.value;
+                    const valorMobile = document.getElementById('precio-valor-tarjetas-mobile');
+                    if (valorMobile) {
+                        valorMobile.textContent = '$' + parseInt(rangeDesktop.value).toLocaleString('es-CO');
+                    }
+                }
+            }
+        }
+        
+        function cerrarModalFiltrosTarjetas() {
+            const modal = document.getElementById('filtrosModal');
+            const overlay = document.getElementById('filtrosOverlay');
+            if (modal) {
+                modal.classList.remove('active');
+                if (overlay) overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+        
+        function actualizarPrecioTarjetasMobile() {
+            const range = document.getElementById('precio-range-tarjetas-mobile');
+            const valor = document.getElementById('precio-valor-tarjetas-mobile');
+            if (range && valor) {
+                valor.textContent = '$' + parseInt(range.value).toLocaleString('es-CO');
+            }
+            // También actualizar el desktop para sincronizar
+            const rangeDesktop = document.getElementById('precio-range-tarjetas');
+            if (rangeDesktop && range) {
+                rangeDesktop.value = range.value;
+                const valorDesktop = document.getElementById('precio-valor-tarjetas');
+                if (valorDesktop) {
+                    valorDesktop.textContent = '$' + parseInt(range.value).toLocaleString('es-CO');
+                }
+            }
+        }
+        
+        // Exponer funciones globalmente
+        window.abrirModalFiltrosTarjetas = abrirModalFiltrosTarjetas;
+        window.cerrarModalFiltrosTarjetas = cerrarModalFiltrosTarjetas;
+        window.actualizarPrecioTarjetasMobile = actualizarPrecioTarjetasMobile;
+    </script>
 </body>
 </html>

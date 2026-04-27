@@ -1,26 +1,35 @@
+/* ============================================
+   CONTACTO.CSS - NEXPIXEL
+   Con colores consistentes (azul, no rosado)
+   ============================================ */
 
 .contacto-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 3rem;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(16, 36, 64, 0.7);
     border-radius: 15px;
     padding: 3rem;
-    border: 1px solid #2a2f45;
+    border: 1px solid rgba(77, 140, 255, 0.3);
+    backdrop-filter: blur(10px);
 }
 
+/* Sección de información */
 .info-contacto h2 {
-    color: #e94560;
+    color: var(--color-primario-claro, #4d8cff);
     font-size: 2rem;
     margin-bottom: 1rem;
+    border-left: 5px solid var(--color-primario-claro, #4d8cff);
+    padding-left: 1rem;
 }
 
 .info-contacto p {
-    color: #ccc;
+    color: rgba(255, 255, 255, 0.7);
     line-height: 1.6;
     margin-bottom: 2rem;
 }
 
+/* Métodos de contacto */
 .metodos-contacto {
     display: flex;
     flex-direction: column;
@@ -32,132 +41,135 @@
     align-items: center;
     gap: 1rem;
     padding: 1rem;
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 10px;
-    border: 1px solid #2a2f45;
-    transition: all 0.3s;
+    background: rgba(10, 30, 50, 0.6);
+    border-radius: 12px;
+    border: 1px solid rgba(77, 140, 255, 0.2);
+    transition: all 0.3s ease;
 }
 
 .metodo-item:hover {
-    border-color: #e94560;
+    border-color: var(--color-primario-claro, #4d8cff);
     transform: translateX(10px);
+    background: rgba(77, 140, 255, 0.1);
 }
 
 .metodo-icono {
     width: 50px;
     height: 50px;
-    background: #e94560;
+    background: linear-gradient(135deg, #2a6fdb, #4d8cff);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.5rem;
+    color: white;
+    box-shadow: 0 0 15px rgba(77, 140, 255, 0.3);
 }
 
 .metodo-item h4 {
-    color: #e94560;
+    color: var(--color-primario-claro, #4d8cff);
     margin-bottom: 0.3rem;
+    font-size: 1.1rem;
 }
 
 .metodo-item p {
     margin: 0;
     color: white;
+    font-size: 0.95rem;
 }
 
+/* Formulario */
 .formulario-contacto {
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(10, 30, 50, 0.5);
     border-radius: 15px;
     padding: 2rem;
-    border: 1px solid #2a2f45;
+    border: 1px solid rgba(77, 140, 255, 0.2);
 }
 
 .formulario-contacto h2 {
-    color: #e94560;
+    color: var(--color-primario-claro, #4d8cff);
     margin-bottom: 2rem;
+    border-left: 5px solid var(--color-primario-claro, #4d8cff);
+    padding-left: 1rem;
 }
 
+/* Grupos de formulario */
+.formulario-contacto .form-group {
+    margin-bottom: 1.5rem;
+}
+
+/* Botón enviar */
 .btn-enviar {
     width: 100%;
     padding: 1rem;
-    background: #e94560;
+    background: linear-gradient(135deg, #2a6fdb, #1a4f9f);
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     font-size: 1.1rem;
+    font-weight: bold;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.3s ease;
     margin-top: 1rem;
 }
 
 .btn-enviar:hover {
-    transform: scale(1.02);
-    box-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
+    background: linear-gradient(135deg, #4d8cff, #2a6fdb);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(77, 140, 255, 0.4);
 }
 
-@media (max-width: 768px) {
+/* Mensajes de éxito/error */
+.mensaje-exito {
+    background: rgba(76, 175, 80, 0.2);
+    border: 1px solid #4CAF50;
+    color: #4CAF50;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.mensaje-error {
+    background: rgba(244, 67, 54, 0.2);
+    border: 1px solid #f44336;
+    color: #ff8a80;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+/* ===== RESPONSIVE ===== */
+@media screen and (max-width: 768px) {
     .contacto-container {
         grid-template-columns: 1fr;
         padding: 1.5rem;
+        gap: 1.5rem;
+    }
+    
+    .info-contacto h2,
+    .formulario-contacto h2 {
+        font-size: 1.5rem;
+    }
+    
+    .metodo-item {
+        padding: 0.8rem;
+    }
+    
+    .metodo-icono {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
     }
 }
-/* ===== CONTACTO - CORREGIDO ===== */
-.contacto-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3rem;
-    background: rgba(16, 36, 64, 0.7);
-    border-radius: 15px;
-    padding: 3rem;
-    border: 1px solid #2a6fdb;
-}
 
-.info-contacto h2 {
-    color: #4d8cff; /* Azul claro */
-    font-size: 2rem;
-    margin-bottom: 1rem;
-}
-
-.metodo-icono {
-    width: 50px;
-    height: 50px;
-    background: #2a6fdb; /* Azul */
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-}
-
-.metodo-item:hover {
-    border-color: #4d8cff; /* Azul claro */
-    transform: translateX(10px);
-}
-
-.metodo-item h4 {
-    color: #4d8cff; /* Azul claro */
-    margin-bottom: 0.3rem;
-}
-
-.formulario-contacto h2 {
-    color: #4d8cff; /* Azul claro */
-    margin-bottom: 2rem;
-}
-
-.btn-enviar {
-    width: 100%;
-    padding: 1rem;
-    background: #2a6fdb; /* Azul */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: all 0.3s;
-    margin-top: 1rem;
-}
-
-.btn-enviar:hover {
-    background: #4d8cff; /* Azul más claro */
-    transform: scale(1.02);
-    box-shadow: 0 0 20px rgba(42, 111, 219, 0.5);
+@media screen and (max-width: 480px) {
+    .contacto-container {
+        padding: 1rem;
+    }
+    
+    .formulario-contacto {
+        padding: 1.5rem;
+    }
 }

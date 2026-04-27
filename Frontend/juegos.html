@@ -16,34 +16,34 @@
 </head>
 
 <body>
+    <!-- Sidebar global (menú principal) -->
     <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">☰</button>
     <div class="sidebar" id="sidebar"></div>
 
     <div class="content">
         <div class="page-header">
-            <h2><i class="bi bi-controller"></i> Juegos</h2>
+            <h2><i class="fa-solid fa-gamepad"></i> Juegos</h2>
         </div>
 
-        <!-- Botón para abrir modal de filtros en móvil -->
-        <button class="filtros-toggle-btn" id="filtrosToggleBtn" onclick="abrirModalFiltros()">
-            <i class="fa-solid fa-filter"></i> Filtros
-            <span class="filter-icon">▼</span>
+        <!-- Botón para abrir filtros en móvil -->
+        <button class="filtros-toggle-btn" id="filtrosToggleBtn" onclick="abrirModalFiltrosJuegos()">
+            <i class="fa-solid fa-filter"></i> Filtrar Juegos
         </button>
 
-        <!-- Overlay -->
-        <div class="filtros-overlay" id="filtrosOverlay" onclick="cerrarModalFiltros()"></div>
+        <!-- Overlay para móvil -->
+        <div class="filtros-overlay" id="filtrosOverlay" onclick="cerrarModalFiltrosJuegos()"></div>
 
         <!-- Modal de filtros para móvil -->
         <div class="filtros-modal" id="filtrosModal">
             <div class="filtros-modal-header">
                 <h3>Filtrar Juegos</h3>
-                <button onclick="cerrarModalFiltros()">✕</button>
+                <button onclick="cerrarModalFiltrosJuegos()">✕</button>
             </div>
             <div class="filtros-modal-content">
                 <div class="filtro-grupo">
+                    <h4>Plataforma</h4>
                     <div id="filtro-plataformas-mobile"></div>
                 </div>
-
                 <div class="filtro-grupo">
                     <h4>Género</h4>
                     <div id="filtro-generos-mobile">
@@ -64,12 +64,11 @@
                         </label>
                     </div>
                 </div>
-
                 <div class="filtro-grupo">
                     <h4>Precio máximo</h4>
                     <div class="precio-rango">
-                        <input type="range" id="precio-range-mobile" min="0" max="500000" value="500000" step="10000"
-                            oninput="actualizarPrecioMobile()" onchange="aplicarFiltros()">
+                        <input type="range" id="precio-range-mobile" min="0" max="500000" value="500000" step="10000" 
+                               oninput="actualizarPrecioMobile()" onchange="aplicarFiltros()">
                         <div class="precio-valor">
                             <span>$0</span>
                             <span id="precio-valor-mobile">$500,000</span>
@@ -78,20 +77,21 @@
                 </div>
             </div>
             <div class="filtros-modal-footer">
-                <button class="btn-cerrar-filtros" onclick="cerrarModalFiltros()">Cerrar</button>
-                <button class="btn-filtrar" onclick="aplicarFiltros(); cerrarModalFiltros()">Aplicar filtros</button>
+                <button class="btn-cerrar-filtros" onclick="cerrarModalFiltrosJuegos()">Cerrar</button>
+                <button class="btn-filtrar" onclick="aplicarFiltros(); cerrarModalFiltrosJuegos()">Aplicar filtros</button>
             </div>
         </div>
 
-        <!-- Sidebar de filtros para desktop -->
+        <!-- Contenedor principal: FILTROS + PRODUCTOS -->
         <div class="juegos-container">
-            <div class="filtros-sidebar" id="filtrosSidebar">
+            <!-- Sidebar de filtros (visible en desktop) -->
+            <aside class="filtros-sidebar" id="filtrosSidebar">
                 <h3>Filtrar Juegos</h3>
+                
+                <!-- Plataformas - SIN título duplicado, lo pone cargarFiltrosPlataformas -->
+                <div id="filtro-plataformas"></div>
 
-                <div class="filtro-grupo">
-                    <div id="filtro-plataformas"></div>
-                </div>
-
+                <!-- Géneros -->
                 <div class="filtro-grupo">
                     <h4>Género</h4>
                     <div id="filtro-generos">
@@ -113,6 +113,7 @@
                     </div>
                 </div>
 
+                <!-- Rango de precio -->
                 <div class="filtro-grupo">
                     <h4>Precio máximo</h4>
                     <div class="precio-rango">
@@ -126,14 +127,12 @@
                 </div>
 
                 <button class="btn-filtrar" onclick="aplicarFiltros()">Aplicar filtros</button>
-            </div>
+            </aside>
 
-            <!-- Contenido principal -->
-            <div class="filtros-contenido">
+            <!-- Contenido principal (productos) -->
+            <main class="filtros-contenido">
                 <div class="search-section">
-                    <!-- Por esto: -->
-                    <input type="text" class="search-input" id="searchInput" placeholder="Buscar juegos..."
-                        oninput="aplicarFiltros()">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Buscar juegos..." oninput="aplicarFiltros()">
                 </div>
 
                 <div class="resultados-header">
@@ -152,7 +151,7 @@
                         <p>Cargando juegos...</p>
                     </div>
                 </div>
-            </div>
+            </main>
         </div>
     </div>
 
@@ -168,11 +167,78 @@
     <script src="js/auth.js"></script>
     <script src="js/sidebar.js"></script>
     <script src="js/modales.js"></script>
-    <script src="js/productos.js"></script>
+    <script src="js/productos.js"></script> <!-- ← Toda la lógica está aquí -->
     <script src="js/carrito-db.js"></script>
     <script src="js/ia-db.js"></script>
     <script src="js/compras.js"></script>
     <script src="js/main.js"></script>
-</body>
 
+    <!-- Script mínimo SOLO para UI de filtros móvil -->
+    <script>
+        // Inicializar filtros de plataformas (ya incluye el título "Plataforma")
+        if (document.getElementById('filtro-plataformas')) {
+            Productos.cargarFiltrosPlataformas('filtro-plataformas', 'aplicarFiltros()');
+        }
+
+        // Funciones de modal para móvil
+        function abrirModalFiltrosJuegos() {
+            const modal = document.getElementById('filtrosModal');
+            const overlay = document.getElementById('filtrosOverlay');
+            if (modal) {
+                modal.classList.add('active');
+                if (overlay) overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                
+                // Cargar plataformas en el modal si están vacías
+                const mobileContainer = document.getElementById('filtro-plataformas-mobile');
+                if (mobileContainer && mobileContainer.children.length === 0) {
+                    Productos.cargarFiltrosPlataformas('filtro-plataformas-mobile', 'aplicarFiltros()');
+                }
+                
+                // Sincronizar precio
+                const rangeDesktop = document.getElementById('precio-range');
+                const rangeMobile = document.getElementById('precio-range-mobile');
+                if (rangeDesktop && rangeMobile) {
+                    rangeMobile.value = rangeDesktop.value;
+                    const valorMobile = document.getElementById('precio-valor-mobile');
+                    if (valorMobile) {
+                        valorMobile.textContent = '$' + parseInt(rangeDesktop.value).toLocaleString('es-CO');
+                    }
+                }
+            }
+        }
+        
+        function cerrarModalFiltrosJuegos() {
+            const modal = document.getElementById('filtrosModal');
+            const overlay = document.getElementById('filtrosOverlay');
+            if (modal) {
+                modal.classList.remove('active');
+                if (overlay) overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+        
+        function actualizarPrecioMobile() {
+            const range = document.getElementById('precio-range-mobile');
+            const valor = document.getElementById('precio-valor-mobile');
+            if (range && valor) {
+                valor.textContent = '$' + parseInt(range.value).toLocaleString('es-CO');
+            }
+            // Sincronizar con desktop
+            const rangeDesktop = document.getElementById('precio-range');
+            if (rangeDesktop && range) {
+                rangeDesktop.value = range.value;
+                const valorDesktop = document.getElementById('precio-valor');
+                if (valorDesktop) {
+                    valorDesktop.textContent = '$' + parseInt(range.value).toLocaleString('es-CO');
+                }
+            }
+        }
+        
+        // Exponer funciones globalmente
+        window.abrirModalFiltrosJuegos = abrirModalFiltrosJuegos;
+        window.cerrarModalFiltrosJuegos = cerrarModalFiltrosJuegos;
+        window.actualizarPrecioMobile = actualizarPrecioMobile;
+    </script>
+</body>
 </html>
