@@ -163,7 +163,6 @@ async function cargarPlataformasYMostrarFormulario() {
                         <select id="producto-tipo" required onchange="toggleCamposProducto()">
                             <option value="Juego">Videojuego</option>
                             <option value="Tarjeta regalo">Tarjeta de regalo</option>
-                            <option value="Suscripcion">Suscripción</option>
                         </select>
                     </div>
                     
@@ -544,7 +543,6 @@ async function editarProducto(id) {
                         <select id="edit-producto-tipo" required onchange="toggleEditCamposProducto()">
                             <option value="Juego" ${producto.tipo_producto === 'Juego' ? 'selected' : ''}>Videojuego</option>
                             <option value="Tarjeta regalo" ${producto.tipo_producto === 'Tarjeta regalo' ? 'selected' : ''}>Tarjeta de regalo</option>
-                            <option value="Suscripcion" ${producto.tipo_producto === 'Suscripcion' ? 'selected' : ''}>Suscripción</option>
                         </select>
                     </div>
                     
