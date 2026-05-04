@@ -290,5 +290,31 @@ const Auth = {
         this.usuarioActual = null;
         mostrarNotificacion('Sesión cerrada correctamente', 'info');
         window.location.href = 'index.html';
+    },
+    // En tu archivo auth.js, dentro del objeto Auth (o clase), agrega este método:
+
+    async recargarUsuarioActual() {
+        try {
+            const token = localStorage.getItem('nexpixel_token');
+            if (!token) return null;
+
+            const response = await fetch(`${API_URL}/auth/perfil`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.success && data.usuario) {
+                this.usuarioActual = data.usuario;
+                localStorage.setItem('nexpixel_usuario', JSON.stringify(data.usuario));
+                console.log('🔄 Usuario recargado:', this.usuarioActual);
+                return this.usuarioActual;
+            }
+        } catch (error) {
+            console.error('❌ Error recargando usuario:', error);
+        }
+        return null;
     }
 };

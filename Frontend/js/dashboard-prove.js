@@ -1,5 +1,5 @@
 // ============================================
-// DASHBOARD-PROVE.JS - VERSIÓN PARA NODE.JS (USA API)
+// DASHBOARD-PROVE.JS - CON SUBIDA DE IMÁGENES
 // ============================================
 
 let proveedorActual = null;
@@ -106,7 +106,7 @@ async function cargarMisProductos() {
                          class="producto-proveedor-img"
                          onerror="this.src='assets/img/default-game.jpg'">
                     <div class="producto-proveedor-info">
-                        <h3>${p.nombre_producto}</h3>
+                        <h3>${escapeHtml(p.nombre_producto)}</h3>
                         <p class="producto-proveedor-precio">$${formatearPrecio(p.precio)}</p>
                         <p class="producto-proveedor-stock">Códigos: ${p.codigos_disponibles || 0} disponibles</p>
                         <p class="producto-proveedor-tipo">Tipo: ${p.tipo_producto}</p>
@@ -128,7 +128,7 @@ async function cargarMisProductos() {
     }
 }
 
-// ===== FORMULARIO PARA NUEVO PRODUCTO =====
+// ===== FORMULARIO PARA NUEVO PRODUCTO (CON SUBIDA DE IMAGEN) =====
 function cargarFormularioNuevoProducto() {
     document.getElementById('proveedor-content').innerHTML = `
         <h2 style="color: #4d8cff; margin-bottom: 2rem;">➕ Añadir nuevo producto</h2>
@@ -151,12 +151,12 @@ async function cargarPlataformasYMostrarFormulario() {
 
         let options = '<option value="">Seleccionar plataforma</option>';
         plataformas.forEach(p => {
-            options += `<option value="${p.id_plataforma}">${p.nombre_plataforma}</option>`;
+            options += `<option value="${p.id_plataforma}">${escapeHtml(p.nombre_plataforma)}</option>`;
         });
 
         document.getElementById('proveedor-content').innerHTML = `
             <h2 style="color: #4d8cff; margin-bottom: 2rem;">➕ Añadir nuevo producto</h2>
-            <form onsubmit="return guardarNuevoProducto(event)" class="form-producto">
+            <form id="form-nuevo-producto" onsubmit="return guardarNuevoProducto(event)" class="form-producto" enctype="multipart/form-data">
                 <div class="form-row">
                     <div class="form-group">
                         <label>Tipo de producto</label>
@@ -229,10 +229,15 @@ async function cargarPlataformasYMostrarFormulario() {
                     </div>
                 </div>
                 
+                <!-- SUBIDA DE IMAGEN (reemplaza URL) -->
                 <div class="form-group">
-                    <label>URL de la imagen</label>
-                    <input type="url" id="producto-imagen" placeholder="https://ejemplo.com/imagen.jpg">
-                    <small style="color: #aaccff;">Deja en blanco para usar imagen por defecto</small>
+                    <label>Foto del producto</label>
+                    <div class="foto-upload-modal" onclick="document.getElementById('producto-foto-input').click()">
+                        📷 Seleccionar imagen
+                    </div>
+                    <input type="file" id="producto-foto-input" name="imagen" accept="image/*" style="display:none;" onchange="previewFotoProductoNuevo(event)">
+                    <img id="foto-producto-preview-nuevo" class="foto-preview-modal" style="display:none; max-width: 200px; margin-top: 10px;">
+                    <small style="color: #aaccff;">Formatos: JPG, PNG, GIF (máx 5MB)</small>
                 </div>
                 
                 <div class="form-group">
@@ -253,13 +258,43 @@ async function cargarPlataformasYMostrarFormulario() {
     }
 }
 
+// Previsualizar foto para nuevo producto
+function previewFotoProductoNuevo(event) {
+    const preview = document.getElementById('foto-producto-preview-nuevo');
+    const file = event.target.files[0];
+    
+    if (file && preview) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+// Previsualizar foto para edición de producto
+function previewFotoProductoEdit(event) {
+    const preview = document.getElementById('foto-producto-preview-edit');
+    const file = event.target.files[0];
+    
+    if (file && preview) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
 function toggleCamposProducto() {
     const tipo = document.getElementById('producto-tipo').value;
     document.getElementById('campos-juego').style.display = tipo === 'Juego' ? 'block' : 'none';
     document.getElementById('campos-tarjeta').style.display = tipo === 'Tarjeta regalo' ? 'block' : 'none';
 }
 
-// ===== GUARDAR NUEVO PRODUCTO =====
+// ===== GUARDAR NUEVO PRODUCTO (CON FormData) =====
 async function guardarNuevoProducto(event) {
     event.preventDefault();
 
@@ -272,30 +307,38 @@ async function guardarNuevoProducto(event) {
             return false;
         }
 
-        const producto = {
-            id_categoria: tipoProducto === 'Juego' ? 1 : 2,
-            id_plataforma: plataformaId,
-            nombre_producto: document.getElementById('producto-nombre').value,
-            precio: parseFloat(document.getElementById('producto-precio').value),
-            tipo_producto: tipoProducto,
-            stock: parseInt(document.getElementById('producto-stock').value) || 0,
-            descripcion: document.getElementById('producto-descripcion')?.value || '',
-            imagen_url: document.getElementById('producto-imagen').value || 'assets/img/default-game.jpg'
-        };
+        // Usar FormData para incluir la imagen
+        const formData = new FormData();
+        formData.append('id_categoria', tipoProducto === 'Juego' ? 1 : 2);
+        formData.append('id_plataforma', plataformaId);
+        formData.append('nombre_producto', document.getElementById('producto-nombre').value);
+        formData.append('precio', parseFloat(document.getElementById('producto-precio').value));
+        formData.append('tipo_producto', tipoProducto);
+        formData.append('stock', parseInt(document.getElementById('producto-stock').value) || 0);
+        formData.append('descripcion', document.getElementById('producto-descripcion')?.value || '');
 
-        if (tipoProducto === 'Juego') {
-            producto.genero = document.getElementById('juego-genero')?.value || '';
-            producto.edicion = document.getElementById('juego-edicion')?.value || '';
-            producto.desarrollador = document.getElementById('juego-desarrollador')?.value || '';
-            producto.fecha_lanzamiento = document.getElementById('juego-lanzamiento')?.value || null;
-        } else if (tipoProducto === 'Tarjeta regalo') {
-            producto.valor_tarjeta = parseFloat(document.getElementById('tarjeta-valor')?.value) || producto.precio;
+        // Agregar imagen si existe
+        const fotoInput = document.getElementById('producto-foto-input');
+        if (fotoInput && fotoInput.files.length > 0) {
+            formData.append('imagen', fotoInput.files[0]);
         }
 
+        if (tipoProducto === 'Juego') {
+            formData.append('genero', document.getElementById('juego-genero')?.value || '');
+            formData.append('edicion', document.getElementById('juego-edicion')?.value || '');
+            formData.append('desarrollador', document.getElementById('juego-desarrollador')?.value || '');
+            formData.append('fecha_lanzamiento', document.getElementById('juego-lanzamiento')?.value || '');
+        } else if (tipoProducto === 'Tarjeta regalo') {
+            formData.append('valor_tarjeta', parseFloat(document.getElementById('tarjeta-valor')?.value) || 0);
+        }
+
+        const token = localStorage.getItem('nexpixel_token');
         const response = await fetch(`${API_URL}/proveedor/productos`, {
             method: 'POST',
-            headers: API.getHeaders(),
-            body: JSON.stringify(producto)
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            body: formData
         });
         
         const data = await response.json();
@@ -355,7 +398,7 @@ async function cargarSelectProductos() {
 
         let options = '<option value="">Seleccionar producto</option>';
         productos.forEach(p => {
-            options += `<option value="${p.id_producto}">${p.nombre_producto}</option>`;
+            options += `<option value="${p.id_producto}">${escapeHtml(p.nombre_producto)}</option>`;
         });
         select.innerHTML = options;
     } catch (error) {
@@ -416,7 +459,7 @@ async function cargarMisVentas() {
             html += `
                 <tr>
                     <td>${new Date(v.fecha).toLocaleDateString()}</td>
-                    <td>${v.producto}</td>
+                    <td>${escapeHtml(v.producto)}</td>
                     <td>${v.cantidad}</td>
                     <td>$${formatearPrecio(v.subtotal)}</td>
                 </tr>
@@ -455,7 +498,7 @@ async function eliminarProducto(id) {
     }
 }
 
-// ===== EDITAR PRODUCTO =====
+// ===== EDITAR PRODUCTO (CON SUBIDA DE IMAGEN) =====
 async function editarProducto(id) {
     console.log('✏️ Editando producto:', id);
 
@@ -488,13 +531,13 @@ async function editarProducto(id) {
         let plataformaOptions = '<option value="">Seleccionar plataforma</option>';
         plataformas.forEach(p => {
             const selected = producto.id_plataforma === p.id_plataforma ? 'selected' : '';
-            plataformaOptions += `<option value="${p.id_plataforma}" ${selected}>${p.nombre_plataforma}</option>`;
+            plataformaOptions += `<option value="${p.id_plataforma}" ${selected}>${escapeHtml(p.nombre_plataforma)}</option>`;
         });
 
         const container = document.getElementById('proveedor-content');
         container.innerHTML = `
             <h2 style="color: #4d8cff; margin-bottom: 2rem;">✏️ Editar producto</h2>
-            <form onsubmit="return guardarEdicionProducto(event, ${id})" class="form-producto">
+            <form id="form-editar-producto" onsubmit="return guardarEdicionProducto(event, ${id})" class="form-producto" enctype="multipart/form-data">
                 <div class="form-row">
                     <div class="form-group">
                         <label>Tipo de producto</label>
@@ -515,7 +558,7 @@ async function editarProducto(id) {
                 
                 <div class="form-group">
                     <label>Nombre del producto</label>
-                    <input type="text" id="edit-producto-nombre" required value="${producto.nombre_producto}">
+                    <input type="text" id="edit-producto-nombre" required value="${escapeHtml(producto.nombre_producto)}">
                 </div>
                 
                 <div class="form-row">
@@ -536,19 +579,19 @@ async function editarProducto(id) {
                     <div class="form-row">
                         <div class="form-group">
                             <label>Género</label>
-                            <input type="text" id="edit-juego-genero" value="${producto.genero || ''}">
+                            <input type="text" id="edit-juego-genero" value="${escapeHtml(producto.genero || '')}">
                         </div>
                         
                         <div class="form-group">
                             <label>Edición</label>
-                            <input type="text" id="edit-juego-edicion" value="${producto.edicion || ''}">
+                            <input type="text" id="edit-juego-edicion" value="${escapeHtml(producto.edicion || '')}">
                         </div>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
                             <label>Desarrollador</label>
-                            <input type="text" id="edit-juego-desarrollador" value="${producto.desarrollador || ''}">
+                            <input type="text" id="edit-juego-desarrollador" value="${escapeHtml(producto.desarrollador || '')}">
                         </div>
                         
                         <div class="form-group">
@@ -567,14 +610,24 @@ async function editarProducto(id) {
                     </div>
                 </div>
                 
+                <!-- SUBIDA DE IMAGEN -->
                 <div class="form-group">
-                    <label>URL de la imagen</label>
-                    <input type="url" id="edit-producto-imagen" value="${producto.imagen_url || ''}">
+                    <label>Foto actual</label>
+                    <img src="${producto.imagen_url || 'assets/img/default-game.jpg'}" style="max-width: 150px; border-radius: 10px;" onerror="this.src='assets/img/default-game.jpg'">
+                </div>
+                
+                <div class="form-group">
+                    <label>Cambiar foto</label>
+                    <div class="foto-upload-modal" onclick="document.getElementById('edit-producto-foto-input').click()">
+                        📷 Seleccionar nueva imagen
+                    </div>
+                    <input type="file" id="edit-producto-foto-input" name="imagen" accept="image/*" style="display:none;" onchange="previewFotoProductoEdit(event)">
+                    <img id="foto-producto-preview-edit" class="foto-preview-modal" style="display:none; max-width: 200px; margin-top: 10px;">
                 </div>
                 
                 <div class="form-group">
                     <label>Descripción</label>
-                    <textarea id="edit-producto-descripcion" rows="4">${producto.descripcion || ''}</textarea>
+                    <textarea id="edit-producto-descripcion" rows="4">${escapeHtml(producto.descripcion || '')}</textarea>
                 </div>
                 
                 <div style="display: flex; gap: 1rem;">
@@ -595,6 +648,7 @@ function toggleEditCamposProducto() {
     document.getElementById('edit-campos-tarjeta').style.display = tipo === 'Tarjeta regalo' ? 'block' : 'none';
 }
 
+// ===== GUARDAR EDICIÓN DE PRODUCTO (CON FormData) =====
 async function guardarEdicionProducto(event, productoId) {
     event.preventDefault();
 
@@ -607,26 +661,33 @@ async function guardarEdicionProducto(event, productoId) {
             return false;
         }
 
-        const productoActualizado = {
-            id_categoria: tipoProducto === 'Juego' ? 1 : 2,
-            id_plataforma: plataformaId,
-            nombre_producto: document.getElementById('edit-producto-nombre').value,
-            precio: parseFloat(document.getElementById('edit-producto-precio').value),
-            tipo_producto: tipoProducto,
-            stock: parseInt(document.getElementById('edit-producto-stock').value) || 0,
-            descripcion: document.getElementById('edit-producto-descripcion')?.value || '',
-            imagen_url: document.getElementById('edit-producto-imagen').value || 'assets/img/default-game.jpg',
-            genero: document.getElementById('edit-juego-genero')?.value || null,
-            edicion: document.getElementById('edit-juego-edicion')?.value || null,
-            desarrollador: document.getElementById('edit-juego-desarrollador')?.value || null,
-            fecha_lanzamiento: document.getElementById('edit-juego-lanzamiento')?.value || null,
-            valor_tarjeta: parseFloat(document.getElementById('edit-tarjeta-valor')?.value) || null
-        };
+        const formData = new FormData();
+        formData.append('id_categoria', tipoProducto === 'Juego' ? 1 : 2);
+        formData.append('id_plataforma', plataformaId);
+        formData.append('nombre_producto', document.getElementById('edit-producto-nombre').value);
+        formData.append('precio', parseFloat(document.getElementById('edit-producto-precio').value));
+        formData.append('tipo_producto', tipoProducto);
+        formData.append('stock', parseInt(document.getElementById('edit-producto-stock').value) || 0);
+        formData.append('descripcion', document.getElementById('edit-producto-descripcion')?.value || '');
+        formData.append('genero', document.getElementById('edit-juego-genero')?.value || '');
+        formData.append('edicion', document.getElementById('edit-juego-edicion')?.value || '');
+        formData.append('desarrollador', document.getElementById('edit-juego-desarrollador')?.value || '');
+        formData.append('fecha_lanzamiento', document.getElementById('edit-juego-lanzamiento')?.value || '');
+        formData.append('valor_tarjeta', parseFloat(document.getElementById('edit-tarjeta-valor')?.value) || 0);
 
+        // Agregar nueva imagen si existe
+        const fotoInput = document.getElementById('edit-producto-foto-input');
+        if (fotoInput && fotoInput.files.length > 0) {
+            formData.append('imagen', fotoInput.files[0]);
+        }
+
+        const token = localStorage.getItem('nexpixel_token');
         const response = await fetch(`${API_URL}/proveedor/productos/${productoId}`, {
             method: 'PUT',
-            headers: API.getHeaders(),
-            body: JSON.stringify(productoActualizado)
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            body: formData
         });
 
         const data = await response.json();
@@ -645,6 +706,17 @@ async function guardarEdicionProducto(event, productoId) {
     return false;
 }
 
+// ===== FUNCIÓN PARA ESCAPAR HTML =====
+function escapeHtml(str) {
+    if (!str) return '';
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 // ===== UTILIDADES =====
 function formatearPrecio(precio) {
     return new Intl.NumberFormat('es-CO').format(precio);
@@ -657,3 +729,7 @@ window.guardarNuevoProducto = guardarNuevoProducto;
 window.editarProducto = editarProducto;
 window.eliminarProducto = eliminarProducto;
 window.cargarFormularioCodigos = cargarFormularioCodigos;
+window.toggleCamposProducto = toggleCamposProducto;
+window.toggleEditCamposProducto = toggleEditCamposProducto;
+window.previewFotoProductoNuevo = previewFotoProductoNuevo;
+window.previewFotoProductoEdit = previewFotoProductoEdit;

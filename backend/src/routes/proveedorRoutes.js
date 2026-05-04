@@ -1,6 +1,7 @@
 import express from 'express';
 import { proveedorController } from '../controllers/proveedorController.js';
 import { verificarToken, verificarRol } from '../middlewares/authMiddleware.js';
+import { uploadProductMiddleware } from '../middlewares/uploadMiddleware.js';
 
 const router = express.Router();
 
@@ -11,8 +12,8 @@ router.use(verificarRol(['proveedor']));
 // Productos
 router.get('/productos', proveedorController.obtenerMisProductos);
 router.get('/productos/:id', proveedorController.obtenerProductoPorId);
-router.post('/productos', proveedorController.crearProducto);
-router.put('/productos/:id', proveedorController.actualizarProducto);
+router.post('/productos', uploadProductMiddleware, proveedorController.crearProducto);
+router.put('/productos/:id', uploadProductMiddleware, proveedorController.actualizarProducto);
 router.delete('/productos/:id', proveedorController.eliminarProducto);
 
 // Códigos

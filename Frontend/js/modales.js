@@ -358,10 +358,30 @@ async function iniciarSesionModal(event) {
     const result = await Auth.login(email, password);
 
     if (result.success) {
-        console.log('✅ Login exitoso, actualizando sidebar...');
+        console.log('✅ Login exitoso');
         cerrarModal();
         
-        await renderizarSidebar();
+        // 🔥 FORZAR RECARGA DE DATOS DEL USUARIO DESDE EL SERVIDOR
+        await Auth.recargarUsuarioActual();
+        
+        // 🔥 ESPERAR UN MOMENTO Y RENDERIZAR SIDEBAR
+        setTimeout(() => {
+            if (typeof renderizarSidebar === 'function') {
+                renderizarSidebar();
+            }
+            
+            // 🔥 SI ESTÁS EN EL DASHBOARD, RECARGAR LOS DATOS ESPECÍFICOS
+            if (window.location.pathname.includes('dashboard-proveedor')) {
+                if (typeof cargarDashboardProveedor === 'function') {
+                    cargarDashboardProveedor();
+                }
+            } else if (window.location.pathname.includes('dashboard-admin')) {
+                if (typeof cargarDashboardAdmin === 'function') {
+                    cargarDashboardAdmin();
+                }
+            }
+        }, 100);
+        
         if (typeof Carrito !== 'undefined' && Carrito.sincronizarCarritoLocal) {
             await Carrito.sincronizarCarritoLocal();
         }
@@ -373,7 +393,6 @@ async function iniciarSesionModal(event) {
 
     return false;
 }
-
 // =============================================
 // PERFIL
 // =============================================

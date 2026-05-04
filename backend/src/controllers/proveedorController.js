@@ -1,5 +1,58 @@
 import { supabase } from '../config/db-config.js';
 
+// ============================================
+// FUNCIONES DE SUPABASE STORAGE PARA PRODUCTOS
+// ============================================
+
+async function subirImagenProducto(file, nombreProducto, idProducto) {
+    try {
+        const extension = file.originalname.split('.').pop();
+        const nombreLimpio = nombreProducto
+            .toLowerCase()
+            .replace(/[^a-z0-9]/g, '-')
+            .substring(0, 50);
+        
+        const fileName = `productos/${nombreLimpio}-${idProducto}-${Date.now()}.${extension}`;
+        
+        const { data, error } = await supabase.storage
+            .from('avatars') // 👈 CAMBIA A TU BUCKET
+            .upload(fileName, file.buffer, {
+                contentType: file.mimetype,
+                cacheControl: '3600'
+            });
+
+        if (error) throw error;
+
+        const { data: urlData } = supabase.storage
+            .from('avatars')
+            .getPublicUrl(fileName);
+
+        return urlData.publicUrl;
+    } catch (error) {
+        console.error('❌ Error subiendo imagen a Supabase:', error);
+        throw error;
+    }
+}
+
+async function eliminarImagenProducto(urlImagen) {
+    try {
+        if (!urlImagen) return;
+        
+        const pathParts = urlImagen.split('/avatars/');
+        if (pathParts.length < 2) return;
+        
+        const filePath = pathParts[1];
+        
+        const { error } = await supabase.storage
+            .from('avatars')
+            .remove([filePath]);
+            
+        if (error) console.error('Error eliminando imagen antigua:', error);
+    } catch (error) {
+        console.error('❌ Error eliminando imagen:', error);
+    }
+}
+
 export const proveedorController = {
   // ============================================
   // OBTENER PRODUCTOS DEL PROVEEDOR
@@ -21,7 +74,6 @@ export const proveedorController = {
 
       if (error) throw error;
 
-      // Obtener códigos disponibles para cada producto
       const productosConCodigos = await Promise.all(
         (productos || []).map(async (producto) => {
           const { count } = await supabase
@@ -52,10 +104,17 @@ export const proveedorController = {
   },
 
   // ============================================
-  // CREAR PRODUCTO (PROVEEDOR)
+  // CREAR PRODUCTO (PROVEEDOR) - CON SUBIDA DE IMAGEN
   // ============================================
   async crearProducto(req, res) {
     try {
+      // 🔥 DEBUG
+      console.log('===== DEBUG CREAR PRODUCTO =====');
+      console.log('req.body:', req.body);
+      console.log('req.file:', req.file);
+      console.log('===============================');
+
+      // Los campos vienen en req.body gracias a multer
       const {
         id_categoria,
         id_plataforma,
@@ -64,7 +123,6 @@ export const proveedorController = {
         precio,
         tipo_producto,
         stock,
-        imagen_url,
         genero,
         edicion,
         desarrollador,
@@ -87,21 +145,22 @@ export const proveedorController = {
         });
       }
 
+      // 1. Crear el producto primero (sin imagen)
       const nuevoProducto = {
         id_proveedor: req.usuario.id_usuario,
         id_categoria: id_categoria || null,
-        id_plataforma,
+        id_plataforma: parseInt(id_plataforma),
         nombre_producto,
         descripcion: descripcion || '',
-        precio,
+        precio: parseFloat(precio),
         tipo_producto,
-        stock: stock || 0,
-        imagen_url: imagen_url || null,
+        stock: stock ? parseInt(stock) : 0,
+        imagen_url: null,
         genero: genero || null,
         edicion: edicion || null,
         desarrollador: desarrollador || null,
         fecha_lanzamiento: fecha_lanzamiento || null,
-        valor_tarjeta: valor_tarjeta || null,
+        valor_tarjeta: valor_tarjeta ? parseFloat(valor_tarjeta) : null,
         estado: 'activo',
         fecha_creacion: new Date()
       };
@@ -114,10 +173,30 @@ export const proveedorController = {
 
       if (error) throw error;
 
-      // Si hay stock, crear códigos automáticamente
-      if (stock > 0 && producto) {
+      // 2. Si hay imagen, subir a Supabase y actualizar producto
+      let imagen_url = null;
+      if (req.file) {
+        imagen_url = await subirImagenProducto(
+          req.file, 
+          nombre_producto, 
+          producto.id_producto
+        );
+        
+        const { error: updateError } = await supabase
+          .from('producto')
+          .update({ imagen_url: imagen_url })
+          .eq('id_producto', producto.id_producto);
+          
+        if (updateError) throw updateError;
+        
+        producto.imagen_url = imagen_url;
+      }
+
+      // 3. Si hay stock, crear códigos automáticamente
+      const stockNum = stock ? parseInt(stock) : 0;
+      if (stockNum > 0 && producto) {
         const codigos = [];
-        for (let i = 0; i < stock; i++) {
+        for (let i = 0; i < stockNum; i++) {
           codigos.push({
             id_producto: producto.id_producto,
             codigo: `COD-${producto.id_producto}-${i + 1}-${Math.random().toString(36).substring(7).toUpperCase()}`,
@@ -146,18 +225,18 @@ export const proveedorController = {
   },
 
   // ============================================
-  // ACTUALIZAR PRODUCTO
+  // ACTUALIZAR PRODUCTO - CON IMAGEN
   // ============================================
   async actualizarProducto(req, res) {
     try {
       const { id } = req.params;
       const proveedorId = req.usuario.id_usuario;
-      const datosActualizar = req.body;
+      const datosActualizar = { ...req.body };
 
       // Verificar que el producto pertenece al proveedor
       const { data: productoExistente, error: errorExistente } = await supabase
         .from('producto')
-        .select('id_proveedor')
+        .select('id_proveedor, imagen_url')
         .eq('id_producto', id)
         .single();
 
@@ -175,11 +254,33 @@ export const proveedorController = {
         });
       }
 
+      // Si se subió una nueva imagen
+      if (req.file) {
+        // Eliminar imagen anterior si existe
+        if (productoExistente.imagen_url) {
+          await eliminarImagenProducto(productoExistente.imagen_url);
+        }
+        
+        // Subir nueva imagen
+        const nuevaImagenUrl = await subirImagenProducto(
+          req.file, 
+          datosActualizar.nombre_producto || 'producto', 
+          id
+        );
+        datosActualizar.imagen_url = nuevaImagenUrl;
+      }
+
       // Eliminar campos que no se deben actualizar
       delete datosActualizar.id_producto;
       delete datosActualizar.id_proveedor;
       delete datosActualizar.fecha_creacion;
       delete datosActualizar.ventas_totales;
+
+      // Convertir números
+      if (datosActualizar.precio) datosActualizar.precio = parseFloat(datosActualizar.precio);
+      if (datosActualizar.stock) datosActualizar.stock = parseInt(datosActualizar.stock);
+      if (datosActualizar.valor_tarjeta) datosActualizar.valor_tarjeta = parseFloat(datosActualizar.valor_tarjeta);
+      if (datosActualizar.id_plataforma) datosActualizar.id_plataforma = parseInt(datosActualizar.id_plataforma);
 
       const { data, error } = await supabase
         .from('producto')
@@ -213,10 +314,9 @@ export const proveedorController = {
       const { id } = req.params;
       const proveedorId = req.usuario.id_usuario;
 
-      // Verificar que el producto pertenece al proveedor
       const { data: productoExistente, error: errorExistente } = await supabase
         .from('producto')
-        .select('id_proveedor')
+        .select('id_proveedor, imagen_url')
         .eq('id_producto', id)
         .single();
 
@@ -234,7 +334,11 @@ export const proveedorController = {
         });
       }
 
-      // Desactivar producto
+      // Eliminar imagen de Supabase si existe
+      if (productoExistente.imagen_url) {
+        await eliminarImagenProducto(productoExistente.imagen_url);
+      }
+
       const { error } = await supabase
         .from('producto')
         .update({ estado: 'inactivo' })
@@ -257,6 +361,46 @@ export const proveedorController = {
   },
 
   // ============================================
+  // OBTENER PRODUCTO POR ID (PROVEEDOR)
+  // ============================================
+  async obtenerProductoPorId(req, res) {
+    try {
+      const { id } = req.params;
+      const proveedorId = req.usuario.id_usuario;
+
+      const { data: producto, error } = await supabase
+        .from('producto')
+        .select(`
+          *,
+          categoria: id_categoria (nombre_grupo),
+          plataforma: id_plataforma (nombre_plataforma)
+        `)
+        .eq('id_producto', id)
+        .eq('id_proveedor', proveedorId)
+        .single();
+
+      if (error || !producto) {
+        return res.status(404).json({
+          success: false,
+          error: 'Producto no encontrado'
+        });
+      }
+
+      res.json({
+        success: true,
+        producto
+      });
+
+    } catch (error) {
+      console.error('❌ Error obteniendo producto:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Error al obtener producto'
+      });
+    }
+  },
+
+  // ============================================
   // OBTENER CÓDIGOS DE UN PRODUCTO
   // ============================================
   async obtenerCodigos(req, res) {
@@ -264,7 +408,6 @@ export const proveedorController = {
       const { id } = req.params;
       const proveedorId = req.usuario.id_usuario;
 
-      // Verificar que el producto pertenece al proveedor
       const { data: producto, error: errorProducto } = await supabase
         .from('producto')
         .select('id_proveedor')
@@ -293,7 +436,6 @@ export const proveedorController = {
 
       if (error) throw error;
 
-      // Estadísticas de códigos
       const disponibles = codigos?.filter(c => c.estado === 'disponible').length || 0;
       const vendidos = codigos?.filter(c => c.estado === 'vendida').length || 0;
 
@@ -332,7 +474,6 @@ export const proveedorController = {
         });
       }
 
-      // Verificar que el producto pertenece al proveedor
       const { data: producto, error: errorProducto } = await supabase
         .from('producto')
         .select('id_proveedor, stock')
@@ -353,7 +494,6 @@ export const proveedorController = {
         });
       }
 
-      // Preparar códigos para insertar
       const codigosParaInsertar = codigos.map(codigo => ({
         id_producto: parseInt(id),
         codigo: codigo.trim(),
@@ -368,7 +508,6 @@ export const proveedorController = {
 
       if (error) throw error;
 
-      // Actualizar stock del producto
       await supabase
         .from('producto')
         .update({ stock: (producto.stock || 0) + codigos.length })
@@ -396,7 +535,6 @@ export const proveedorController = {
     try {
       const proveedorId = req.usuario.id_usuario;
 
-      // Total de productos
       const { count: totalProductos, error: errorProductos } = await supabase
         .from('producto')
         .select('*', { count: 'exact', head: true })
@@ -405,7 +543,6 @@ export const proveedorController = {
 
       if (errorProductos) throw errorProductos;
 
-      // Total de códigos disponibles
       const { data: productos, error: errorProductosList } = await supabase
         .from('producto')
         .select('id_producto')
@@ -428,7 +565,6 @@ export const proveedorController = {
         }
       }
 
-      // Ventas totales
       let totalVentas = 0;
       let ingresosTotales = 0;
 
@@ -475,7 +611,6 @@ export const proveedorController = {
     try {
       const proveedorId = req.usuario.id_usuario;
 
-      // Obtener productos del proveedor
       const { data: productos, error: errorProductos } = await supabase
         .from('producto')
         .select('id_producto, nombre_producto')
@@ -494,7 +629,6 @@ export const proveedorController = {
 
       const idsProductos = productos.map(p => p.id_producto);
 
-      // Obtener detalles de compra de estos productos
       const { data: ventas, error: errorVentas } = await supabase
         .from('detalle_compra')
         .select(`
@@ -516,7 +650,6 @@ export const proveedorController = {
 
       if (errorVentas) throw errorVentas;
 
-      // Agrupar ventas por producto
       const ventasPorProducto = {};
       let totalIngresos = 0;
 
@@ -614,44 +747,5 @@ export const proveedorController = {
         error: 'Error al obtener categorías' 
       });
     }
-  },
-  // ============================================
-// OBTENER PRODUCTO POR ID (PROVEEDOR)
-// ============================================
-async obtenerProductoPorId(req, res) {
-  try {
-    const { id } = req.params;
-    const proveedorId = req.usuario.id_usuario; // 👈 mismo patrón que usas en todo el archivo
-
-    const { data: producto, error } = await supabase
-      .from('producto')
-      .select(`
-        *,
-        categoria: id_categoria (nombre_grupo),
-        plataforma: id_plataforma (nombre_plataforma)
-      `)
-      .eq('id_producto', id)
-      .eq('id_proveedor', proveedorId) // 👈 seguridad: solo sus propios productos
-      .single();
-
-    if (error || !producto) {
-      return res.status(404).json({
-        success: false,
-        error: 'Producto no encontrado'
-      });
-    }
-
-    res.json({
-      success: true,
-      producto
-    });
-
-  } catch (error) {
-    console.error('❌ Error obteniendo producto:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Error al obtener producto'
-    });
   }
-},
 };
