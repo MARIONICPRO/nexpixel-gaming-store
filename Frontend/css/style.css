@@ -448,134 +448,291 @@ p {
     100% { transform: scale(1); }
 }
 
-/* ===== IA RAZONAMIENTO ===== */
+/* ============================================
+   ESTILOS DE IA - VERSIÓN PREMIUM
+   ============================================ */
+
+/* Contenedor principal de la IA */
 .ia-razonamiento-card {
-    background: rgba(10, 26, 47, 0.85);
-    backdrop-filter: blur(12px);
-    border-radius: 16px;
-    padding: 20px;
-    margin-bottom: 30px;
-    border: 1px solid rgba(77, 140, 255, 0.25);
-    box-shadow: 0 0 20px rgba(77, 140, 255, 0.15);
+    background: linear-gradient(135deg, rgba(10, 30, 50, 0.95) 0%, rgba(30, 20, 60, 0.95) 100%);
+    backdrop-filter: blur(16px);
+    border-radius: 24px;
+    padding: 24px;
+    margin-bottom: 32px;
+    border: 1px solid rgba(77, 140, 255, 0.4);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), 0 0 20px rgba(77, 140, 255, 0.2);
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
 }
 
+/* Efecto de brillo en el borde */
+.ia-razonamiento-card::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, 
+        #2a6fdb, 
+        #7b2cbf, 
+        #ff6b6b, 
+        #4d8cff, 
+        #2a6fdb);
+    border-radius: 26px;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.ia-razonamiento-card:hover::before {
+    opacity: 0.5;
+}
+
+.ia-razonamiento-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 30px rgba(77, 140, 255, 0.4);
+}
+
+/* Partículas de fondo para IA */
+.ia-razonamiento-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 20% 30%, rgba(77, 140, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(123, 44, 191, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+    border-radius: 24px;
+}
+
+/* Header de la IA */
 .ia-header {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
+    gap: 14px;
+    margin-bottom: 16px;
+    position: relative;
 }
 
+/* Icono animado */
+.ia-icon {
+    font-size: 32px;
+    color: #6ea8ff;
+    text-shadow: 0 0 10px rgba(77, 140, 255, 0.8);
+    animation: pulse-glow 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 5px rgba(77, 140, 255, 0.5));
+}
+
+@keyframes pulse-glow {
+    0%, 100% {
+        text-shadow: 0 0 5px rgba(77, 140, 255, 0.6);
+        filter: drop-shadow(0 0 3px rgba(77, 140, 255, 0.4));
+    }
+    50% {
+        text-shadow: 0 0 20px rgba(77, 140, 255, 1);
+        filter: drop-shadow(0 0 10px rgba(77, 140, 255, 0.8));
+    }
+}
+
+/* Título */
 .ia-header h3 {
     color: white;
     margin: 0;
-    font-size: 16px;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    background: linear-gradient(90deg, #ffffff, #aaccff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
-.ia-icon {
-    font-size: 24px;
-    color: #6ea8ff;
-    text-shadow: 0 0 5px rgba(77, 140, 255, 0.8);
-}
-
+/* Badge de IA */
 .ia-badge {
     margin-left: auto;
-    background: rgba(77, 140, 255, 0.15);
-    border: 1px solid rgba(77, 140, 255, 0.4);
-    padding: 4px 10px;
-    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(77, 140, 255, 0.2), rgba(123, 44, 191, 0.2));
+    border: 1px solid rgba(77, 140, 255, 0.5);
+    padding: 6px 12px;
+    border-radius: 30px;
     font-size: 11px;
-    color: var(--color-primario-claro);
+    font-weight: 600;
+    color: #8ab5ff;
+    letter-spacing: 0.5px;
+    backdrop-filter: blur(4px);
+    transition: all 0.3s ease;
 }
 
+.ia-badge::before {
+    content: '🤖 ';
+    font-size: 12px;
+}
+
+/* Texto del razonamiento */
 .ia-text {
-    color: #cfe3ff;
-    line-height: 1.6;
-    font-size: 14px;
+    color: #e0ecff;
+    line-height: 1.7;
+    font-size: 15px;
+    text-align: justify;
+    margin-bottom: 16px;
+    padding: 0 8px;
 }
 
+.ia-text strong {
+    color: #6ea8ff;
+    font-weight: 600;
+}
+
+/* Footer */
 .ia-footer {
-    margin-top: 14px;
-    padding-top: 10px;
-    border-top: 1px solid rgba(77, 140, 255, 0.15);
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(77, 140, 255, 0.2);
     font-size: 12px;
     color: #88aadd;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-/* ===== RECOMENDACIONES ===== */
+.ia-footer::before {
+    content: '⚡';
+    font-size: 14px;
+    animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+}
+
+/* ===== TARJETAS DE RECOMENDACIONES ===== */
+#recomendaciones-container {
+    margin-top: 20px;
+}
+
 #recomendaciones-container .productos-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
+    gap: 24px;
     width: 100%;
+}
+
+/* Tarjetas de juegos recomendados con glow */
+#recomendaciones-container .producto-card {
+    background: linear-gradient(135deg, rgba(20, 40, 70, 0.9) 0%, rgba(30, 25, 55, 0.9) 100%);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(77, 140, 255, 0.3);
+    border-radius: 16px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+}
+
+/* Efecto glow en hover */
+#recomendaciones-container .producto-card:hover {
+    transform: translateY(-12px) scale(1.02);
+    border-color: rgba(77, 140, 255, 0.8);
+    box-shadow: 0 15px 35px rgba(77, 140, 255, 0.3), 0 0 20px rgba(77, 140, 255, 0.2);
 }
 
 #recomendaciones-container .producto-img {
     height: 180px;
+    border-radius: 16px 16px 0 0;
+    transition: transform 0.5s ease;
 }
 
-/* ===== HERO ===== */
-.hero {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 3rem;
-    padding: 3rem;
-    margin-bottom: 2rem;
-    background: rgba(10, 20, 40, 0.55);
-    backdrop-filter: blur(12px);
-    border-radius: 20px;
-    border: 1px solid rgba(255,255,255,0.08);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+#recomendaciones-container .producto-card:hover .producto-img {
+    transform: scale(1.05);
 }
 
-.hero h1 {
-    font-size: 3rem;
-    letter-spacing: 2px;
-    text-shadow: 0 0 15px rgba(255,255,255,0.3);
-}
-
-.hero .nex {
-    color: var(--color-primario-claro);
-}
-
-.hero .pixel {
-    background: linear-gradient(90deg, var(--color-primario-claro), #7b2cbf);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-/* ===== DETALLE DE PRODUCTO ===== */
-.producto-detalle {
-    display: flex;
-    gap: 2rem;
-    padding: 2rem;
-    background: rgba(10, 20, 40, 0.7);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    border: 1px solid rgba(77, 140, 255, 0.3);
-}
-
-.producto-detalle-imagen {
-    flex: 1;
-    max-width: 400px;
-}
-
-.producto-detalle-imagen img {
-    width: 100%;
-    border-radius: 12px;
-    object-fit: cover;
-}
-
-.producto-detalle-info {
-    flex: 2;
-}
-
-.producto-detalle-precio {
-    font-size: 2rem;
-    color: var(--color-primario-claro);
+/* Precio destacado */
+#recomendaciones-container .producto-precio {
+    font-size: 1.3rem;
     font-weight: bold;
-    margin: 1rem 0;
+    color: #6ea8ff;
+    text-shadow: 0 0 10px rgba(110, 168, 255, 0.5);
+}
+
+/* Botones en tarjetas */
+#recomendaciones-container .btn-agregar {
+    background: linear-gradient(135deg, rgba(42, 111, 219, 0.9), rgba(77, 140, 255, 0.9));
+    border: none;
+    transition: all 0.3s ease;
+}
+
+#recomendaciones-container .btn-agregar:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 20px rgba(42, 111, 219, 0.5);
+}
+
+/* Loader para recomendaciones IA */
+.ia-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    gap: 20px;
+}
+
+.ia-loading .spinner {
+    width: 60px;
+    height: 60px;
+    border: 3px solid rgba(77, 140, 255, 0.2);
+    border-top-color: #4d8cff;
+    border-right-color: #7b2cbf;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+.ia-loading p {
+    color: #aaccff;
+    font-size: 14px;
+}
+
+/* Efecto de escritura (opcional para texto) */
+.ia-text.typing {
+    overflow: hidden;
+    border-right: 2px solid #4d8cff;
+    white-space: nowrap;
+    animation: typing 2s steps(40, end), blink-caret 0.75s step-end infinite;
+}
+
+@keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent; }
+    50% { border-color: #4d8cff; }
+}
+
+/* Tooltip para IA (info adicional) */
+.ia-tooltip {
+    position: relative;
+    cursor: help;
+}
+
+.ia-tooltip:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: #aaccff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 100;
+    border: 1px solid #4d8cff;
+    backdrop-filter: blur(8px);
+    pointer-events: none;
 }
 
 /* ===== NOTIFICACIONES ===== */
@@ -686,6 +843,7 @@ p {
     scrollbar-width: thin;
     scrollbar-color: #2a6fdb #0a0f1f;
 }
+
 /* ===== ICONOS CON DEGRADADO ===== */
 .sidebar i {
     background: linear-gradient(90deg, #3aa0ff, #7bff7b);
@@ -698,186 +856,7 @@ p {
     filter: drop-shadow(0 0 8px rgba(77,140,255,0.8));
     transform: scale(1.2);
 }
-/* ============================================
-   RESPONSIVE
-   ============================================ */
 
-/* Tablet (992px - 1199px) */
-@media screen and (max-width: 1199px) {
-    .productos-grid,
-    .tarjetas-grid {
-        grid-template-columns: repeat(3, minmax(240px, 1fr));
-    }
-}
-
-/* Tablet (768px - 991px) */
-@media screen and (max-width: 991px) {
-    .content {
-        margin-left: 0;
-        width: 100%;
-        padding: 2rem;
-    }
-    
-    .filtros-sidebar {
-        display: none;
-    }
-    
-    .filtros-toggle-btn {
-        display: flex;
-    }
-    
-    .juegos-container,
-    .tarjetas-container {
-        flex-direction: column;
-    }
-    
-    .productos-grid,
-    .tarjetas-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .producto-img,
-    .tarjeta-img {
-        height: 160px;
-    }
-}
-
-/* Móvil (576px - 767px) */
-@media screen and (max-width: 767px) {
-    .content {
-        padding: 70px 1rem 1rem 1rem;
-    }
-    
-    .productos-grid,
-    .tarjetas-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.8rem;
-    }
-    
-    .producto-img,
-    .tarjeta-img {
-        height: 140px;
-    }
-    
-    .producto-info h3,
-    .tarjeta-info h3 {
-        font-size: 0.85rem;
-        min-height: 2.2rem;
-    }
-    
-    .producto-precio {
-        font-size: 1rem;
-    }
-    
-    .btn-agregar,
-    .btn-comprar {
-        padding: 0.4rem;
-        font-size: 0.75rem;
-    }
-    
-    .hero {
-        flex-direction: column;
-        text-align: center;
-        padding: 2rem;
-    }
-    
-    .hero h1 {
-        font-size: 2rem;
-    }
-}
-
-/* Móvil pequeño (menos de 576px) */
-@media screen and (max-width: 575px) {
-    .productos-grid,
-    .tarjetas-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-    
-    .producto-img,
-    .tarjeta-img {
-        height: 200px;
-    }
-    
-    .producto-info h3,
-    .tarjeta-info h3 {
-        font-size: 1rem;
-        min-height: auto;
-    }
-    
-    .resultados-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    
-    .ordenar-select {
-        width: 100%;
-    }
-    
-    .btn-paginacion {
-        padding: 0.3rem 0.6rem;
-        font-size: 0.75rem;
-        min-width: 32px;
-    }
-    
-    .cart-floating {
-        width: 55px;
-        height: 55px;
-        font-size: 1.5rem;
-        bottom: 20px;
-        right: 20px;
-    }
-}
-
-/* Orientación horizontal en móvil */
-@media screen and (max-width: 768px) and (orientation: landscape) {
-    .productos-grid,
-    .tarjetas-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 0.5rem;
-    }
-    
-    .producto-img,
-    .tarjeta-img {
-        height: 100px;
-    }
-    
-    .producto-info h3,
-    .tarjeta-info h3 {
-        font-size: 0.7rem;
-        min-height: 1.8rem;
-    }
-}
-
-/* Ajustes para recomendaciones en responsive */
-@media (max-width: 1024px) {
-    #recomendaciones-container .productos-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 15px;
-    }
-    #recomendaciones-container .producto-img {
-        height: 160px;
-    }
-}
-
-@media (max-width: 768px) {
-    #recomendaciones-container .productos-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-    }
-    #recomendaciones-container .producto-img {
-        height: 140px;
-    }
-}
-
-@media (max-width: 576px) {
-    #recomendaciones-container .productos-grid {
-        grid-template-columns: 1fr;
-    }
-    #recomendaciones-container .producto-img {
-        height: 200px;
-    }
-}
 /* ============================================
    ESTILOS GLOBALES PARA INPUTS Y FORMULARIOS
    ============================================ */
@@ -981,4 +960,224 @@ input[type="range"]::-webkit-slider-thumb:hover {
 button:not(.menu-toggle):not(.btn-paginacion):not(.carrusel-btn) {
     cursor: pointer;
     transition: all 0.3s ease;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+/* Tablet (992px - 1199px) */
+@media screen and (max-width: 1199px) {
+    .productos-grid,
+    .tarjetas-grid {
+        grid-template-columns: repeat(3, minmax(240px, 1fr));
+    }
+    
+    #recomendaciones-container .productos-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+    }
+    #recomendaciones-container .producto-img {
+        height: 160px;
+    }
+}
+
+/* Tablet (768px - 991px) */
+@media screen and (max-width: 991px) {
+    .content {
+        margin-left: 0;
+        width: 100%;
+        padding: 2rem;
+    }
+    
+    .filtros-sidebar {
+        display: none;
+    }
+    
+    .filtros-toggle-btn {
+        display: flex;
+    }
+    
+    .juegos-container,
+    .tarjetas-container {
+        flex-direction: column;
+    }
+    
+    .productos-grid,
+    .tarjetas-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .producto-img,
+    .tarjeta-img {
+        height: 160px;
+    }
+}
+
+/* Móvil (576px - 767px) */
+@media screen and (max-width: 767px) {
+    .content {
+        padding: 70px 1rem 1rem 1rem;
+    }
+    
+    .productos-grid,
+    .tarjetas-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.8rem;
+    }
+    
+    .producto-img,
+    .tarjeta-img {
+        height: 140px;
+    }
+    
+    .producto-info h3,
+    .tarjeta-info h3 {
+        font-size: 0.85rem;
+        min-height: 2.2rem;
+    }
+    
+    .producto-precio {
+        font-size: 1rem;
+    }
+    
+    .btn-agregar,
+    .btn-comprar {
+        padding: 0.4rem;
+        font-size: 0.75rem;
+    }
+    
+    .hero {
+        flex-direction: column;
+        text-align: center;
+        padding: 2rem;
+    }
+    
+    .hero h1 {
+        font-size: 2rem;
+    }
+    
+    /* Responsive IA */
+    .ia-razonamiento-card {
+        padding: 16px;
+        border-radius: 20px;
+    }
+    
+    .ia-icon {
+        font-size: 24px;
+    }
+    
+    .ia-header {
+        flex-wrap: wrap;
+    }
+    
+    .ia-badge {
+        margin-left: 0;
+        font-size: 10px;
+    }
+    
+    .ia-text {
+        font-size: 13px;
+        line-height: 1.5;
+    }
+    
+    #recomendaciones-container .productos-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    #recomendaciones-container .producto-img {
+        height: 140px;
+    }
+}
+
+/* Móvil pequeño (menos de 576px) */
+@media screen and (max-width: 575px) {
+    .productos-grid,
+    .tarjetas-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .producto-img,
+    .tarjeta-img {
+        height: 200px;
+    }
+    
+    .producto-info h3,
+    .tarjeta-info h3 {
+        font-size: 1rem;
+        min-height: auto;
+    }
+    
+    .resultados-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .ordenar-select {
+        width: 100%;
+    }
+    
+    .btn-paginacion {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.75rem;
+        min-width: 32px;
+    }
+    
+    .cart-floating {
+        width: 55px;
+        height: 55px;
+        font-size: 1.5rem;
+        bottom: 20px;
+        right: 20px;
+    }
+    
+    /* Responsive IA móvil pequeño */
+    .ia-razonamiento-card {
+        padding: 14px;
+        margin-bottom: 20px;
+    }
+    
+    .ia-icon {
+        font-size: 20px;
+    }
+    
+    .ia-header h3 {
+        font-size: 14px;
+    }
+    
+    .ia-text {
+        font-size: 12px;
+    }
+    
+    .ia-footer {
+        font-size: 10px;
+    }
+    
+    #recomendaciones-container .productos-grid {
+        grid-template-columns: 1fr;
+    }
+    #recomendaciones-container .producto-img {
+        height: 200px;
+    }
+}
+
+/* Orientación horizontal en móvil */
+@media screen and (max-width: 768px) and (orientation: landscape) {
+    .productos-grid,
+    .tarjetas-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+    }
+    
+    .producto-img,
+    .tarjeta-img {
+        height: 100px;
+    }
+    
+    .producto-info h3,
+    .tarjeta-info h3 {
+        font-size: 0.7rem;
+        min-height: 1.8rem;
+    }
 }

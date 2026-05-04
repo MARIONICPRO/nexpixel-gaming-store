@@ -1,32 +1,31 @@
 // ============================================
 // IA-DB.JS - RECOMENDACIONES INTELIGENTES
-// Versión corregida con personalización real
+// VERSIÓN UNIFICADA - MISMO SISTEMA EN TODAS LAS PÁGINAS
 // ============================================
 
 const API_URL = 'http://localhost:3000/api';
 
 const IARecomendaciones = {
-    // Cache para evitar múltiples llamadas iguales
     cache: new Map(),
 
-    async cargarRecomendacionesUniversal({
+    // ============================================
+    // FUNCIÓN PRINCIPAL UNIFICADA
+    // ============================================
+    async cargarRecomendaciones({
         containerId,
-        tipo = "general",
-        productoId = null,
         limite = 4,
         forceRefresh = false
     }) {
         const container = document.getElementById(containerId);
         if (!container) {
-            console.warn(`⚠️ Container no encontrado: ${containerId}`);
+            console.warn(`Container no encontrado: ${containerId}`);
             return;
         }
 
-        // Buscar contenedor de razonamiento (puede estar separado o dentro)
+        // Buscar contenedor de razonamiento
         let razonamientoContainer = document.getElementById("ia-razonamiento");
         let tieneRazonamientoSeparado = !!razonamientoContainer;
 
-        // Si no hay contenedor separado, usaremos el mismo container para todo
         if (!tieneRazonamientoSeparado) {
             razonamientoContainer = container;
         }
@@ -40,118 +39,67 @@ const IARecomendaciones = {
         }
 
         try {
-            // Obtener usuario logeado
             const usuarioId = Auth.usuarioActual?.id_usuario || null;
             
-            // Log para debugging
-            console.log(`🔍 IA: Cargando recomendaciones - Tipo: ${tipo}, Usuario: ${usuarioId || 'anónimo'}, Producto: ${productoId || 'ninguno'}`);
+            console.log(`Cargando recomendaciones - Usuario: ${usuarioId || 'anonimo'}`);
 
-            let url = '';
-            let razonamientoBase = '';
-
-            // Construir URL según el tipo
-            if (tipo === "producto" && productoId) {
-                url = `${API_URL}/productos/${productoId}/similares?limite=${limite}`;
-                razonamientoBase = '🎮 Los jugadores que vieron este producto también compraron:';
-                console.log(`📦 Buscando productos similares al ID: ${productoId}`);
+            // 🔥 TODAS LAS PÁGINAS USAN EL MISMO ENDPOINT
+            let url = `${API_URL}/ia/recomendaciones?limite=${limite}`;
+            
+            if (usuarioId) {
+                url += `&usuarioId=${usuarioId}`;
+                console.log(`Recomendaciones personalizadas para usuario ${usuarioId}`);
             } else {
-                // PARA GENERAL: SIEMPRE intentar personalizado primero
-                url = `${API_URL}/ia/recomendaciones?limite=${limite}`;
-                if (usuarioId) {
-                    url += `&usuarioId=${usuarioId}`;
-                    razonamientoBase = '🎯 Basado en tus compras y visitas recientes:';
-                    console.log(`👤 Recomendaciones personalizadas para usuario: ${usuarioId}`);
-                } else {
-                    razonamientoBase = '🔥 Productos populares del momento:';
-                    console.log(`🌍 Recomendaciones generales (usuario no logueado)`);
-                }
+                console.log(`Recomendaciones generales para usuario anonimo`);
             }
 
-            // Verificar caché para evitar llamadas repetidas
-            const cacheKey = `${url}_${tipo}`;
+            const cacheKey = url;
             if (!forceRefresh && this.cache.has(cacheKey)) {
-                console.log(`💾 Usando caché para: ${cacheKey}`);
+                console.log(`Usando cache`);
                 const cached = this.cache.get(cacheKey);
-                this.renderizarRecomendaciones(cached.productos, container, razonamientoContainer, cached.razonamiento, tieneRazonamientoSeparado);
+                this.renderizar(cached.productos, container, razonamientoContainer, cached.razonamiento, tieneRazonamientoSeparado);
                 return;
             }
 
-            // Hacer petición al backend
             const response = await fetch(url);
             
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                throw new Error(`HTTP ${response.status}`);
             }
             
             const data = await response.json();
-            console.log(`📡 Respuesta del backend:`, data);
+            console.log(`Respuesta del backend:`, data);
 
-            let productos = [];
-            let razonamiento = razonamientoBase;
+            let productos = data.productos || [];
+            let razonamiento = data.razonamiento || '';
 
-            // Procesar respuesta según tipo
-            if (tipo === "producto") {
-                productos = data.similares || [];
-                if (productos.length === 0) {
-                    razonamiento = '⚠️ No encontramos productos similares, pero estos te pueden interesar:';
-                }
-            } else {
-                productos = data.productos || [];
-                
-                // Usar el razonamiento del backend si existe
-                if (data.razonamiento) {
-                    razonamiento = data.razonamiento;
-                }
-                
-                // Verificar si realmente son personalizados o son populares
-                if (usuarioId && productos.length > 0) {
-                    // Revisar si el backend nos dio personalizados o fallback
-                    const esPersonalizado = data.es_personalizado !== undefined ? data.es_personalizado : true;
-                    if (!esPersonalizado) {
-                        razonamiento = '🎯 No tenemos suficientes datos sobre ti, pero estos productos populares pueden interesarte:';
-                        console.log(`⚠️ Backend retornó fallback (populares) para usuario ${usuarioId}`);
-                    } else {
-                        console.log(`✅ Recomendaciones PERSONALIZADAS cargadas para usuario ${usuarioId}`);
-                    }
-                }
-            }
-
-            // Si no hay productos, usar fallback de populares
-            if (!productos || productos.length === 0) {
-                console.log(`⚠️ Sin resultados, cargando productos populares como fallback...`);
+            // Si no hay productos, usar populares
+            if (productos.length === 0) {
+                console.log(`Sin productos, usando populares`);
                 const fallbackUrl = `${API_URL}/ia/populares?limite=${limite}`;
                 const fallbackResponse = await fetch(fallbackUrl);
                 const fallbackData = await fallbackResponse.json();
                 productos = fallbackData.productos || [];
-                razonamiento = '<i class="fas fa-gamepad"></i>   Productos más populares en NexPixel';
-                console.log(`🔄 Fallback: ${productos.length} productos populares cargados`);
+                razonamiento = 'Los juegos más populares del momento en NexPixel';
             }
 
-            // Guardar en caché
             this.cache.set(cacheKey, { productos, razonamiento });
-
-            // Renderizar
-            this.renderizarRecomendaciones(productos, container, razonamientoContainer, razonamiento, tieneRazonamientoSeparado);
+            this.renderizar(productos, container, razonamientoContainer, razonamiento, tieneRazonamientoSeparado);
 
         } catch (error) {
-            console.error('❌ Error en IARecomendaciones:', error);
+            console.error('Error en IARecomendaciones:', error);
             
-            // Mostrar error amigable
-            if (tieneRazonamientoSeparado) {
+            try {
+                const fallbackUrl = `${API_URL}/ia/populares?limite=${limite}`;
+                const fallbackResponse = await fetch(fallbackUrl);
+                const fallbackData = await fallbackResponse.json();
+                const productos = fallbackData.productos || [];
+                const razonamiento = 'Productos populares de NexPixel';
+                this.renderizar(productos, container, razonamientoContainer, razonamiento, tieneRazonamientoSeparado);
+            } catch (fallbackError) {
                 container.innerHTML = `
                     <div class="error-message">
-                        <i class="fa-solid fa-exclamation-triangle"></i>
                         <p>No pudimos cargar las recomendaciones</p>
-                        <button onclick="IARecomendaciones.cargarRecomendacionesUniversal({containerId: '${containerId}', tipo: '${tipo}', productoId: ${productoId}, forceRefresh: true})" class="btn-reintentar">
-                            <i class="fa-solid fa-rotate-right"></i> Reintentar
-                        </button>
-                    </div>
-                `;
-            } else {
-                container.innerHTML = `
-                    <div class="error-message">
-                        <i class="fa-solid fa-exclamation-triangle"></i>
-                        <p>Error cargando recomendaciones</p>
                         <button onclick="location.reload()" class="btn-reintentar">Reintentar</button>
                     </div>
                 `;
@@ -159,18 +107,15 @@ const IARecomendaciones = {
         }
     },
 
-    renderizarRecomendaciones(productos, container, razonamientoContainer, razonamiento, tieneRazonamientoSeparado) {
-        if (!productos.length) {
-            const msg = '<p class="empty-message">No hay productos para mostrar</p>';
-            if (tieneRazonamientoSeparado) {
-                container.innerHTML = msg;
-            } else {
-                container.innerHTML = msg;
-            }
+    // ============================================
+    // RENDERIZAR (igual para todas las páginas)
+    // ============================================
+    renderizar(productos, container, razonamientoContainer, razonamiento, tieneRazonamientoSeparado) {
+        if (!productos || productos.length === 0) {
+            container.innerHTML = '<p class="empty-message">No hay productos para mostrar</p>';
             return;
         }
 
-        // Renderizar razonamiento
         if (razonamiento && razonamientoContainer) {
             razonamientoContainer.innerHTML = `
                 <div class="ia-razonamiento-card">
@@ -191,28 +136,23 @@ const IARecomendaciones = {
             `;
         }
 
-        // Renderizar productos
         let html = `<div class="productos-grid">`;
 
         productos.forEach(prod => {
-            const id = prod.id_producto || prod.id;
+            const id = prod.id_producto;
             const nombre = prod.nombre_producto || 'Producto';
             const precio = prod.precio || 0;
             const imagen = prod.imagen_url || 'assets/img/default-game.jpg';
-            const plataforma = prod.plataforma || 'Multiplataforma';
 
             html += `
             <div class="producto-card" data-id="${id}" onclick="verProducto(${id})">
                 <img src="${imagen}" class="producto-img" alt="${nombre}" loading="lazy" onerror="this.src='assets/img/default-game.jpg'">
                 <div class="producto-info">
                     <h3>${this.truncarTexto(nombre, 50)}</h3>
-                    <div class="producto-plataforma">
-                        <i class="fa-solid fa-desktop"></i> ${plataforma}
-                    </div>
                     <div class="producto-precio">
-                        $${formatearPrecio(precio)}
+                        $${this.formatearPrecio(precio)}
                     </div>
-                    <button class="btn-agregar" onclick="event.stopPropagation(); agregarAlCarrito(${id})">
+                    <button class="btn-agregar" onclick="event.stopPropagation(); manejarClickCompra(${id})">
                         <i class="fa-solid fa-cart-plus"></i> Agregar
                     </button>
                 </div>
@@ -234,18 +174,22 @@ const IARecomendaciones = {
     truncarTexto(texto, maxLength) {
         if (!texto) return '';
         return texto.length > maxLength ? texto.substring(0, maxLength) + '...' : texto;
+    },
+
+    formatearPrecio(precio) {
+        return new Intl.NumberFormat('es-CO').format(precio);
     }
 };
 
 // ============================================
-// INICIALIZACIÓN SEGÚN LA PÁGINA
+// INICIALIZACIÓN UNIFICADA
 // ============================================
 
 async function inicializarRecomendaciones() {
     const path = window.location.pathname;
-    console.log(`🚀 Inicializando IA en: ${path}`);
+    console.log(`Inicializando IA en: ${path}`);
 
-    // Esperar a que Auth esté listo (importante!)
+    // Esperar a que Auth esté listo
     let esperas = 0;
     while (!Auth?.usuarioActual && esperas < 20) {
         await new Promise(resolve => setTimeout(resolve, 100));
@@ -253,57 +197,36 @@ async function inicializarRecomendaciones() {
     }
     
     if (Auth?.usuarioActual) {
-        console.log(`✅ Usuario logueado: ${Auth.usuarioActual.id_usuario} (${Auth.usuarioActual.nombre})`);
+        console.log(`Usuario logueado: ${Auth.usuarioActual.id_usuario}`);
     } else {
-        console.log(`👤 Usuario no logueado - recomendaciones generales`);
+        console.log(`Usuario no logueado - recomendaciones generales`);
     }
 
-    // Pequeña pausa para asegurar que todo esté listo
+    // 🔥 MISMO CONTAINER PARA TODAS LAS PÁGINAS (usar siempre 'recomendaciones-container')
+    // o crear un contenedor específico si no existe
+    let containerId = '';
+    
+    // Detectar qué contenedor existe en la página actual
+    if (document.getElementById('recomendaciones-ia-container')) {
+        containerId = 'recomendaciones-ia-container';
+    } else if (document.getElementById('recomendaciones-container')) {
+        containerId = 'recomendaciones-container';
+    } else {
+        console.log('No se encontró contenedor para recomendaciones');
+        return;
+    }
+
+    console.log(`Usando container: ${containerId}`);
+    
     await new Promise(resolve => setTimeout(resolve, 200));
-
-    if (path.includes('producto.html')) {
-        // Página de detalle de producto
-        const params = new URLSearchParams(window.location.search);
-        const productoId = params.get('id');
-        
-        if (productoId) {
-            console.log(`🎮 Producto ID: ${productoId} - Cargando recomendaciones similares`);
-            IARecomendaciones.cargarRecomendacionesUniversal({
-                containerId: 'recomendaciones-ia-container',
-                tipo: 'producto',
-                productoId: productoId,
-                limite: 4
-            });
-        } else {
-            console.warn('⚠️ No se encontró ID de producto, usando recomendaciones generales');
-            IARecomendaciones.cargarRecomendacionesUniversal({
-                containerId: 'recomendaciones-ia-container',
-                tipo: 'general',
-                limite: 4
-            });
-        }
-
-    } else if (path.includes('carrito.html')) {
-        // Carrito - usa contenedor con razonamiento separado
-        console.log('🛒 Carrito - Cargando recomendaciones personalizadas');
-        IARecomendaciones.cargarRecomendacionesUniversal({
-            containerId: 'recomendaciones-ia-container',
-            tipo: 'general',
-            limite: 4
-        });
-
-    } else {
-        // Index y cualquier otra página
-        console.log('🏠 Index - Cargando recomendaciones personalizadas');
-        IARecomendaciones.cargarRecomendacionesUniversal({
-            containerId: 'recomendaciones-container',
-            tipo: 'general',
-            limite: 4
-        });
-    }
+    
+    IARecomendaciones.cargarRecomendaciones({
+        containerId: containerId,
+        limite: 4
+    });
 }
 
-// Estilos para el botón de reintento (agregar al CSS)
+// Estilos
 const styleReintentar = document.createElement('style');
 styleReintentar.textContent = `
     .btn-reintentar {
@@ -314,11 +237,6 @@ styleReintentar.textContent = `
         border-radius: 8px;
         cursor: pointer;
         margin-top: 12px;
-        transition: all 0.3s ease;
-    }
-    .btn-reintentar:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(42, 111, 219, 0.4);
     }
     .error-message {
         text-align: center;
@@ -329,6 +247,50 @@ styleReintentar.textContent = `
         text-align: center;
         padding: 2rem;
         color: #aaccff;
+    }
+    .ia-razonamiento-card {
+        background: rgba(10, 26, 47, 0.95);
+        backdrop-filter: blur(12px);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(77, 140, 255, 0.3);
+    }
+    .ia-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+    }
+    .ia-icon {
+        font-size: 1.8rem;
+        color: #4d8cff;
+    }
+    .ia-header h3 {
+        margin: 0;
+        color: #4d8cff;
+    }
+    .ia-badge {
+        background: linear-gradient(135deg, #2a6fdb, #1a4f9f);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        color: white;
+    }
+    .ia-text {
+        font-style: italic;
+        color: #cfe3ff;
+        padding: 1rem;
+        border-left: 3px solid #4d8cff;
+        background: rgba(77, 140, 255, 0.05);
+        border-radius: 8px;
+    }
+    .ia-footer {
+        margin-top: 1rem;
+        font-size: 0.75rem;
+        color: #8ba8d4;
+        text-align: right;
     }
     .ia-razonamiento-card-inline {
         background: rgba(10, 26, 47, 0.85);
@@ -342,20 +304,11 @@ styleReintentar.textContent = `
 `;
 document.head.appendChild(styleReintentar);
 
-// Inicializar cuando el DOM esté listo
+// Inicializar
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', inicializarRecomendaciones);
 } else {
     inicializarRecomendaciones();
 }
 
-// También inicializar después de que Auth cargue (por si acaso)
-setTimeout(() => {
-    if (!window._recomendacionesInicializadas) {
-        window._recomendacionesInicializadas = true;
-        inicializarRecomendaciones();
-    }
-}, 800);
-
-// Exportar para uso global
 window.IARecomendaciones = IARecomendaciones;

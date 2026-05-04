@@ -767,3 +767,97 @@ window.addEventListener('resize', function () {
         document.body.style.overflow = '';
     }
 });
+// ============================================
+// MANEJAR CLIC EN COMPRA (REGISTRA INTERACCIÓN PARA IA)
+// ============================================
+window.manejarClickCompra = async function(productoId) {
+    console.log('🛒 Click en comprar producto:', productoId);
+    
+    try {
+        // 1. Obtener producto para mostrar notificación
+        const producto = await Productos.buscarProducto(productoId);
+        
+        if (!producto) {
+            console.error('Producto no encontrado');
+            return;
+        }
+        
+        // 2. Agregar al carrito
+        const resultado = await agregarAlCarrito(productoId, 1);
+        
+        if (resultado && resultado.success !== false) {
+            // 3. 🔥 REGISTRAR INTERACCIÓN EN EL BACKEND (IA aprende)
+            const token = localStorage.getItem('nexpixel_token');
+            const usuario = Auth.usuarioActual;
+            
+            if (token && usuario && usuario.id_usuario) {
+                try {
+                    const response = await fetch(`${API_URL}/ia/interaccion`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            usuarioId: usuario.id_usuario,
+                            productoId: productoId,
+                            tipoInteraccion: 'carrito'
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        console.log('✅ Interacción registrada en IA');
+                        
+                        // 4. 🔥 OBTENER RECOMENDACIÓN PERSONALIZADA
+                        await mostrarRecomendacionIA(producto);
+                    }
+                } catch (err) {
+                    console.error('❌ Error registrando interacción:', err);
+                }
+            } else {
+                // Usuario no logueado, solo mostrar mensaje
+                mostrarNotificacion(`✅ ${producto.nombre_producto} agregado al carrito`, 'success');
+            }
+        }
+        
+    } catch (error) {
+        console.error('❌ Error en manejarClickCompra:', error);
+        mostrarNotificacion('Error al agregar al carrito', 'error');
+    }
+};
+
+// ============================================
+// MOSTRAR RECOMENDACIÓN DE IA
+// ============================================
+async function mostrarRecomendacionIA(productoAgregado) {
+    try {
+        const usuario = Auth.usuarioActual;
+        let url = `${API_URL}/ia/recomendaciones?limite=1`;
+        
+        if (usuario && usuario.id_usuario) {
+            url += `&usuarioId=${usuario.id_usuario}`;
+        }
+        
+        const response = await fetch(url, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('nexpixel_token')}`
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success && data.productos && data.productos.length > 0) {
+            const recomendado = data.productos[0];
+            const razonamiento = data.razonamiento || 'Basado en tu actividad reciente';
+            
+            // Mostrar notificación con recomendación
+            mostrarNotificacion(
+                `🎯 ¡No te pierdas ${recomendado.nombre_producto}! ${razonamiento}`,
+                'info',
+                6000
+            );
+        }
+    } catch (error) {
+        console.error('❌ Error obteniendo recomendación IA:', error);
+    }
+}
