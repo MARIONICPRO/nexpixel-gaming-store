@@ -4,54 +4,57 @@ import { supabase } from '../config/db-config.js';
 
 class IAService {
   
-// 🔥 MODIFICADO: Obtener recomendaciones CON RAZONAMIENTO
-async getRecomendaciones(usuarioId = null, limite = 8) {
-  try {
-    console.log(`🤖 Generando recomendaciones para usuario: ${usuarioId || 'anónimo'}`);
-    
-    if (!usuarioId) {
-      const productos = await this.getProductosPopulares(limite);
-      productos.razonamiento = 'Mostrando productos más populares de la tienda';
-      return productos;
+  async getRecomendaciones(usuarioId = null, limite = 8) {
+    try {
+      console.log(`Generando recomendaciones para usuario: ${usuarioId || 'anonimo'}`);
+      
+      if (!usuarioId) {
+        const productos = await this.getProductosPopulares(limite);
+        productos.razonamiento = '🔥 Los juegos mas populares del momento en NexPixel';
+        return productos;
+      }
+      
+      const productosVistos = await this.getProductosVistos(usuarioId);
+      
+      console.log('🎮 Productos en historial del usuario:');
+      productosVistos.forEach(p => {
+        console.log(`   - ${p.nombre_producto} (${p.categoria})`);
+      });
+      
+      if (productosVistos.length === 0) {
+        console.log('👤 Usuario nuevo sin historial, mostrando productos populares');
+        const productos = await this.getProductosPopulares(limite);
+        productos.razonamiento = '🎉 ¡Bienvenido a NexPixel! Estos son nuestros juegos mas populares para comenzar tu aventura';
+        return productos;
+      }
+      
+      const catalogo = await this.getCatalogoDisponible();
+      
+      if (catalogo.length === 0) {
+        return [];
+      }
+      
+      const recomendaciones = await this.recomendarConIA(productosVistos, catalogo, limite);
+      
+      if (recomendaciones && recomendaciones.length > 0) {
+        return recomendaciones;
+      }
+      
+      const populares = await this.getProductosPopulares(limite);
+      populares.razonamiento = '✨ Te mostramos nuestros juegos mas vendidos mientras personalizamos tu experiencia';
+      return populares;
+      
+    } catch (error) {
+      console.error('Error en recomendaciones:', error);
+      const populares = await this.getProductosPopulares(limite);
+      populares.razonamiento = '🎮 Productos populares de NexPixel - ¡Descubre tus próximos juegos favoritos!';
+      return populares;
     }
-    
-    const productosVistos = await this.getProductosVistos(usuarioId);
-    
-    if (productosVistos.length === 0) {
-      console.log('📊 Usuario nuevo, mostrando productos populares');
-      const productos = await this.getProductosPopulares(limite);
-      productos.razonamiento = 'Eres nuevo en NexPixel. Te mostramos nuestros juegos más vendidos';
-      return productos;
-    }
-    
-    const catalogo = await this.getCatalogoDisponible();
-    
-    if (catalogo.length === 0) {
-      return [];
-    }
-    
-    const recomendaciones = await this.recomendarConIA(productosVistos, catalogo, limite);
-    
-    if (recomendaciones.length > 0) {
-      return recomendaciones;
-    }
-    
-    const populares = await this.getProductosPopulares(limite);
-    populares.razonamiento = 'No pudimos generar recomendaciones personalizadas. Mostrando productos populares';
-    return populares;
-    
-  } catch (error) {
-    console.error('❌ Error en recomendaciones:', error);
-    const populares = await this.getProductosPopulares(limite);
-    populares.razonamiento = 'Error en el sistema de recomendaciones. Mostrando productos populares';
-    return populares;
   }
-}
   
-  // Obtener productos que el usuario ya ha visto o comprado
   async getProductosVistos(usuarioId) {
     try {
-      console.log(`📝 Obteniendo historial del usuario ${usuarioId}`);
+      console.log(`Obteniendo historial del usuario ${usuarioId}`);
       
       // Obtener compras
       const { data: compras, error: errorCompras } = await supabase
@@ -65,10 +68,10 @@ async getRecomendaciones(usuarioId = null, limite = 8) {
             categoria (nombre_grupo)
           )
         `)
-        .eq('compra.id_cuenta', parseInt(usuarioId));
+        .eq('id_usuario', parseInt(usuarioId)); 
       
       if (errorCompras) {
-        console.log('⚠️ Error en compras:', errorCompras.message);
+        console.log('Error en compras:', errorCompras.message);
       }
       
       // Obtener interacciones
@@ -89,15 +92,16 @@ async getRecomendaciones(usuarioId = null, limite = 8) {
         .limit(30);
       
       if (errorInter) {
-        console.log('⚠️ Error en interacciones:', errorInter.message);
+        console.log('Error en interacciones:', errorInter.message);
       }
       
-      // Combinar productos vistos
       const productosMap = new Map();
       
-      if (compras) {
-        compras.forEach(item => {
-          if (item.producto) {
+      if (compras && compras.length > 0) {
+        console.log(`📦 Compras encontradas: ${compras.length}`);
+        for (const item of compras) {
+          if (item.producto && item.producto.nombre_producto) {
+            console.log(`   ✅ Comprado: ${item.producto.nombre_producto}`);
             productosMap.set(item.producto.id_producto, {
               id_producto: item.producto.id_producto,
               nombre_producto: item.producto.nombre_producto,
@@ -105,12 +109,14 @@ async getRecomendaciones(usuarioId = null, limite = 8) {
               categoria: item.producto.categoria?.nombre_grupo || 'General'
             });
           }
-        });
+        }
       }
       
-      if (interacciones) {
-        interacciones.forEach(item => {
-          if (item.producto && !productosMap.has(item.producto.id_producto)) {
+      if (interacciones && interacciones.length > 0) {
+        console.log(`👁️ Interacciones encontradas: ${interacciones.length}`);
+        for (const item of interacciones) {
+          if (item.producto && item.producto.nombre_producto && !productosMap.has(item.producto.id_producto)) {
+            console.log(`   👀 Visto: ${item.producto.nombre_producto} (${item.tipo_interaccion})`);
             productosMap.set(item.producto.id_producto, {
               id_producto: item.producto.id_producto,
               nombre_producto: item.producto.nombre_producto,
@@ -118,24 +124,23 @@ async getRecomendaciones(usuarioId = null, limite = 8) {
               categoria: item.producto.categoria?.nombre_grupo || 'General'
             });
           }
-        });
+        }
       }
       
       const productos = Array.from(productosMap.values());
-      console.log(`📊 Encontrados ${productos.length} productos vistos/comprados`);
+      console.log(`📊 Total productos en historial: ${productos.length}`);
       
       return productos;
       
     } catch (error) {
-      console.error('❌ Error obteniendo productos vistos:', error);
+      console.error('Error obteniendo productos vistos:', error);
       return [];
     }
   }
   
-  // 🔥 CORREGIDO: Obtener productos populares (SIN default-game.jpg)
   async getProductosPopulares(limite) {
     try {
-      console.log(`📊 Obteniendo ${limite} productos populares`);
+      console.log(`Obteniendo ${limite} productos populares`);
       
       const { data, error } = await supabase
         .from('producto')
@@ -155,27 +160,25 @@ async getRecomendaciones(usuarioId = null, limite = 8) {
       
       if (error) throw error;
       
-      // 🔥 CAMBIO IMPORTANTE: usar null en lugar de la ruta problemática
       const productos = (data || []).map(p => ({
         id_producto: p.id_producto,
         nombre_producto: p.nombre_producto,
         precio: p.precio,
         descripcion: p.descripcion || '',
-        imagen_url: p.imagen_url || null,  // ✅ null, no string
+        imagen_url: p.imagen_url || null,
         stock: p.stock,
         categoria: p.categoria?.nombre_grupo || 'General'
       }));
       
-      console.log(`✅ Encontrados ${productos.length} productos populares`);
+      console.log(`✅ ${productos.length} productos populares encontrados`);
       return productos;
       
     } catch (error) {
-      console.error('❌ Error obteniendo productos populares:', error);
+      console.error('Error obteniendo productos populares:', error);
       return [];
     }
   }
   
-  // Obtener catálogo disponible (incluye imagen_url)
   async getCatalogoDisponible() {
     try {
       const { data, error } = await supabase
@@ -193,88 +196,168 @@ async getRecomendaciones(usuarioId = null, limite = 8) {
       
       if (error) throw error;
       
-      console.log(`📚 Catálogo obtenido: ${data?.length || 0} productos`);
+      console.log(`📚 Catalogo obtenido: ${data?.length || 0} productos`);
+      
       return data || [];
       
     } catch (error) {
-      console.error('❌ Error obteniendo catálogo:', error);
+      console.error('Error obteniendo catalogo:', error);
       return [];
     }
   }
   
-  // 🔥 CORREGIDO: Recomendar usando IA (SIN default-game.jpg)
-// 🔥 MODIFICADO: Recomendar usando IA CON RAZONAMIENTO
-async recomendarConIA(productosVistos, catalogo, limite) {
-  try {
-    // Filtrar productos que no ha visto
-    const idsVistos = new Set(productosVistos.map(p => p.id_producto));
-    const catalogoFiltrado = catalogo.filter(p => !idsVistos.has(p.id_producto));
-    
-    if (catalogoFiltrado.length === 0) {
-      console.log('⚠️ No hay productos nuevos para recomendar');
+  async recomendarConIA(productosVistos, catalogo, limite) {
+    try {
+      if (!productosVistos || productosVistos.length === 0) {
+        console.log('No hay productos vistos');
+        return [];
+      }
+      
+      const idsVistos = new Set(productosVistos.map(p => p.id_producto));
+      const catalogoFiltrado = catalogo.filter(p => !idsVistos.has(p.id_producto));
+      
+      if (catalogoFiltrado.length === 0) {
+        console.log('No hay productos nuevos para recomendar');
+        return [];
+      }
+      
+      const catalogoLimitado = catalogoFiltrado.slice(0, 30);
+      
+      // 🔥 MEJORAR PRESENTACION DEL HISTORIAL
+      const historialDetallado = productosVistos.map((p, i) => 
+        `${i + 1}. ${p.nombre_producto} - ${p.categoria || 'Videojuego'}`
+      ).join('\n');
+      
+      const nombresVistos = productosVistos.map(p => p.nombre_producto).join(', ');
+      
+      // 🔥 MEJORAR PRESENTACION DEL CATALOGO
+      const catalogoTexto = catalogoLimitado.map(p => 
+        `ID:${p.id_producto} | ${p.nombre_producto} | ${p.categoria || 'General'}`
+      ).join('\n');
+      
+      // 🔥 PROMPT MEJORADO PARA RAZONAMIENTO DE CALIDAD
+      const prompt = `Eres un experto recomendador de videojuegos para NexPixel, una tienda especializada en entretenimiento digital.
+
+## 📋 REGLAS IMPORTANTES:
+1. SOLO recomienda juegos que estén EXPLÍCITAMENTE en el catálogo que te doy
+2. NO inventes juegos, usa SOLO los IDs y nombres del catálogo
+3. Basa tu recomendación en los juegos que el usuario ya ha visto o agregado al carrito
+4. Responde en español, de forma natural, entusiasta y amigable
+
+## 🎮 HISTORIAL DEL USUARIO (juegos que ha visto/agregado al carrito):
+${historialDetallado}
+
+## 🛒 CATÁLOGO DISPONIBLE (juegos que SÍ existen en la tienda):
+${catalogoTexto}
+
+## 🎯 TAREA:
+Recomienda ${limite} juegos diferentes a los que el usuario ya ha visto.
+
+## 📝 FORMATO DE RESPUESTA (OBLIGATORIO):
+Primera línea: Los IDs separados por coma (ejemplo: "15,23,42,67")
+Segunda línea: Un "|"
+Tercera línea: Tu razonamiento. DEBE incluir:
+- Por qué estos juegos son similares a los que le gustaron
+- Qué características comparten (género, estilo, jugabilidad, temática)
+- Una invitación cordial y entusiasta a probarlos
+
+## 💡 EJEMPLO de respuesta CORRECTA:
+"15,23,42,67 |
+🎯 ¡Excelente elección! Como has disfrutado de juegos de acción como Pepsiman y carreras como Forza, hemos seleccionado estos títulos que combinan adrenalina y diversión. God of War te sumergirá en una épica historia nórdica con combates intensos, mientras que Spider-Man 2 te hará balancearte por Nueva York con mecánicas ágiles. ¡Estamos seguros de que te encantarán! 🚀"
+
+RESPONDE AHORA SIGUIENDO EXACTAMENTE EL FORMATO:`;
+
+      console.log('🤖 Consultando IA mejorada...');
+      
+      let respuestaIA = '';
+      try {
+        respuestaIA = await jsllm7(prompt);
+      } catch (iaError) {
+        console.error('Error llamando a jsllm7:', iaError);
+        return this.getRecomendacionesPorCategoria(productosVistos, catalogoLimitado, limite);
+      }
+      
+      console.log('💬 Respuesta IA:', respuestaIA);
+      
+      let ids = [];
+      let razonamiento = '';
+      
+      if (respuestaIA && respuestaIA.includes('|')) {
+        const parts = respuestaIA.split('|');
+        const idsPart = parts[0];
+        razonamiento = parts.slice(1).join('|').trim();
+        const idMatches = idsPart.match(/\d+/g);
+        ids = idMatches || [];
+      } else if (respuestaIA) {
+        const idMatches = respuestaIA.match(/\d+/g);
+        ids = idMatches || [];
+        // Razonamiento mejorado por defecto
+        const juegosInteres = productosVistos.map(p => p.nombre_producto).join(', ');
+        const categoriaInteres = productosVistos[0]?.categoria || 'videojuegos';
+        razonamiento = `🎯 ¡Genial! Basado en tu interés por ${juegosInteres}, hemos analizado nuestro catálogo y seleccionado estos ${categoriaInteres} que comparten mecánicas, estilo narrativo y esa misma emoción que tanto te gusta. ¡Prepárate para nuevas aventuras épicas! 🎮✨`;
+      }
+      
+      const idsNumeros = ids.map(Number).slice(0, limite);
+      const idsValidos = catalogoLimitado.filter(p => idsNumeros.includes(p.id_producto));
+      
+      let recomendados = idsValidos;
+      
+      if (recomendados.length < limite && productosVistos.length > 0) {
+        const categoriaInteres = productosVistos[0]?.categoria;
+        const mismosGenero = catalogoLimitado
+          .filter(p => !idsNumeros.includes(p.id_producto) && p.categoria === categoriaInteres)
+          .slice(0, limite - recomendados.length);
+        recomendados.push(...mismosGenero);
+      }
+      
+      if (recomendados.length < limite) {
+        const restantes = catalogoLimitado
+          .filter(p => !recomendados.some(r => r.id_producto === p.id_producto))
+          .slice(0, limite - recomendados.length);
+        recomendados.push(...restantes);
+      }
+      
+      const resultados = recomendados.map(p => ({
+        id_producto: p.id_producto,
+        nombre_producto: p.nombre_producto,
+        precio: p.precio,
+        imagen_url: p.imagen_url || null,
+        categoria: p.categoria?.nombre_grupo || 'General'
+      }));
+      
+      resultados.razonamiento = razonamiento;
+      
+      console.log(`✨ IA recomendo: ${resultados.map(p => p.nombre_producto).join(', ')}`);
+      console.log(`📝 Razonamiento: ${razonamiento.substring(0, 100)}...`);
+      
+      return resultados;
+      
+    } catch (error) {
+      console.error('Error en IA:', error);
+      return this.getRecomendacionesPorCategoria(productosVistos, catalogo, limite);
+    }
+  }
+  
+  async getRecomendacionesPorCategoria(productosVistos, catalogo, limite) {
+    if (!productosVistos || productosVistos.length === 0 || !catalogo || catalogo.length === 0) {
       return [];
     }
     
-    // Limitar catálogo para no sobrecargar
-    const catalogoLimitado = catalogoFiltrado.slice(0, 40);
+    const categoriaInteres = productosVistos[0]?.categoria;
+    const idsVistos = new Set(productosVistos.map(p => p.id_producto));
+    const juegosInteres = productosVistos.map(p => p.nombre_producto).join(', ');
     
-    // Preparar nombres de productos vistos
-    const nombresVistos = productosVistos.slice(0, 8).map(p => p.nombre_producto).join(', ');
+    let recomendados = catalogo
+      .filter(p => !idsVistos.has(p.id_producto) && p.categoria === categoriaInteres)
+      .slice(0, limite);
     
-    const catalogoTexto = catalogoLimitado.map(p => 
-      `${p.id_producto}: ${p.nombre_producto} (${p.categoria?.nombre_grupo || 'General'}) - $${p.precio}`
-    ).join('\n');
-    
-    // 🔥 NUEVO PROMPT CON RAZONAMIENTO
-    const prompt = `Eres un recomendador de videojuegos para NexPixel.
-
-El usuario ha visto/comprado: ${nombresVistos}
-
-Catálogo disponible (elige SOLO de aquí):
-${catalogoTexto}
-
-Recomienda ${limite} juegos DIFERENTES a los que ya ha visto.
-
-Formato de respuesta (OBLIGATORIO):
-PRIMERO: Los IDs separados por coma
-LUEGO: Un "|"
-DESPUÉS: Tu razonamiento explicando POR QUÉ recomiendas esos juegos
-
-Ejemplo correcto:
-"15,23,42,67 | El usuario juega RPG y acción, por eso le recomiendo Elden Ring (RPG desafiante), Spider-Man 2 (acción+mundo abierto), God of War (acción narrativa) y Horizon (mundo abierto+acción)"`;
-
-    console.log('🤖 Consultando IA con razonamiento...');
-    const respuestaIA = await jsllm7(prompt);
-    console.log('💬 Respuesta IA completa:', respuestaIA);
-    
-    // 🔥 EXTRAER IDs Y RAZONAMIENTO
-    let ids = [];
-    let razonamiento = '';
-    
-    if (respuestaIA.includes('|')) {
-      const [idsPart, razonamientoPart] = respuestaIA.split('|');
-      ids = idsPart.match(/\d+/g) || [];
-      razonamiento = razonamientoPart.trim();
-    } else {
-      // Fallback si no usa el formato correcto
-      ids = respuestaIA.match(/\d+/g) || [];
-      razonamiento = 'Recomendaciones basadas en tu historial de juegos';
-    }
-    
-    const idsNumeros = ids.map(Number).slice(0, limite);
-    
-    // Filtrar productos
-    let recomendados = catalogoLimitado.filter(p => idsNumeros.includes(p.id_producto));
-    
-    // Si faltan, completar
     if (recomendados.length < limite) {
-      const restantes = catalogoLimitado
-        .filter(p => !idsNumeros.includes(p.id_producto))
+      const restantes = catalogo
+        .filter(p => !idsVistos.has(p.id_producto) && p.categoria !== categoriaInteres)
         .slice(0, limite - recomendados.length);
       recomendados.push(...restantes);
     }
     
-    // 🔥 RESULTADOS CON RAZONAMIENTO INCLUIDO
     const resultados = recomendados.map(p => ({
       id_producto: p.id_producto,
       nombre_producto: p.nombre_producto,
@@ -283,21 +366,22 @@ Ejemplo correcto:
       categoria: p.categoria?.nombre_grupo || 'General'
     }));
     
-    // 🔥 AÑADIR RAZONAMIENTO A LOS RESULTADOS
-    resultados.razonamiento = razonamiento;
+    // 🔥 RAZONAMIENTOS MEJORADOS para el fallback
+    const mensajesRazonamiento = [
+      `🎯 ¡Excelente elección! Como te gustan juegos como ${juegosInteres}, hemos seleccionado estos títulos que comparten la misma esencia y emoción. ¡Dale una oportunidad a estos juegazos que te harán vibrar! 🚀`,
+      `🎮 Basado en tu interés por ${juegosInteres}, te recomendamos esta selección especial de ${categoriaInteres || 'videojuegos'} que combinan acción, aventura y horas de diversión asegurada. ¡No te arrepentirás! ⚡`,
+      `✨ ¡Genial! Sabemos que has disfrutado de ${juegosInteres}, así que preparamos esta lista con juegos que te harán vivir experiencias aún más épicas. ¡Prepárate para nuevas aventuras! 🎉`,
+      `🔥 ¡Acertaste! Basado en tu historial, estos juegos son perfectos para ti. Comparten la calidad, la jugabilidad y la emoción que ya conoces y amas. ¡A jugar se ha dicho! 🎮💪`
+    ];
     
-    console.log(`✨ IA recomendó ${resultados.length} productos`);
-    console.log(`🧠 Razonamiento: ${razonamiento}`);
+    const randomIndex = Math.floor(Math.random() * mensajesRazonamiento.length);
+    resultados.razonamiento = mensajesRazonamiento[randomIndex];
+    
+    console.log(`Fallback por categoria: ${resultados.map(p => p.nombre_producto).join(', ')}`);
     
     return resultados;
-    
-  } catch (error) {
-    console.error('❌ Error en IA:', error);
-    return [];
   }
-}
   
-  // Registrar interacción del usuario
   async registrarInteraccion(usuarioId, productoId, tipo) {
     if (!usuarioId) return;
     
@@ -313,23 +397,29 @@ Ejemplo correcto:
         });
       
       if (error) throw error;
-      console.log(`✅ Interacción registrada: ${tipo} - Producto ${productoId}`);
+      console.log(`✅ Interaccion registrada: ${tipo} - Producto ${productoId}`);
       
     } catch (error) {
-      console.error('❌ Error registrando interacción:', error);
+      console.error('Error registrando interaccion:', error);
     }
   }
   
-  // 🔥 CORREGIDO: Obtener productos similares (SIN default-game.jpg)
   async getProductosSimilares(productoId, limite = 4) {
     try {
+      console.log(`Buscando productos similares al ID: ${productoId}`);
+      
       const { data: productoOriginal, error: prodError } = await supabase
         .from('producto')
-        .select('id_categoria')
+        .select('id_producto, nombre_producto, id_categoria, categoria (nombre_grupo)')
         .eq('id_producto', parseInt(productoId))
         .single();
       
-      if (prodError) throw prodError;
+      if (prodError) {
+        console.error('Error obteniendo producto original:', prodError);
+        return [];
+      }
+      
+      console.log(`Producto original: ${productoOriginal.nombre_producto}, Categoria ID: ${productoOriginal.id_categoria}`);
       
       let query = supabase
         .from('producto')
@@ -354,17 +444,20 @@ Ejemplo correcto:
       
       if (error) throw error;
       
-      // 🔥 CAMBIO IMPORTANTE: usar null en lugar de la ruta problemática
-      return (similares || []).map(p => ({
+      const resultados = (similares || []).map(p => ({
         id_producto: p.id_producto,
         nombre_producto: p.nombre_producto,
         precio: p.precio,
-        imagen_url: p.imagen_url || null,  // ✅ null, no string
+        imagen_url: p.imagen_url || null,
         categoria: p.categoria?.nombre_grupo || 'General'
       }));
       
+      console.log(`Encontrados ${resultados.length} productos similares`);
+      
+      return resultados;
+      
     } catch (error) {
-      console.error('❌ Error obteniendo similares:', error);
+      console.error('Error obteniendo similares:', error);
       return [];
     }
   }
