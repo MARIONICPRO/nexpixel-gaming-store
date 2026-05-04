@@ -41,6 +41,7 @@ body {
     background: var(--color-fondo);
     overflow-x: hidden;
     position: relative;
+    z-index: 0;
 }
 
 /* ===== FONDO CON IMAGEN Y EFECTO ===== */
@@ -48,7 +49,7 @@ body::before {
     content: '';
     position: fixed;
     inset: 0;
-    background: url('https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=2000&q=80') center/cover no-repeat;
+    background: url('../../resources/img/Fondo.avif') center/cover no-repeat;
     z-index: -2;
     filter: brightness(0.6);
 }
