@@ -232,3 +232,9 @@
         transform: translateY(0);
     }
 }
+#recomendaciones-ia-container .productos-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 1.5rem !important;
+    width: 100% !important;
+}

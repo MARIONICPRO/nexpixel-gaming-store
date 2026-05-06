@@ -300,6 +300,7 @@ styleReintentar.textContent = `
         margin-bottom: 20px;
         border: 1px solid rgba(77, 140, 255, 0.25);
         color: #cfe3ff;
+        
     }
 `;
 document.head.appendChild(styleReintentar);

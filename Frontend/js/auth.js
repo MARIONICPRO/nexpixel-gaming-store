@@ -113,6 +113,9 @@ const Auth = {
                 if (typeof Auth !== 'undefined' && Auth.actualizarUI) {
                     Auth.actualizarUI();
                 }
+                setTimeout(() => {
+                window.location.reload();
+                }, 500);
 
                 return { success: true, usuario: response.usuario };
             }
