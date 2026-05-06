@@ -852,7 +852,7 @@ async function mostrarRecomendacionIA(productoAgregado) {
             
             // Mostrar notificación con recomendación
             mostrarNotificacion(
-                `🎯 ¡No te pierdas ${recomendado.nombre_producto}! ${razonamiento}`,
+                `<i class="fa-solid fa-fire"></i> ¡No te pierdas ${recomendado.nombre_producto}! ${razonamiento}`,
                 'info',
                 6000
             );

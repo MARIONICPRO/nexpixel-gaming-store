@@ -427,7 +427,7 @@ function abrirModalPerfil() {
                     <textarea id="perfil-descripcion" rows="3">${usuario.descripcion || ''}</textarea>
                 </div>
                 
-                <h3 style="color:#4d8cff; margin:20px 0 10px;">🔐 Cambiar contraseña</h3>
+                <h3 style="color:#4d8cff; margin:20px 0 10px;"><i class="fa-solid fa-key"></i> Cambiar contraseña</h3>
                 <div class="form-group password-container">
                     <label>Contraseña actual</label>
                     <input type="password" id="perfil-password-actual" placeholder="Ingresa tu contraseña actual">
@@ -451,7 +451,7 @@ function abrirModalPerfil() {
                 </div>
                 
                 <div class="foto-upload-modal" onclick="document.getElementById('perfil-foto').click()">
-                    📷 Cambiar foto
+                    <i class="fa-solid fa-camera"></i> Cambiar foto
                 </div>
                 <input type="file" id="perfil-foto" accept="image/*" style="display:none;" onchange="previewFotoPerfil(event)">
                 <img id="foto-perfil-preview" class="foto-preview-modal" src="${usuario.foto_perfil || ''}">

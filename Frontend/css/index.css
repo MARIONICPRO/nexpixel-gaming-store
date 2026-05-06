@@ -238,3 +238,6 @@
     gap: 1.5rem !important;
     width: 100% !important;
 }
+form-group password-container i{
+    color: white;
+}

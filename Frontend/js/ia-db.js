@@ -127,7 +127,7 @@ const IARecomendaciones = {
                         <div class="ia-badge">Personalizado</div>
                     </div>
                     <div class="ia-text">
-                        <i class="fa-solid fa-quote-left"></i> ${razonamiento}
+                        ${razonamiento}
                     </div>
                     <div class="ia-footer">
                         <i class="fa-regular fa-clock"></i> Basado en tu actividad reciente
