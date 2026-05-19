@@ -1,5 +1,5 @@
 /* ============================================
-   NEXPIXEL - ESTILOS GLOBALES LIMPIOS
+   NEXPIXEL - ESTILOS GLOBALES
    ============================================ */
 
 /* ===== VARIABLES ===== */
@@ -87,11 +87,13 @@ p {
     color: rgba(255,255,255,0.6);
 }
 
-/* ===== CONTENIDO PRINCIPAL ===== */
+/* ===== CONTENIDO PRINCIPAL - OCUPAR TODO EL ANCHO ===== */
 .content {
-    margin-left: 280px;
-    padding: 2rem;
-    width: calc(100% - 280px);
+    margin-left: 0;
+    padding: 2rem 3rem;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 /* ===== SIDEBAR DE FILTROS ===== */
@@ -197,11 +199,13 @@ p {
     display: flex;
     gap: 2rem;
     width: 100%;
+    max-width: 100%;
 }
 
 .filtros-contenido {
     flex: 1;
     min-width: 0;
+    max-width: 100%;
     display: flex;
     flex-direction: column;
 }
@@ -250,11 +254,11 @@ p {
     cursor: pointer;
 }
 
-/* ===== GRID DE PRODUCTOS ===== */
+/* ===== GRID DE PRODUCTOS - MÁS COLUMNAS ===== */
 .productos-grid,
 .tarjetas-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(240px, 1fr));
+    grid-template-columns: repeat(4, minmax(240px, 1fr));
     gap: 1rem;
     margin-top: 1.5rem;
     width: 100%;
@@ -272,6 +276,7 @@ p {
     display: flex;
     flex-direction: column;
     height: 100%;
+    max-width: 100%;
     backdrop-filter: blur(5px);
     box-shadow: var(--shadow);
 }
@@ -286,7 +291,7 @@ p {
 .producto-img,
 .tarjeta-img {
     width: 100%;
-    height: 200px;
+    height: 220px;
     object-fit: cover;
     background: var(--color-fondo-claro);
     border-bottom: 1px solid var(--color-borde);
@@ -452,7 +457,6 @@ p {
    ESTILOS DE IA - VERSIÓN PREMIUM
    ============================================ */
 
-/* Contenedor principal de la IA */
 .ia-razonamiento-card {
     background: linear-gradient(135deg, rgba(10, 30, 50, 0.95) 0%, rgba(30, 20, 60, 0.95) 100%);
     backdrop-filter: blur(16px);
@@ -466,7 +470,6 @@ p {
     overflow: hidden;
 }
 
-/* Efecto de brillo en el borde */
 .ia-razonamiento-card::before {
     content: '';
     position: absolute;
@@ -495,21 +498,6 @@ p {
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 30px rgba(77, 140, 255, 0.4);
 }
 
-/* Partículas de fondo para IA */
-.ia-razonamiento-card::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle at 20% 30%, rgba(77, 140, 255, 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 80% 70%, rgba(123, 44, 191, 0.05) 0%, transparent 50%);
-    pointer-events: none;
-    border-radius: 24px;
-}
-
-/* Header de la IA */
 .ia-header {
     display: flex;
     align-items: center;
@@ -518,7 +506,6 @@ p {
     position: relative;
 }
 
-/* Icono animado */
 .ia-icon {
     font-size: 32px;
     color: #6ea8ff;
@@ -538,7 +525,6 @@ p {
     }
 }
 
-/* Título */
 .ia-header h3 {
     color: white;
     margin: 0;
@@ -551,7 +537,6 @@ p {
     background-clip: text;
 }
 
-/* Badge de IA */
 .ia-badge {
     margin-left: auto;
     background: linear-gradient(135deg, rgba(77, 140, 255, 0.2), rgba(123, 44, 191, 0.2));
@@ -563,7 +548,6 @@ p {
     color: #8ab5ff;
     letter-spacing: 0.5px;
     backdrop-filter: blur(4px);
-    transition: all 0.3s ease;
 }
 
 .ia-badge::before {
@@ -571,7 +555,6 @@ p {
     font-size: 12px;
 }
 
-/* Texto del razonamiento */
 .ia-text {
     color: #e0ecff;
     line-height: 1.7;
@@ -581,12 +564,6 @@ p {
     padding: 0 8px;
 }
 
-.ia-text strong {
-    color: #6ea8ff;
-    font-weight: 600;
-}
-
-/* Footer */
 .ia-footer {
     margin-top: 16px;
     padding-top: 12px;
@@ -610,10 +587,6 @@ p {
 }
 
 /* ===== TARJETAS DE RECOMENDACIONES ===== */
-#recomendaciones-container {
-    margin-top: 20px;
-}
-
 #recomendaciones-container .productos-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -621,8 +594,15 @@ p {
     width: 100%;
 }
 
-/* Tarjetas de juegos recomendados con glow */
-#recomendaciones-container .producto-card {
+#recomendaciones-ia-container .productos-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    width: 100%;
+}
+
+#recomendaciones-container .producto-card,
+#recomendaciones-ia-container .producto-card {
     background: linear-gradient(135deg, rgba(20, 40, 70, 0.9) 0%, rgba(30, 25, 55, 0.9) 100%);
     backdrop-filter: blur(8px);
     border: 1px solid rgba(77, 140, 255, 0.3);
@@ -631,108 +611,65 @@ p {
     position: relative;
 }
 
-/* Efecto glow en hover */
-#recomendaciones-container .producto-card:hover {
+#recomendaciones-container .producto-card:hover,
+#recomendaciones-ia-container .producto-card:hover {
     transform: translateY(-12px) scale(1.02);
     border-color: rgba(77, 140, 255, 0.8);
     box-shadow: 0 15px 35px rgba(77, 140, 255, 0.3), 0 0 20px rgba(77, 140, 255, 0.2);
 }
 
-#recomendaciones-container .producto-img {
-    height: 180px;
+#recomendaciones-container .producto-img,
+#recomendaciones-ia-container .producto-img {
+    height: 200px;
     border-radius: 16px 16px 0 0;
     transition: transform 0.5s ease;
 }
 
-#recomendaciones-container .producto-card:hover .producto-img {
+#recomendaciones-container .producto-card:hover .producto-img,
+#recomendaciones-ia-container .producto-card:hover .producto-img {
     transform: scale(1.05);
 }
 
-/* Precio destacado */
-#recomendaciones-container .producto-precio {
+#recomendaciones-container .producto-precio,
+#recomendaciones-ia-container .producto-precio {
     font-size: 1.3rem;
     font-weight: bold;
     color: #6ea8ff;
     text-shadow: 0 0 10px rgba(110, 168, 255, 0.5);
 }
 
-/* Botones en tarjetas */
-#recomendaciones-container .btn-agregar {
+#recomendaciones-container .btn-agregar,
+#recomendaciones-ia-container .btn-agregar {
     background: linear-gradient(135deg, rgba(42, 111, 219, 0.9), rgba(77, 140, 255, 0.9));
     border: none;
-    transition: all 0.3s ease;
 }
 
-#recomendaciones-container .btn-agregar:hover {
+#recomendaciones-container .btn-agregar:hover,
+#recomendaciones-ia-container .btn-agregar:hover {
     transform: scale(1.05);
     box-shadow: 0 5px 20px rgba(42, 111, 219, 0.5);
 }
 
-/* Loader para recomendaciones IA */
-.ia-loading {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 40px;
-    gap: 20px;
+/* ===== LOADING ===== */
+.loading {
+    text-align: center;
+    padding: 3rem;
+    color: #aaccff;
 }
 
-.ia-loading .spinner {
-    width: 60px;
-    height: 60px;
-    border: 3px solid rgba(77, 140, 255, 0.2);
-    border-top-color: #4d8cff;
-    border-right-color: #7b2cbf;
+.spinner {
+    border: 4px solid rgba(42, 111, 219, 0.3);
+    border-top: 4px solid var(--color-primario);
     border-radius: 50%;
-    animation: spin 0.8s linear infinite;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
 }
 
-.ia-loading p {
-    color: #aaccff;
-    font-size: 14px;
-}
-
-/* Efecto de escritura (opcional para texto) */
-.ia-text.typing {
-    overflow: hidden;
-    border-right: 2px solid #4d8cff;
-    white-space: nowrap;
-    animation: typing 2s steps(40, end), blink-caret 0.75s step-end infinite;
-}
-
-@keyframes typing {
-    from { width: 0; }
-    to { width: 100%; }
-}
-
-@keyframes blink-caret {
-    from, to { border-color: transparent; }
-    50% { border-color: #4d8cff; }
-}
-
-/* Tooltip para IA (info adicional) */
-.ia-tooltip {
-    position: relative;
-    cursor: help;
-}
-
-.ia-tooltip:hover::after {
-    content: attr(data-tooltip);
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.9);
-    color: #aaccff;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 12px;
-    white-space: nowrap;
-    z-index: 100;
-    border: 1px solid #4d8cff;
-    backdrop-filter: blur(8px);
-    pointer-events: none;
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 /* ===== NOTIFICACIONES ===== */
@@ -765,39 +702,16 @@ p {
     }
 }
 
-/* ===== LOADING ===== */
-.loading {
-    text-align: center;
-    padding: 3rem;
-}
-
-.spinner {
-    border: 4px solid rgba(42, 111, 219, 0.3);
-    border-top: 4px solid var(--color-primario);
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 1s linear infinite;
-    margin: 0 auto;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
 /* ===== UTILIDADES ===== */
-.empty-message,
-.error-message {
+.empty-message {
     text-align: center;
     padding: 3rem;
-}
-
-.empty-message {
     color: #aaccff;
 }
 
 .error-message {
+    text-align: center;
+    padding: 3rem;
     color: #ff6b6b;
 }
 
@@ -844,24 +758,7 @@ p {
     scrollbar-color: #2a6fdb #0a0f1f;
 }
 
-/* ===== ICONOS CON DEGRADADO ===== */
-.sidebar i {
-    background: linear-gradient(90deg, #3aa0ff, #7bff7b);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    transition: 0.3s;
-}
-
-.sidebar li:hover i {
-    filter: drop-shadow(0 0 8px rgba(77,140,255,0.8));
-    transform: scale(1.2);
-}
-
-/* ============================================
-   ESTILOS GLOBALES PARA INPUTS Y FORMULARIOS
-   ============================================ */
-
-/* Estilos base para todos los inputs, selects y textareas */
+/* ===== INPUTS Y FORMULARIOS ===== */
 input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
 select,
 textarea {
@@ -877,7 +774,6 @@ textarea {
     box-sizing: border-box;
 }
 
-/* Focus state para inputs */
 input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,
 select:focus,
 textarea:focus {
@@ -886,74 +782,9 @@ textarea:focus {
     box-shadow: 0 0 0 3px rgba(77, 140, 255, 0.2);
 }
 
-/* Placeholder color */
 input::placeholder,
 textarea::placeholder {
     color: #6688aa;
-}
-
-/* Select específico */
-select {
-    cursor: pointer;
-    appearance: none;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%234d8cff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    background-size: 16px;
-}
-
-select option {
-    background: #0a1a2f;
-    color: white;
-}
-
-/* Textarea específico */
-textarea {
-    resize: vertical;
-    min-height: 100px;
-}
-
-/* Labels para formularios */
-.form-group label {
-    display: block;
-    color: #aaccff;
-    margin-bottom: 8px;
-    font-size: 0.9rem;
-    font-weight: 500;
-}
-
-/* Checkbox y radio styling consistente */
-input[type="checkbox"],
-input[type="radio"] {
-    accent-color: var(--color-primario-claro, #4d8cff);
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
-}
-
-/* Rango (slider) */
-input[type="range"] {
-    width: 100%;
-    height: 6px;
-    background: rgba(77, 140, 255, 0.2);
-    border-radius: 3px;
-    appearance: none;
-    cursor: pointer;
-}
-
-input[type="range"]::-webkit-slider-thumb {
-    appearance: none;
-    width: 18px;
-    height: 18px;
-    background: var(--color-primario-claro, #4d8cff);
-    border-radius: 50%;
-    cursor: pointer;
-    border: 2px solid white;
-    box-shadow: 0 0 5px rgba(77, 140, 255, 0.5);
-}
-
-input[type="range"]::-webkit-slider-thumb:hover {
-    transform: scale(1.2);
 }
 
 /* ===== BOTONES GLOBALES ===== */
@@ -966,19 +797,39 @@ button:not(.menu-toggle):not(.btn-paginacion):not(.carrusel-btn) {
    RESPONSIVE
    ============================================ */
 
-/* Tablet (992px - 1199px) */
-@media screen and (max-width: 1199px) {
+/* Pantallas grandes (1200px - 1400px) */
+@media screen and (max-width: 1400px) {
     .productos-grid,
     .tarjetas-grid {
         grid-template-columns: repeat(3, minmax(240px, 1fr));
     }
     
-    #recomendaciones-container .productos-grid {
+    #recomendaciones-container .productos-grid,
+    #recomendaciones-ia-container .productos-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .content {
+        padding: 2rem;
+    }
+}
+
+/* Tablet (992px - 1199px) */
+@media screen and (max-width: 1199px) {
+    .productos-grid,
+    .tarjetas-grid {
+        grid-template-columns: repeat(3, minmax(220px, 1fr));
+    }
+    
+    #recomendaciones-container .productos-grid,
+    #recomendaciones-ia-container .productos-grid {
         grid-template-columns: repeat(3, 1fr);
         gap: 15px;
     }
-    #recomendaciones-container .producto-img {
-        height: 160px;
+    
+    .producto-img,
+    .tarjeta-img {
+        height: 180px;
     }
 }
 
@@ -987,7 +838,7 @@ button:not(.menu-toggle):not(.btn-paginacion):not(.carrusel-btn) {
     .content {
         margin-left: 0;
         width: 100%;
-        padding: 2rem;
+        padding: 1.5rem;
     }
     
     .filtros-sidebar {
@@ -1006,11 +857,17 @@ button:not(.menu-toggle):not(.btn-paginacion):not(.carrusel-btn) {
     .productos-grid,
     .tarjetas-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    #recomendaciones-container .productos-grid,
+    #recomendaciones-ia-container .productos-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
     
     .producto-img,
     .tarjeta-img {
-        height: 160px;
+        height: 180px;
     }
 }
 
@@ -1026,9 +883,15 @@ button:not(.menu-toggle):not(.btn-paginacion):not(.carrusel-btn) {
         gap: 0.8rem;
     }
     
+    #recomendaciones-container .productos-grid,
+    #recomendaciones-ia-container .productos-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
     .producto-img,
     .tarjeta-img {
-        height: 140px;
+        height: 160px;
     }
     
     .producto-info h3,
@@ -1047,17 +910,6 @@ button:not(.menu-toggle):not(.btn-paginacion):not(.carrusel-btn) {
         font-size: 0.75rem;
     }
     
-    .hero {
-        flex-direction: column;
-        text-align: center;
-        padding: 2rem;
-    }
-    
-    .hero h1 {
-        font-size: 2rem;
-    }
-    
-    /* Responsive IA */
     .ia-razonamiento-card {
         padding: 16px;
         border-radius: 20px;
@@ -1067,26 +919,17 @@ button:not(.menu-toggle):not(.btn-paginacion):not(.carrusel-btn) {
         font-size: 24px;
     }
     
-    .ia-header {
-        flex-wrap: wrap;
-    }
-    
-    .ia-badge {
-        margin-left: 0;
-        font-size: 10px;
+    .ia-header h3 {
+        font-size: 14px;
     }
     
     .ia-text {
         font-size: 13px;
-        line-height: 1.5;
     }
     
-    #recomendaciones-container .productos-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-    }
-    #recomendaciones-container .producto-img {
-        height: 140px;
+    #recomendaciones-container .producto-img,
+    #recomendaciones-ia-container .producto-img {
+        height: 150px;
     }
 }
 
@@ -1098,8 +941,18 @@ button:not(.menu-toggle):not(.btn-paginacion):not(.carrusel-btn) {
         gap: 1rem;
     }
     
+    #recomendaciones-container .productos-grid,
+    #recomendaciones-ia-container .productos-grid {
+        grid-template-columns: 1fr;
+    }
+    
     .producto-img,
     .tarjeta-img {
+        height: 220px;
+    }
+    
+    #recomendaciones-container .producto-img,
+    #recomendaciones-ia-container .producto-img {
         height: 200px;
     }
     
@@ -1131,35 +984,6 @@ button:not(.menu-toggle):not(.btn-paginacion):not(.carrusel-btn) {
         bottom: 20px;
         right: 20px;
     }
-    
-    /* Responsive IA móvil pequeño */
-    .ia-razonamiento-card {
-        padding: 14px;
-        margin-bottom: 20px;
-    }
-    
-    .ia-icon {
-        font-size: 20px;
-    }
-    
-    .ia-header h3 {
-        font-size: 14px;
-    }
-    
-    .ia-text {
-        font-size: 12px;
-    }
-    
-    .ia-footer {
-        font-size: 10px;
-    }
-    
-    #recomendaciones-container .productos-grid {
-        grid-template-columns: 1fr;
-    }
-    #recomendaciones-container .producto-img {
-        height: 200px;
-    }
 }
 
 /* Orientación horizontal en móvil */
@@ -1172,7 +996,7 @@ button:not(.menu-toggle):not(.btn-paginacion):not(.carrusel-btn) {
     
     .producto-img,
     .tarjeta-img {
-        height: 100px;
+        height: 120px;
     }
     
     .producto-info h3,
@@ -1180,9 +1004,4 @@ button:not(.menu-toggle):not(.btn-paginacion):not(.carrusel-btn) {
         font-size: 0.7rem;
         min-height: 1.8rem;
     }
-}
-#recomendaciones-ia-container .producto-card:hover {
-    transform: translateY(-12px) scale(1.02);
-    border-color: #4d8cff;
-    box-shadow: 0 15px 35px rgba(77, 140, 255, 0.3);
 }

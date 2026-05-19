@@ -16,9 +16,6 @@
 </head>
 
 <body>
-    <!-- Botón menú hamburguesa para móvil -->
-    <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">☰</button>
-
     <div class="sidebar" id="sidebar"></div>
 
     <div class="content">
@@ -28,13 +25,37 @@
                 <p>Cargando producto...</p>
             </div>
         </div>
-        <!-- 👇 NUEVA SECCIÓN: RECOMENDACIONES IA CON RAZONAMIENTO -->
+
+        <!-- 🔥 NUEVA SECCIÓN: CONSEJOS Y TRUCOS DEL JUEGO CON GEMINI -->
+        <section class="tips-section" id="tipsSection" style="display:none;">
+            <div class="tips-header">
+                <h2><i class="fa-solid fa-robot"></i> Consejos y Trucos</h2>
+                <span class="tips-badge">Gemini AI</span>
+            </div>
+            
+            <!-- Resumen -->
+            <div id="tipsResumen" class="tips-resumen"></div>
+            
+            <!-- Grid de tips -->
+            <div id="tipsContainer" class="tips-container"></div>
+            
+            <!-- Pregunta a Gemini -->
+            <div class="tips-pregunta">
+                <input type="text" id="tipsPregunta" placeholder="¿Alguna duda sobre este juego? Pregúntale a Gemini...">
+                <button id="tipsPreguntarBtn"><i class="fa-solid fa-paper-plane"></i> Preguntar</button>
+            </div>
+            <div id="tipsRespuesta"></div>
+        </section>
+
+        <!-- 👇 RECOMENDACIONES IA (se mantiene pero abajo) -->
         <section class="recomendaciones-ia">
-            <h2>Recomendaciones para ti</h2>
-
-            <div id="ia-razonamiento"></div>
-
-            <div id="recomendaciones-ia-container"></div>
+            <h2><i class="fa-solid fa-star"></i> También te puede interesar</h2>
+            <div id="recomendaciones-ia-container" class="recomendaciones-ia-grid">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Cargando recomendaciones...</p>
+                </div>
+            </div>
         </section>
 
         <a href="carrito.html" class="cart-floating" id="cartFloating">

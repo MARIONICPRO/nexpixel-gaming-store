@@ -74,7 +74,6 @@ const Productos = {
 
         console.log('Juegos en esta página:', juegosPagina.length);
 
-        // Limpiar el container y agregar los juegos directamente
         container.innerHTML = '';
 
         juegosPagina.forEach(juego => {
@@ -87,7 +86,12 @@ const Productos = {
             card.className = 'producto-card';
             card.onclick = () => verProducto(juego.id_producto);
             card.innerHTML = `
-            <img src="${juego.imagen_url || 'assets/img/default-game.jpg'}" class="producto-img" onerror="this.src='assets/img/default-game.jpg'">
+            <div class="producto-img-container">
+                <img src="${juego.imagen_url || 'assets/img/default-game.jpg'}" 
+                     class="producto-img" 
+                     loading="lazy"
+                     onerror="this.src='assets/img/default-game.jpg'">
+            </div>
             <div class="producto-info">
                 <h3>${nombreProducto}</h3>
                 <p class="producto-precio">$${formatearPrecio(juego.precio)}</p>
@@ -99,7 +103,6 @@ const Productos = {
             container.appendChild(card);
         });
 
-        // PAGINACIÓN
         if (totalPaginas > 1) {
             const paginacionDiv = document.createElement('div');
             paginacionDiv.className = 'paginacion';
@@ -137,40 +140,45 @@ const Productos = {
         window.juegosActuales = juegos;
         window.paginaActualJuegos = pagina;
     },
-// ===== RENDERIZAR TARJETAS CON PAGINACIÓN (9 por página) =====
-renderizarTarjetas(tarjetas, containerId, pagina = 1, itemsPorPagina = 9) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
 
-    if (!tarjetas || tarjetas.length === 0) {
-        container.innerHTML = '<div class="empty-message">No hay tarjetas disponibles</div>';
-        return;
-    }
+    // ===== RENDERIZAR TARJETAS CON PAGINACIÓN (9 por página) =====
+    renderizarTarjetas(tarjetas, containerId, pagina = 1, itemsPorPagina = 9) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
 
-    console.log('Tarjetas a renderizar:', tarjetas.length);
-    console.log('Página:', pagina, 'Items por página:', itemsPorPagina);
-
-    const inicio = (pagina - 1) * itemsPorPagina;
-    const fin = inicio + itemsPorPagina;
-    const tarjetasPagina = tarjetas.slice(inicio, fin);
-    const totalPaginas = Math.ceil(tarjetas.length / itemsPorPagina);
-
-    console.log('Tarjetas en esta página:', tarjetasPagina.length);
-
-    // Limpiar el container
-    container.innerHTML = '';
-
-    tarjetasPagina.forEach(tarjeta => {
-        let nombreTarjeta = tarjeta.nombre_producto || 'Tarjeta sin nombre';
-        if (nombreTarjeta.length > 40) {
-            nombreTarjeta = nombreTarjeta.substring(0, 37) + '...';
+        if (!tarjetas || tarjetas.length === 0) {
+            container.innerHTML = '<div class="empty-message">No hay tarjetas disponibles</div>';
+            return;
         }
-        
-        const card = document.createElement('div');
-        card.className = 'tarjeta-card';
-        card.onclick = () => verProducto(tarjeta.id_producto);
-        card.innerHTML = `
-            <img src="${tarjeta.imagen_url || 'assets/img/default-card.jpg'}" class="tarjeta-img" onerror="this.src='assets/img/default-card.jpg'">
+
+        console.log('Tarjetas a renderizar:', tarjetas.length);
+        console.log('Página:', pagina, 'Items por página:', itemsPorPagina);
+
+        const inicio = (pagina - 1) * itemsPorPagina;
+        const fin = inicio + itemsPorPagina;
+        const tarjetasPagina = tarjetas.slice(inicio, fin);
+        const totalPaginas = Math.ceil(tarjetas.length / itemsPorPagina);
+
+        console.log('Tarjetas en esta página:', tarjetasPagina.length);
+
+        container.innerHTML = '';
+
+        tarjetasPagina.forEach(tarjeta => {
+            let nombreTarjeta = tarjeta.nombre_producto || 'Tarjeta sin nombre';
+            if (nombreTarjeta.length > 40) {
+                nombreTarjeta = nombreTarjeta.substring(0, 37) + '...';
+            }
+
+            const card = document.createElement('div');
+            card.className = 'tarjeta-card';
+            card.onclick = () => verProducto(tarjeta.id_producto);
+            card.innerHTML = `
+            <div class="tarjeta-img-container">
+                <img src="${tarjeta.imagen_url || 'assets/img/default-card.jpg'}" 
+                     class="tarjeta-img" 
+                     loading="lazy"
+                     onerror="this.src='assets/img/default-card.jpg'">
+            </div>
             <div class="tarjeta-info">
                 <h3>${nombreTarjeta}</h3>
                 <p class="producto-precio">$${formatearPrecio(tarjeta.precio)}</p>
@@ -179,47 +187,46 @@ renderizarTarjetas(tarjetas, containerId, pagina = 1, itemsPorPagina = 9) {
                 </button>
             </div>
         `;
-        container.appendChild(card);
-    });
+            container.appendChild(card);
+        });
 
-    // PAGINACIÓN
-    if (totalPaginas > 1) {
-        const paginacionDiv = document.createElement('div');
-        paginacionDiv.className = 'paginacion';
-        
-        if (pagina > 1) {
-            const btnAnterior = document.createElement('button');
-            btnAnterior.className = 'btn-paginacion';
-            btnAnterior.innerHTML = '◀ Anterior';
-            btnAnterior.onclick = () => cambiarPaginaTarjetas(pagina - 1);
-            paginacionDiv.appendChild(btnAnterior);
-        }
+        if (totalPaginas > 1) {
+            const paginacionDiv = document.createElement('div');
+            paginacionDiv.className = 'paginacion';
 
-        for (let i = 1; i <= totalPaginas; i++) {
-            const btnPagina = document.createElement('button');
-            btnPagina.className = 'btn-paginacion';
-            if (i === pagina) btnPagina.classList.add('active');
-            btnPagina.textContent = i;
-            if (i !== pagina) {
-                btnPagina.onclick = () => cambiarPaginaTarjetas(i);
+            if (pagina > 1) {
+                const btnAnterior = document.createElement('button');
+                btnAnterior.className = 'btn-paginacion';
+                btnAnterior.innerHTML = '◀ Anterior';
+                btnAnterior.onclick = () => cambiarPaginaTarjetas(pagina - 1);
+                paginacionDiv.appendChild(btnAnterior);
             }
-            paginacionDiv.appendChild(btnPagina);
+
+            for (let i = 1; i <= totalPaginas; i++) {
+                const btnPagina = document.createElement('button');
+                btnPagina.className = 'btn-paginacion';
+                if (i === pagina) btnPagina.classList.add('active');
+                btnPagina.textContent = i;
+                if (i !== pagina) {
+                    btnPagina.onclick = () => cambiarPaginaTarjetas(i);
+                }
+                paginacionDiv.appendChild(btnPagina);
+            }
+
+            if (pagina < totalPaginas) {
+                const btnSiguiente = document.createElement('button');
+                btnSiguiente.className = 'btn-paginacion';
+                btnSiguiente.innerHTML = 'Siguiente ▶';
+                btnSiguiente.onclick = () => cambiarPaginaTarjetas(pagina + 1);
+                paginacionDiv.appendChild(btnSiguiente);
+            }
+
+            container.appendChild(paginacionDiv);
         }
 
-        if (pagina < totalPaginas) {
-            const btnSiguiente = document.createElement('button');
-            btnSiguiente.className = 'btn-paginacion';
-            btnSiguiente.innerHTML = 'Siguiente ▶';
-            btnSiguiente.onclick = () => cambiarPaginaTarjetas(pagina + 1);
-            paginacionDiv.appendChild(btnSiguiente);
-        }
-        
-        container.appendChild(paginacionDiv);
-    }
-    
-    window.tarjetasActuales = tarjetas;
-    window.paginaActualTarjetas = pagina;
-},
+        window.tarjetasActuales = tarjetas;
+        window.paginaActualTarjetas = pagina;
+    },
 
     // ===== RENDERIZAR CARRUSEL =====
     renderizarCarrusel(juegos, containerId) {
@@ -238,6 +245,7 @@ renderizarTarjetas(tarjetas, containerId, pagina = 1, itemsPorPagina = 9) {
                     <img src="${juego.imagen_url || 'assets/img/default-game.jpg'}" 
                          alt="${juego.nombre_producto}" 
                          class="carrusel-img"
+                         loading="lazy"
                          onerror="this.src='assets/img/default-game.jpg'">
                     <div class="carrusel-info">
                         <h3>${juego.nombre_producto}</h3>
@@ -265,10 +273,12 @@ renderizarTarjetas(tarjetas, containerId, pagina = 1, itemsPorPagina = 9) {
                 <div class="producto-detalle-imagen">
                     <img src="${producto.imagen_url || 'assets/img/default-game.jpg'}" 
                          alt="${producto.nombre_producto}"
+                         class="producto-detalle-img"
+                         loading="eager"
                          onerror="this.src='assets/img/default-game.jpg'">
                 </div>
                 <div class="producto-detalle-info">
-                    <h1>${producto.nombre_producto}</h1>
+                    <h1 class="producto-nombre">${producto.nombre_producto}</h1>
                     <p class="producto-detalle-precio">$${formatearPrecio(producto.precio)}</p>
                     <p class="producto-detalle-descripcion">${producto.descripcion || 'Sin descripción disponible'}</p>
                     
@@ -282,11 +292,16 @@ renderizarTarjetas(tarjetas, containerId, pagina = 1, itemsPorPagina = 9) {
                     </div>
                     
                     <button class="btn-agregar" onclick="manejarClickCompra(${producto.id_producto})">
-                        Añadir al carrito
+                        <i class="fas fa-shopping-cart"></i> Añadir al carrito
                     </button>
                 </div>
             </div>
         `;
+
+        // 🔥 CARGAR TIPS CON GEMINI
+        if (producto.nombre_producto) {
+            cargarTipsDelJuego(producto.nombre_producto);
+        }
     },
 
     // ===== CARGAR FILTROS DE PLATAFORMAS =====
@@ -336,6 +351,115 @@ renderizarTarjetas(tarjetas, containerId, pagina = 1, itemsPorPagina = 9) {
         }
     }
 };
+
+// ============================================
+// CARGAR TIPS DEL JUEGO CON GEMINI
+// ============================================
+async function cargarTipsDelJuego(nombreJuego) {
+    const section = document.getElementById('tipsSection');
+    const container = document.getElementById('tipsContainer');
+    const resumen = document.getElementById('tipsResumen');
+
+    if (!section || !container || !nombreJuego) return;
+
+    section.style.display = 'block';
+    container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Gemini está analizando el juego...</p></div>';
+
+    try {
+        const res = await fetch(`${API_URL}/ia/tips`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ juego: nombreJuego })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+            if (data.resumen) {
+                resumen.innerHTML = `<p>${data.resumen}</p>`;
+                resumen.style.display = 'block';
+            }
+
+            let html = '';
+
+            if (data.trucos?.length > 0) {
+                html += '<h3 style="color:white;margin:1.2rem 0 0.8rem;font-family:Orbitron;">🎯 Trucos</h3>';
+                data.trucos.forEach(tip => {
+                    html += `
+                        <div class="tip-card">
+                            <h3>${tip.titulo}</h3>
+                            <p>${tip.descripcion}</p>
+                            <div class="tip-meta">
+                                ${tip.categoria ? `<span class="tip-categoria">${tip.categoria}</span>` : ''}
+                                ${tip.dificultad ? `<span class="tip-dificultad">${tip.dificultad}</span>` : ''}
+                            </div>
+                        </div>`;
+                });
+            }
+
+            if (data.consejos_pro?.length > 0) {
+                html += '<h3 style="color:white;margin:1.2rem 0 0.8rem;font-family:Orbitron;">💡 Consejos Pro</h3>';
+                data.consejos_pro.forEach(tip => {
+                    html += `
+                        <div class="tip-card">
+                            <h3>${tip.titulo}</h3>
+                            <p>${tip.descripcion}</p>
+                        </div>`;
+                });
+            }
+
+            if (data.secretos?.length > 0) {
+                html += '<h3 style="color:white;margin:1.2rem 0 0.8rem;font-family:Orbitron;">🔒 Secretos</h3>';
+                data.secretos.forEach(tip => {
+                    html += `
+                        <div class="tip-card">
+                            <h3>${tip.titulo}</h3>
+                            <p>${tip.descripcion}</p>
+                            ${tip.ubicacion ? `<div class="tip-meta"><span class="tip-ubicacion">📍 ${tip.ubicacion}</span></div>` : ''}
+                        </div>`;
+                });
+            }
+
+            container.innerHTML = html || '<p style="color:#aaccff;">No se encontraron tips específicos para este juego.</p>';
+        }
+    } catch (error) {
+        container.innerHTML = '<p style="color:#ff6b6b;">Error al cargar consejos. Intenta de nuevo.</p>';
+    }
+}
+
+// ============================================
+// PREGUNTAR A GEMINI
+// ============================================
+document.addEventListener('click', async (e) => {
+    if (e.target.id === 'tipsPreguntarBtn' || e.target.closest('#tipsPreguntarBtn')) {
+        const pregunta = document.getElementById('tipsPregunta')?.value;
+        const juego = document.querySelector('.producto-nombre')?.textContent ||
+                      document.querySelector('h1')?.textContent;
+
+        if (!pregunta || !juego) return;
+
+        const respuestaDiv = document.getElementById('tipsRespuesta');
+        respuestaDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>Gemini está pensando...</p></div>';
+
+        try {
+            const res = await fetch(`${API_URL}/ia/tips`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ juego, pregunta })
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                respuestaDiv.innerHTML = `<p style="color:#c0d0ff;">${data.respuesta}</p>`;
+            } else {
+                respuestaDiv.innerHTML = '<p style="color:#ff6b6b;">No se pudo obtener respuesta.</p>';
+            }
+        } catch (error) {
+            respuestaDiv.innerHTML = '<p style="color:#ff6b6b;">Error al consultar.</p>';
+        }
+    }
+});
 
 // ============================================
 // FORMATEAR PRECIO
@@ -656,7 +780,6 @@ window.buscarTarjetas = function () {
 // ============================================
 // FUNCIONES PARA MODAL DE TARJETAS
 // ============================================
-
 window.abrirModalFiltrosTarjetas = function () {
     const modal = document.getElementById('filtrosModal');
     const overlay = document.getElementById('filtrosOverlay');
@@ -707,8 +830,6 @@ async function cargarFiltrosTarjetasModal() {
 // ============================================
 // INICIALIZACIÓN
 // ============================================
-
-// Inicializar juegos
 if (document.getElementById('juegos-grid')) {
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
@@ -719,7 +840,6 @@ if (document.getElementById('juegos-grid')) {
     }
 }
 
-// Inicializar tarjetas
 async function inicializarTarjetas() {
     const isTarjetasPage = document.getElementById('tarjetas-grid') !== null;
     if (isTarjetasPage) {
@@ -740,7 +860,6 @@ if (document.readyState === 'loading') {
     inicializarTarjetas();
 }
 
-// Función para alternar sidebar de filtros en móvil
 window.toggleFiltrosSidebar = function () {
     const sidebar = document.getElementById('filtrosSidebar');
     const overlay = document.getElementById('filtrosOverlay');
@@ -755,7 +874,6 @@ window.toggleFiltrosSidebar = function () {
     }
 };
 
-// Cerrar sidebar de filtros al redimensionar
 window.addEventListener('resize', function () {
     if (window.innerWidth > 768) {
         const sidebar = document.getElementById('filtrosSidebar');
@@ -767,29 +885,27 @@ window.addEventListener('resize', function () {
         document.body.style.overflow = '';
     }
 });
+
 // ============================================
-// MANEJAR CLIC EN COMPRA (REGISTRA INTERACCIÓN PARA IA)
+// MANEJAR CLIC EN COMPRA
 // ============================================
-window.manejarClickCompra = async function(productoId) {
+window.manejarClickCompra = async function (productoId) {
     console.log('🛒 Click en comprar producto:', productoId);
-    
+
     try {
-        // 1. Obtener producto para mostrar notificación
         const producto = await Productos.buscarProducto(productoId);
-        
+
         if (!producto) {
             console.error('Producto no encontrado');
             return;
         }
-        
-        // 2. Agregar al carrito
+
         const resultado = await agregarAlCarrito(productoId, 1);
-        
+
         if (resultado && resultado.success !== false) {
-            // 3. 🔥 REGISTRAR INTERACCIÓN EN EL BACKEND (IA aprende)
             const token = localStorage.getItem('nexpixel_token');
             const usuario = Auth.usuarioActual;
-            
+
             if (token && usuario && usuario.id_usuario) {
                 try {
                     const response = await fetch(`${API_URL}/ia/interaccion`, {
@@ -804,22 +920,19 @@ window.manejarClickCompra = async function(productoId) {
                             tipoInteraccion: 'carrito'
                         })
                     });
-                    
+
                     if (response.ok) {
                         console.log('✅ Interacción registrada en IA');
-                        
-                        // 4. 🔥 OBTENER RECOMENDACIÓN PERSONALIZADA
                         await mostrarRecomendacionIA(producto);
                     }
                 } catch (err) {
                     console.error('❌ Error registrando interacción:', err);
                 }
             } else {
-                // Usuario no logueado, solo mostrar mensaje
                 mostrarNotificacion(`✅ ${producto.nombre_producto} agregado al carrito`, 'success');
             }
         }
-        
+
     } catch (error) {
         console.error('❌ Error en manejarClickCompra:', error);
         mostrarNotificacion('Error al agregar al carrito', 'error');
@@ -833,24 +946,23 @@ async function mostrarRecomendacionIA(productoAgregado) {
     try {
         const usuario = Auth.usuarioActual;
         let url = `${API_URL}/ia/recomendaciones?limite=1`;
-        
+
         if (usuario && usuario.id_usuario) {
             url += `&usuarioId=${usuario.id_usuario}`;
         }
-        
+
         const response = await fetch(url, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('nexpixel_token')}`
             }
         });
-        
+
         const data = await response.json();
-        
+
         if (data.success && data.productos && data.productos.length > 0) {
             const recomendado = data.productos[0];
             const razonamiento = data.razonamiento || 'Basado en tu actividad reciente';
-            
-            // Mostrar notificación con recomendación
+
             mostrarNotificacion(
                 `<i class="fa-solid fa-fire"></i> ¡No te pierdas ${recomendado.nombre_producto}! ${razonamiento}`,
                 'info',
@@ -861,3 +973,7 @@ async function mostrarRecomendacionIA(productoAgregado) {
         console.error('❌ Error obteniendo recomendación IA:', error);
     }
 }
+
+// Exponer globalmente
+window.Productos = Productos;
+window.cargarTipsDelJuego = cargarTipsDelJuego;

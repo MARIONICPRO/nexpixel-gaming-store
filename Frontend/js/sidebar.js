@@ -1,10 +1,97 @@
-// =============================================
-// RENDERIZADO DE LA BARRA LATERAL
-// =============================================
-// =============================================
-// RENDERIZADO DE LA BARRA LATERAL
-// =============================================
+// ============================================
+// SIDEBAR.JS - VERSIÓN COMPLETA CORREGIDA
+// ============================================
 
+// =============================================
+// FUNCIONES TOGGLE SIDEBAR
+// =============================================
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    
+    if (!sidebar) return;
+    
+    const isOpen = sidebar.classList.contains('open') || sidebar.classList.contains('active');
+    
+    if (isOpen) {
+        cerrarSidebar();
+    } else {
+        abrirSidebar();
+    }
+}
+
+function abrirSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const toggle = document.getElementById('sidebarToggle');
+    
+    if (sidebar) {
+        sidebar.classList.add('open', 'active');
+        document.body.classList.add('sidebar-open');
+        
+        if (toggle) {
+            toggle.querySelector('i').className = 'fa-solid fa-times';
+        }
+        
+        if (overlay) {
+            overlay.classList.add('active');
+        }
+    }
+}
+
+function cerrarSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const toggle = document.getElementById('sidebarToggle');
+    
+    if (sidebar) {
+        sidebar.classList.remove('open', 'active');
+        document.body.classList.remove('sidebar-open');
+        
+        if (toggle) {
+            toggle.querySelector('i').className = 'fa-solid fa-bars';
+        }
+    }
+    if (overlay) {
+        overlay.classList.remove('active');
+    }
+}
+
+// =============================================
+// CREAR ELEMENTOS AUTOMÁTICAMENTE
+// =============================================
+function crearSidebarOverlay() {
+    // Eliminar overlay existente si hay
+    const existingOverlay = document.getElementById('sidebarOverlay');
+    if (existingOverlay) existingOverlay.remove();
+    
+    const overlay = document.createElement('div');
+    overlay.id = 'sidebarOverlay';
+    overlay.className = 'sidebar-overlay';
+    overlay.addEventListener('click', cerrarSidebar);
+    document.body.appendChild(overlay);
+}
+
+function crearBotonToggle() {
+    // 🔥 ELIMINAR CUALQUIER BOTÓN EXISTENTE
+    const existingToggle = document.getElementById('sidebarToggle');
+    const existingMenuToggle = document.querySelector('.menu-toggle');
+    
+    if (existingToggle) existingToggle.remove();
+    if (existingMenuToggle) existingMenuToggle.remove();
+    
+    // Crear UN SOLO botón
+    const btn = document.createElement('button');
+    btn.id = 'sidebarToggle';
+    btn.className = 'sidebar-toggle';
+    btn.innerHTML = '<i class="fa-solid fa-bars"></i>';
+    btn.onclick = toggleSidebar;
+    btn.setAttribute('aria-label', 'Abrir menú');
+    document.body.prepend(btn);
+}
+
+// =============================================
+// RENDERIZADO DE LA BARRA LATERAL
+// =============================================
 async function renderizarSidebar() {
     const sidebar = document.getElementById('sidebar');
     if (!sidebar) {
@@ -19,11 +106,9 @@ async function renderizarSidebar() {
     let dashboardButtons = '';
 
     if (usuario) {
-        // Usuario logueado - mostrar perfil
-        const fotoUrl = usuario.foto_perfil || 'assets/img/default-avatar.png';
+        // Usuario logueado
         const inicial = usuario.nombre ? usuario.nombre.charAt(0).toUpperCase() : 'U';
 
-        // 👇 NUEVO: Botones según tipo de usuario
         if (usuario.tipo_usuario === 'admin') {
             dashboardButtons = `
                 <a href="dashboard-admin.html" class="menu-item" onclick="cerrarSidebar()">
@@ -38,34 +123,43 @@ async function renderizarSidebar() {
             `;
         }
 
-        // En la sección de la imagen del perfil
-        perfilHTML = `
-    <div class="user-profile-sidebar">
-        <button class="close-sidebar show-on-mobile" onclick="cerrarSidebar()">✕</button>
-        <div class="user-avatar-large">
-            ${usuario.foto_perfil ?
-                `<img src="${usuario.foto_perfil}?t=${Date.now()}" alt="${usuario.nombre}" 
-                      onerror="this.src='assets/img/default-avatar.png'">` :
-                `<div class="avatar-placeholder">${inicial}</div>`
-            }
-        </div>
-        <div class="user-name">${usuario.nombre}</div>
-        <div class="user-email">${usuario.email}</div>
-        <div class="user-role">${usuario.tipo_usuario === 'admin' ? '<i class="fa-solid fa-crown"></i> Administrador' :
-                usuario.tipo_usuario === 'proveedor' ? '<i class="fa-solid fa-building"></i> Proveedor' : '<i class="fa-solid fa-user"></i> Cliente'
-            }</div>
-        <button class="btn-editar-perfil" onclick="abrirModalPerfil()"><i class="fa-solid fa-pen"></i> Editar perfil</button>
-        <button class="btn-sidebar-logout" onclick="cerrarSesion()"><i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión</button>
-    </div>
-`;
-    } else {
-        // Usuario no logueado - mostrar botones de autenticación
         perfilHTML = `
             <div class="user-profile-sidebar">
-                <button class="close-sidebar show-on-mobile" onclick="cerrarSidebar()">✕</button>
+                <button class="close-sidebar" onclick="cerrarSidebar()" aria-label="Cerrar menú">✕</button>
+                <div class="user-avatar-large">
+                    ${usuario.foto_perfil ?
+                        `<img src="${usuario.foto_perfil}?t=${Date.now()}" alt="${usuario.nombre}" 
+                              onerror="this.src='assets/img/default-avatar.png'">` :
+                        `<div class="avatar-placeholder">${inicial}</div>`
+                    }
+                </div>
+                <div class="user-name">${usuario.nombre}</div>
+                <div class="user-email">${usuario.email}</div>
+                <div class="user-role">
+                    ${usuario.tipo_usuario === 'admin' ? '<i class="fa-solid fa-crown"></i> Administrador' :
+                      usuario.tipo_usuario === 'proveedor' ? '<i class="fa-solid fa-building"></i> Proveedor' : 
+                      '<i class="fa-solid fa-user"></i> Cliente'}
+                </div>
+                <button class="btn-editar-perfil" onclick="abrirModalPerfil()">
+                    <i class="fa-solid fa-pen"></i> Editar perfil
+                </button>
+                <button class="btn-sidebar-logout" onclick="Auth.cerrarSesion()">
+                    <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
+                </button>
+            </div>
+        `;
+    } else {
+        // Usuario no logueado
+        perfilHTML = `
+            <div class="user-profile-sidebar">
+                <button class="close-sidebar" onclick="cerrarSidebar()" aria-label="Cerrar menú">✕</button>
                 <div class="auth-buttons-sidebar">
-                    <button class="btn-sidebar btn-sidebar-login" onclick="abrirModalLogin()">Iniciar Sesión</button>
-                    <button class="btn-sidebar btn-sidebar-register" onclick="abrirModalRegistro()">Crear Cuenta</button>
+                    <button class="btn-sidebar btn-sidebar-login" onclick="abrirModalLogin()">
+                        <i class="fa-solid fa-right-to-bracket"></i> Iniciar Sesión
+                    </button>
+                    <button class="btn-sidebar btn-sidebar-register" onclick="abrirModalRegistro()">
+                        <i class="fa-solid fa-user-plus"></i> Crear Cuenta
+                    </button>
                 </div>
             </div>
         `;
@@ -76,8 +170,10 @@ async function renderizarSidebar() {
             <h1><span class="nex">Nex</span><span class="pixel">Pixel</span></h1>
             <p>Videojuegos Digitales</p>
         </div>
+        
         ${perfilHTML}
-        <div class="sidebar-menu">
+        
+        <nav class="sidebar-menu" aria-label="Menú principal">
             <a href="index.html" class="menu-item ${paginaActual === 'index.html' ? 'active' : ''}" onclick="cerrarSidebar()">
                 <span class="menu-icon"><i class="fa-solid fa-house"></i></span> Inicio
             </a>
@@ -94,21 +190,83 @@ async function renderizarSidebar() {
                 <span class="menu-icon"><i class="fa-solid fa-cart-shopping"></i></span> Carrito
                 <span class="carrito-badge" id="sidebar-carrito-contador">${Carrito?.items?.length || 0}</span>
             </a>
-            ${dashboardButtons} 
+            ${dashboardButtons}
+        </nav>
+        
+        <div class="sidebar-footer">
+            <p>&copy; 2026 NexPixel</p>
         </div>
     `;
 
-    console.log('Sidebar renderizada correctamente');
+    console.log('✅ Sidebar renderizada correctamente');
 }
 
-// Función para cerrar sidebar en móvil
-function cerrarSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    if (sidebar) {
-        sidebar.classList.remove('active');
+// =============================================
+// ACTUALIZAR CONTADOR DEL CARRITO
+// =============================================
+function actualizarContadorCarrito(cantidad) {
+    const contador = document.getElementById('sidebar-carrito-contador');
+    if (contador) {
+        contador.textContent = cantidad || 0;
     }
 }
 
-// Exponer funciones globalmente
-window.renderizarSidebar = renderizarSidebar;
+// =============================================
+// EVENTOS
+// =============================================
+
+// Cerrar sidebar con tecla ESC
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        cerrarSidebar();
+    }
+});
+
+// Cerrar sidebar al hacer clic fuera (en el overlay)
+document.addEventListener('click', (e) => {
+    const sidebar = document.getElementById('sidebar');
+    const toggle = document.getElementById('sidebarToggle');
+    const overlay = document.getElementById('sidebarOverlay');
+    
+    if (sidebar && sidebar.classList.contains('active')) {
+        // Si el clic NO fue en el sidebar ni en el botón toggle
+        if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+            cerrarSidebar();
+        }
+    }
+});
+
+// Prevenir que clics dentro del sidebar cierren el overlay
+document.addEventListener('click', (e) => {
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar && sidebar.contains(e.target)) {
+        e.stopPropagation();
+    }
+});
+
+// =============================================
+// INICIALIZACIÓN
+// =============================================
+document.addEventListener('DOMContentLoaded', () => {
+    crearBotonToggle();
+    crearSidebarOverlay();
+    renderizarSidebar();
+});
+
+// También inicializar si el DOM ya está listo
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    setTimeout(() => {
+        crearBotonToggle();
+        crearSidebarOverlay();
+        renderizarSidebar();
+    }, 100);
+}
+
+// =============================================
+// EXPONER FUNCIONES GLOBALMENTE
+// =============================================
+window.toggleSidebar = toggleSidebar;
+window.abrirSidebar = abrirSidebar;
 window.cerrarSidebar = cerrarSidebar;
+window.renderizarSidebar = renderizarSidebar;
+window.actualizarContadorCarrito = actualizarContadorCarrito;

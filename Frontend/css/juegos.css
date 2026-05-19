@@ -190,7 +190,7 @@
 /* ===== GRID DE PRODUCTOS ===== */
 .productos-grid {
     display: grid !important;
-    grid-template-columns: repeat(3, minmax(240px, 1fr)) !important;
+    grid-template-columns: repeat(4, minmax(240px, 1fr)) !important;
     gap: 1rem !important;
     width: 100% !important;
 }
