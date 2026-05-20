@@ -1,24 +1,35 @@
+/* ============================================
+   PRODUCTO.CSS - NEXPIXEL
+   Cada categoría en su propia fila
+   ============================================ */
 
-/* Contenedor principal del detalle */
+/* ===== CONTENEDOR PRINCIPAL ===== */
 .producto-detalle-page {
-    margin-bottom: 3rem;
+    max-width: 1400px;
+    margin: 0 auto 3rem auto;
+    padding: 0 2rem;
+    width: 100%;
 }
 
-/* ===== DETALLE DEL PRODUCTO ===== */
+/* ============================================
+   DETALLE DEL PRODUCTO
+   ============================================ */
+
 .producto-detalle {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 3rem;
     background: rgba(16, 36, 64, 0.8);
     border-radius: 20px;
     padding: 2.5rem;
     border: 1px solid rgba(77, 140, 255, 0.3);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(5px);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     margin-bottom: 2rem;
+    align-items: center;
 }
 
-/* Imagen del producto */
+/* ===== IMAGEN ===== */
 .producto-detalle-imagen {
     border-radius: 15px;
     overflow: hidden;
@@ -29,22 +40,25 @@
     align-items: center;
     justify-content: center;
     aspect-ratio: 1/1;
+    max-height: 500px;
 }
 
 .producto-detalle-imagen img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
+    transition: transform 0.5s ease;
 }
 
+.producto-detalle-imagen:hover img {
+    transform: scale(1.05);
+}
 
-
-/* Información del producto */
+/* ===== INFO ===== */
 .producto-detalle-info {
     display: flex;
     flex-direction: column;
-    gap: 1.2rem;
+    gap: 1rem;
 }
 
 .producto-detalle-info h1 {
@@ -59,54 +73,53 @@
     font-size: 2.5rem;
     font-weight: bold;
     color: #4d8cff;
-    margin: 0.5rem 0;
+    margin: 0;
     text-shadow: 0 0 10px rgba(77, 140, 255, 0.5);
 }
 
 .producto-detalle-descripcion {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     color: #aaccff;
-    line-height: 1.6;
-    margin: 1rem 0;
+    line-height: 1.7;
+    margin: 0;
     padding: 1rem 0;
     border-top: 1px solid rgba(77, 140, 255, 0.2);
     border-bottom: 1px solid rgba(77, 140, 255, 0.2);
 }
 
-/* Metadatos del producto */
+/* ===== METADATA ===== */
 .producto-detalle-metadata {
     background: rgba(10, 30, 50, 0.5);
     border-radius: 12px;
     padding: 1.5rem;
     border: 1px solid rgba(77, 140, 255, 0.2);
-    margin: 1rem 0;
 }
 
 .producto-detalle-metadata p {
-    margin: 0.8rem 0;
+    margin: 0.6rem 0;
     color: white;
-    font-size: 1rem;
+    font-size: 0.95rem;
 }
 
 .producto-detalle-metadata strong {
     color: #4d8cff;
     font-weight: 600;
-    min-width: 120px;
+    min-width: 130px;
     display: inline-block;
 }
 
-/* Botón de agregar al carrito */
+/* ===== BOTÓN ===== */
 .producto-detalle-info .btn-agregar {
     background: transparent;
     border: 2px solid #4d8cff;
     color: white;
     padding: 1.2rem;
-    font-size: 1.2rem;
+    font-size: 1rem;
     font-weight: bold;
     border-radius: 10px;
     cursor: pointer;
     transition: all 0.3s ease;
-    margin-top: 1rem;
+    margin-top: 0.5rem;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
@@ -117,109 +130,347 @@
     box-shadow: 0 10px 25px rgba(77, 140, 255, 0.4);
 }
 
-/* ===== PRODUCTOS SIMILARES ===== */
-.recomendaciones h2 {
-    font-size: 2rem;
-    color: white;
-    margin-bottom: 2rem;
-    border-left: 5px solid #4d8cff;
-    padding-left: 1rem;
-    text-shadow: 0 0 10px rgba(77, 140, 255, 0.3);
-}
+/* ============================================
+   SECCIÓN DE TIPS IA (GROQ)
+   ============================================ */
 
-/* Grid de productos similares */
-#productos-similares {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 1.8rem;
-    margin-top: 1.5rem;
-}
-
-/* Tarjetas de productos similares (heredan de producto-card) */
-#productos-similares .producto-card {
-    background: rgba(16, 36, 64, 0.7);
-    border: 1px solid rgba(77, 140, 255, 0.2);
-    border-radius: 12px;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    backdrop-filter: blur(5px);
-}
-
-
-
-#productos-similares .producto-img {
+.tips-section {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: linear-gradient(135deg, rgba(10, 30, 50, 0.95), rgba(30, 20, 60, 0.95));
+    border-radius: 20px;
+    border: 1px solid rgba(77, 140, 255, 0.3);
     width: 100%;
-    height: 180px;
-    object-fit: cover;
-    border-bottom: 1px solid rgba(77, 140, 255, 0.2);
 }
 
-#productos-similares .producto-info {
-    padding: 1.2rem;
+/* ===== HEADER ===== */
+.tips-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
 }
 
-#productos-similares .producto-info h3 {
-    font-size: 1.1rem;
-    margin-bottom: 0.5rem;
+.tips-header h2 {
     color: white;
+    margin: 0;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.5rem;
 }
 
-#productos-similares .producto-precio {
-    font-size: 1.2rem;
-    font-weight: bold;
+.tips-header h2 i {
+    color: #00C9A7;
+}
+
+.tips-badge {
+    background: linear-gradient(135deg, #00C9A7, #4d8cff);
+    color: white;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* ===== RESUMEN ===== */
+.tips-resumen {
+    background: rgba(0, 201, 167, 0.08);
+    border-left: 4px solid #00C9A7;
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 1.5rem;
+    border-radius: 0 12px 12px 0;
+    color: #c0f0e0;
+    font-style: italic;
+    line-height: 1.6;
+}
+
+/* ============================================
+   CONTENEDOR DE TIPS (COLUMNAS POR CATEGORÍA)
+   ============================================ */
+
+.tips-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Títulos de categoría */
+.tips-container > h3 {
+    margin: 1.2rem 0 0.5rem;
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1rem;
+}
+
+/* Grid de tarjetas por categoría */
+.tips-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.2rem;
+    align-items: stretch;
+}
+
+/* ============================================
+   TARJETAS DE TIPS
+   ============================================ */
+
+.tip-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 180px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(77, 140, 255, 0.15);
+    border-radius: 14px;
+    padding: 1.4rem;
+    transition: all 0.3s ease;
+}
+
+.tip-card:hover {
+    border-color: rgba(0, 201, 167, 0.6);
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 201, 167, 0.15);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.tip-card h3 {
+    color: #6ea8ff;
+    font-size: 1rem;
+    margin-bottom: 0.7rem;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.tip-card p {
+    flex: 1;
+    color: #bcc8e8;
+    font-size: 0.92rem;
+    line-height: 1.6;
+    margin: 0 0 1rem;
+}
+
+/* ===== ETIQUETAS ===== */
+.tip-meta {
+    margin-top: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tip-categoria,
+.tip-dificultad,
+.tip-ubicacion {
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.tip-categoria {
+    background: rgba(77, 140, 255, 0.15);
     color: #4d8cff;
-    margin: 0.5rem 0;
 }
 
-/* Loading spinner */
+.tip-dificultad {
+    background: rgba(255, 165, 0, 0.15);
+    color: #FFA500;
+}
+
+.tip-ubicacion {
+    background: rgba(0, 201, 167, 0.15);
+    color: #00C9A7;
+}
+
+/* ============================================
+   PREGUNTA IA
+   ============================================ */
+
+.tips-pregunta {
+    display: flex;
+    gap: 12px;
+    margin: 1.5rem 0 1rem;
+}
+
+.tips-pregunta input {
+    flex: 1;
+    background: rgba(10, 20, 40, 0.8);
+    border: 1px solid rgba(77, 140, 255, 0.3);
+    border-radius: 10px;
+    padding: 14px 18px;
+    color: white;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.tips-pregunta input:focus {
+    outline: none;
+    border-color: #00C9A7;
+    box-shadow: 0 0 0 3px rgba(0, 201, 167, 0.1);
+}
+
+.tips-pregunta input::placeholder {
+    color: #6688aa;
+}
+
+.tips-pregunta button {
+    background: linear-gradient(135deg, #00C9A7, #4d8cff);
+    color: white;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+}
+
+.tips-pregunta button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 201, 167, 0.3);
+}
+
+/* ===== RESPUESTA ===== */
+#tipsRespuesta {
+    padding: 1.2rem 1.5rem;
+    background: rgba(0, 201, 167, 0.05);
+    border-radius: 10px;
+    color: #c0d0ff;
+    line-height: 1.6;
+    min-height: 50px;
+}
+
+/* ============================================
+   LOADING
+   ============================================ */
+
 .loading {
     text-align: center;
     padding: 3rem;
-    grid-column: 1 / -1;
+    color: #aaccff;
 }
 
+.spinner {
+    border: 4px solid rgba(77, 140, 255, 0.2);
+    border-top-color: #4d8cff;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 1rem;
+}
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    to { transform: rotate(360deg); }
 }
 
-/* ===== RESPONSIVE ===== */
+/* ============================================
+   RECOMENDACIONES IA
+   ============================================ */
+
+#recomendaciones-ia-container {
+    width: 100%;
+}
+
+#recomendaciones-ia-container .productos-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.5rem;
+}
+
+#recomendaciones-ia-container .producto-card {
+    border-radius: 16px;
+    overflow: hidden;
+    background: linear-gradient(135deg, rgba(20, 40, 70, 0.9), rgba(30, 25, 55, 0.9));
+    border: 1px solid rgba(77, 140, 255, 0.2);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+#recomendaciones-ia-container .producto-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(77, 140, 255, 0.5);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+}
+
+#recomendaciones-ia-container .producto-img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+#recomendaciones-ia-container .producto-info {
+    padding: 12px;
+}
+
+#recomendaciones-ia-container .producto-info h3 {
+    font-size: 14px;
+    margin: 0 0 5px;
+    color: white;
+    line-height: 1.4;
+}
+
+#recomendaciones-ia-container .producto-precio {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #4d8cff;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+/* Tablet grande */
+@media screen and (max-width: 1200px) {
+    .tips-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    #recomendaciones-ia-container .productos-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+/* Tablet */
 @media screen and (max-width: 1024px) {
     .producto-detalle {
         gap: 2rem;
         padding: 2rem;
     }
 
-    .producto-detalle-info h1 {
-        font-size: 2rem;
-    }
-
+    .producto-detalle-info h1,
     .producto-detalle-precio {
         font-size: 2rem;
     }
+
+    #recomendaciones-ia-container .producto-img {
+        height: 160px;
+    }
 }
 
+/* Móvil */
 @media screen and (max-width: 768px) {
+    .producto-detalle-page {
+        padding: 0 1rem;
+    }
+
     .producto-detalle {
         grid-template-columns: 1fr;
         gap: 1.5rem;
         padding: 1.5rem;
+        backdrop-filter: none;
     }
 
     .producto-detalle-imagen {
         max-width: 400px;
         margin: 0 auto;
+        max-height: 350px;
     }
 
-    .producto-detalle-info h1 {
-        font-size: 1.8rem;
-        text-align: center;
-    }
-
+    .producto-detalle-info h1,
     .producto-detalle-precio {
         text-align: center;
+        font-size: 1.8rem;
     }
 
     .producto-detalle-metadata p {
@@ -231,411 +482,62 @@
         margin-bottom: 0.3rem;
     }
 
-    #productos-similares {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
+    .tips-section {
+        padding: 1.2rem;
+        margin: 1.5rem 0;
+        backdrop-filter: none;
+    }
+
+    .tips-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .tip-card {
+        min-height: auto;
+    }
+
+    .tips-pregunta {
+        flex-direction: column;
+    }
+
+    .tips-pregunta button {
+        width: 100%;
+    }
+
+    #recomendaciones-ia-container .productos-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.8rem;
+    }
+
+    #recomendaciones-ia-container .producto-img {
+        height: 140px;
+    }
+
+    #recomendaciones-ia-container .producto-info h3 {
+        font-size: 12px;
     }
 }
 
+/* Móvil pequeño */
 @media screen and (max-width: 480px) {
     .producto-detalle {
         padding: 1rem;
     }
 
-    .producto-detalle-info h1 {
+    .producto-detalle-info h1,
+    .producto-detalle-precio {
         font-size: 1.5rem;
     }
 
-    .producto-detalle-precio {
-        font-size: 1.8rem;
-    }
-
     .producto-detalle-descripcion {
-        font-size: 1rem;
+        font-size: 0.95rem;
     }
 
-    #productos-similares {
+    #recomendaciones-ia-container .productos-grid {
         grid-template-columns: 1fr;
     }
-}
-/* ===== RAZONAMIENTO IA - VERSIÓN MEJORADA ===== */
-.ia-razonamiento-card {
-    background: linear-gradient(135deg, #1a2f4f 0%, #0f1a2e 100%);
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 30px;
-    border: 1px solid rgba(77, 140, 255, 0.3);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    animation: fadeInUp 0.5s ease-out;
-    position: relative;
-    overflow: hidden;
-}
 
-/* Efecto de brillo superior */
-
-
-.ia-razonamiento-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
-}
-
-.ia-razonamiento-icon {
-    font-size: 32px;
-    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.2));
-}
-
-.ia-razonamiento-title {
-    color: #4d8cff;
-    margin: 0;
-    font-size: 1.2rem;
-    font-weight: 600;
-}
-
-.ia-badge {
-    background: linear-gradient(135deg, #4d8cff, #2a6fdb);
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 11px;
-    color: white;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.ia-razonamiento-text {
-    color: #e0e0e0;
-    margin: 0;
-    line-height: 1.7;
-    font-size: 15px;
-    text-align: justify;
-}
-
-/* Resaltar nombres de juegos */
-.ia-razonamiento-text strong {
-    color: #4d8cff;
-    font-weight: 600;
-}
-
-/* Estilo para listas dentro del razonamiento */
-.ia-razonamiento-text ul,
-.ia-razonamiento-text ol {
-    margin: 12px 0 0 20px;
-    padding-left: 0;
-}
-
-.ia-razonamiento-text li {
-    margin: 8px 0;
-    color: #ccc;
-}
-
-.ia-razonamiento-text li strong {
-    color: #4d8cff;
-}
-
-.ia-razonamiento-footer {
-    margin-top: 16px;
-    padding-top: 12px;
-    border-top: 1px solid rgba(77, 140, 255, 0.2);
-    font-size: 12px;
-    color: #aaccff;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-
-
-/* Animación */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* ===== RECOMENDACIONES IA - 4 PRODUCTOS POR FILA ===== */
-
-/* Contenedor de recomendaciones IA */
-#recomendaciones-ia-container {
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-}
-
-/* Grid de recomendaciones - forzar 4 columnas */
-#recomendaciones-ia-container .productos-grid {
-    display: grid !important;
-    grid-template-columns: repeat(4, 1fr) !important;
-    gap: 1.5rem !important;
-    width: 100% !important;
-}
-
-/* Tarjetas dentro de recomendaciones */
-
-
-
-/* Imágenes */
-#recomendaciones-ia-container .producto-img {
-    width: 100% ;
-    height: 180px ;
-    object-fit: cover ;
-
-}
-
-/* Información */
-#recomendaciones-ia-container .producto-info {
-    padding: 12px ;
-    flex: 1 ;
-    display: flex ;
-    flex-direction: column ;
-}
-
-#recomendaciones-ia-container .producto-info h3 {
-    font-size: 14px ;
-    font-weight: 600 ;
-    margin: 0 0 5px 0 ;
-    color: white ;
-    line-height: 1.4 ;
-}
-
-/* Responsive */
-@media (max-width: 1024px) {
-    #recomendaciones-ia-container .productos-grid {
-        grid-template-columns: repeat(3, 1fr) !important;
-        gap: 1rem !important;
-    }
     #recomendaciones-ia-container .producto-img {
-        height: 160px !important;
-    }
-}
-
-@media (max-width: 768px) {
-    #recomendaciones-ia-container .productos-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 0.8rem !important;
-    }
-    #recomendaciones-ia-container .producto-img {
-        height: 140px !important;
-    }
-    #recomendaciones-ia-container .producto-info h3 {
-        font-size: 12px !important;
-    }
-    #recomendaciones-ia-container .producto-precio {
-        font-size: 14px !important;
-    }
-}
-
-@media (max-width: 576px) {
-    #recomendaciones-ia-container .productos-grid {
-        grid-template-columns: 1fr !important;
-    }
-    #recomendaciones-ia-container .producto-img {
-        height: 200px !important;
-    }
-}
-#recomendaciones-ia-container .producto-card {
-    position: relative;
-    z-index: 0;
-    border-radius: 16px;
-    overflow: hidden;
-}
-/* ============================================
-   SECCIÓN DE TIPS CON GEMINI
-   ============================================ */
-.tips-section {
-    margin: 2rem 0;
-    padding: 2rem;
-    background: linear-gradient(135deg, rgba(10, 30, 50, 0.95), rgba(30, 20, 60, 0.95));
-    border-radius: 20px;
-    border: 1px solid rgba(77, 140, 255, 0.3);
-    backdrop-filter: blur(10px);
-}
-
-.tips-header {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 1.5rem;
-}
-
-.tips-header h2 {
-    color: white;
-    margin: 0;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.3rem;
-}
-
-.tips-header h2 i {
-    color: #8A2BE2;
-    margin-right: 8px;
-}
-
-.tips-badge {
-    background: linear-gradient(135deg, #8A2BE2, #4d8cff);
-    color: white;
-    padding: 5px 14px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    animation: pulse 2s infinite;
-}
-
-.tips-resumen {
-    background: rgba(77, 140, 255, 0.05);
-    border-left: 3px solid #8A2BE2;
-    padding: 1rem 1.5rem;
-    margin-bottom: 1.5rem;
-    border-radius: 0 10px 10px 0;
-    color: #c0d0ff;
-    font-style: italic;
-    line-height: 1.6;
-}
-
-.tips-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.tip-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(77, 140, 255, 0.2);
-    border-radius: 12px;
-    padding: 1.3rem;
-    transition: all 0.3s ease;
-}
-
-.tip-card:hover {
-    border-color: rgba(138, 43, 226, 0.5);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(138, 43, 226, 0.15);
-}
-
-.tip-card h3 {
-    color: #6ea8ff;
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
-}
-
-.tip-card p {
-    color: #aaccff;
-    font-size: 0.9rem;
-    line-height: 1.5;
-    margin: 0;
-}
-
-.tip-meta {
-    display: flex;
-    gap: 8px;
-    margin-top: 0.8rem;
-    flex-wrap: wrap;
-}
-
-.tip-categoria {
-    background: rgba(77, 140, 255, 0.1);
-    color: #4d8cff;
-    padding: 3px 10px;
-    border-radius: 15px;
-    font-size: 0.75rem;
-}
-
-.tip-dificultad {
-    background: rgba(255, 165, 0, 0.1);
-    color: #FFA500;
-    padding: 3px 10px;
-    border-radius: 15px;
-    font-size: 0.75rem;
-}
-
-.tip-ubicacion {
-    background: rgba(46, 204, 113, 0.1);
-    color: #2ecc71;
-    padding: 3px 10px;
-    border-radius: 15px;
-    font-size: 0.75rem;
-}
-
-/* ===== PREGUNTA A GEMINI ===== */
-.tips-pregunta {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 1rem;
-}
-
-.tips-pregunta input {
-    flex: 1;
-    background: rgba(10, 20, 40, 0.8);
-    border: 1px solid rgba(77, 140, 255, 0.3);
-    border-radius: 10px;
-    padding: 12px 16px;
-    color: white;
-    font-size: 0.95rem;
-    transition: all 0.3s ease;
-}
-
-.tips-pregunta input:focus {
-    outline: none;
-    border-color: #8A2BE2;
-    box-shadow: 0 0 0 2px rgba(138, 43, 226, 0.2);
-}
-
-.tips-pregunta input::placeholder {
-    color: #6688aa;
-}
-
-.tips-pregunta button {
-    background: linear-gradient(135deg, #8A2BE2, #4d8cff);
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 0.95rem;
-    white-space: nowrap;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.tips-pregunta button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(138, 43, 226, 0.4);
-}
-
-#tipsRespuesta {
-    padding: 1rem 1.5rem;
-    background: rgba(77, 140, 255, 0.05);
-    border-radius: 10px;
-    color: #c0d0ff;
-    line-height: 1.6;
-    min-height: 40px;
-}
-
-/* ===== RESPONSIVE ===== */
-@media screen and (max-width: 768px) {
-    .tips-section {
-        padding: 1.2rem;
-    }
-    
-    .tips-container {
-        grid-template-columns: 1fr;
-    }
-    
-    .tips-pregunta {
-        flex-direction: column;
-    }
-    
-    .tips-pregunta button {
-        justify-content: center;
+        height: 200px;
     }
 }

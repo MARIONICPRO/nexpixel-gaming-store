@@ -1,5 +1,5 @@
 // ============================================
-// PRODUCTOS.JS - VERSIÓN PARA NODE.JS (USA API)
+// PRODUCTOS.JS - VERSIÓN COMPLETA CORREGIDA
 // ============================================
 
 const Productos = {
@@ -64,15 +64,10 @@ const Productos = {
             return;
         }
 
-        console.log('Juegos a renderizar:', juegos.length);
-        console.log('Página:', pagina, 'Items por página:', itemsPorPagina);
-
         const inicio = (pagina - 1) * itemsPorPagina;
         const fin = inicio + itemsPorPagina;
         const juegosPagina = juegos.slice(inicio, fin);
         const totalPaginas = Math.ceil(juegos.length / itemsPorPagina);
-
-        console.log('Juegos en esta página:', juegosPagina.length);
 
         container.innerHTML = '';
 
@@ -151,15 +146,10 @@ const Productos = {
             return;
         }
 
-        console.log('Tarjetas a renderizar:', tarjetas.length);
-        console.log('Página:', pagina, 'Items por página:', itemsPorPagina);
-
         const inicio = (pagina - 1) * itemsPorPagina;
         const fin = inicio + itemsPorPagina;
         const tarjetasPagina = tarjetas.slice(inicio, fin);
         const totalPaginas = Math.ceil(tarjetas.length / itemsPorPagina);
-
-        console.log('Tarjetas en esta página:', tarjetasPagina.length);
 
         container.innerHTML = '';
 
@@ -298,7 +288,7 @@ const Productos = {
             </div>
         `;
 
-        // 🔥 CARGAR TIPS CON GEMINI
+        // 🔥 CARGAR TIPS CON GROQ
         if (producto.nombre_producto) {
             cargarTipsDelJuego(producto.nombre_producto);
         }
@@ -353,7 +343,7 @@ const Productos = {
 };
 
 // ============================================
-// CARGAR TIPS DEL JUEGO CON GEMINI
+// CARGAR TIPS DEL JUEGO CON GROQ - TARJETAS SEPARADAS
 // ============================================
 async function cargarTipsDelJuego(nombreJuego) {
     const section = document.getElementById('tipsSection');
@@ -363,7 +353,7 @@ async function cargarTipsDelJuego(nombreJuego) {
     if (!section || !container || !nombreJuego) return;
 
     section.style.display = 'block';
-    container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Gemini está analizando el juego...</p></div>';
+    container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Buscando los mejores consejos...</p></div>';
 
     try {
         const res = await fetch(`${API_URL}/ia/tips`, {
@@ -373,62 +363,81 @@ async function cargarTipsDelJuego(nombreJuego) {
         });
 
         const data = await res.json();
+        console.log('📦 Datos recibidos:', data);
 
         if (data.success) {
+            // Mostrar resumen
             if (data.resumen) {
                 resumen.innerHTML = `<p>${data.resumen}</p>`;
                 resumen.style.display = 'block';
+            } else {
+                resumen.style.display = 'none';
             }
 
             let html = '';
 
-            if (data.trucos?.length > 0) {
+            // 🔥 TRUCOS - Cada uno en su propia tarjeta
+            if (data.trucos && data.trucos.length > 0) {
                 html += '<h3 style="color:white;margin:1.2rem 0 0.8rem;font-family:Orbitron;">🎯 Trucos</h3>';
+                html += '<div class="tips-grid">';
                 data.trucos.forEach(tip => {
                     html += `
                         <div class="tip-card">
-                            <h3>${tip.titulo}</h3>
-                            <p>${tip.descripcion}</p>
+                            <h3>${tip.titulo || 'Truco'}</h3>
+                            <p>${tip.descripcion || ''}</p>
                             <div class="tip-meta">
                                 ${tip.categoria ? `<span class="tip-categoria">${tip.categoria}</span>` : ''}
                                 ${tip.dificultad ? `<span class="tip-dificultad">${tip.dificultad}</span>` : ''}
                             </div>
                         </div>`;
                 });
+                html += '</div>';
             }
 
-            if (data.consejos_pro?.length > 0) {
+            // 🔥 CONSEJOS PRO - Cada uno en su propia tarjeta
+            if (data.consejos_pro && data.consejos_pro.length > 0) {
                 html += '<h3 style="color:white;margin:1.2rem 0 0.8rem;font-family:Orbitron;">💡 Consejos Pro</h3>';
+                html += '<div class="tips-grid">';
                 data.consejos_pro.forEach(tip => {
                     html += `
                         <div class="tip-card">
-                            <h3>${tip.titulo}</h3>
-                            <p>${tip.descripcion}</p>
+                            <h3>${tip.titulo || 'Consejo'}</h3>
+                            <p>${tip.descripcion || ''}</p>
                         </div>`;
                 });
+                html += '</div>';
             }
 
-            if (data.secretos?.length > 0) {
+            // 🔥 SECRETOS - Cada uno en su propia tarjeta
+            if (data.secretos && data.secretos.length > 0) {
                 html += '<h3 style="color:white;margin:1.2rem 0 0.8rem;font-family:Orbitron;">🔒 Secretos</h3>';
+                html += '<div class="tips-grid">';
                 data.secretos.forEach(tip => {
                     html += `
                         <div class="tip-card">
-                            <h3>${tip.titulo}</h3>
-                            <p>${tip.descripcion}</p>
-                            ${tip.ubicacion ? `<div class="tip-meta"><span class="tip-ubicacion">📍 ${tip.ubicacion}</span></div>` : ''}
+                            <h3>${tip.titulo || 'Secreto'}</h3>
+                            <p>${tip.descripcion || ''}</p>
+                            <div class="tip-meta">
+                                ${tip.ubicacion ? `<span class="tip-ubicacion">📍 ${tip.ubicacion}</span>` : ''}
+                            </div>
                         </div>`;
                 });
+                html += '</div>';
             }
 
-            container.innerHTML = html || '<p style="color:#aaccff;">No se encontraron tips específicos para este juego.</p>';
+            container.innerHTML = html || '<p style="color:#aaccff;">No se encontraron tips para este juego.</p>';
+
+        } else {
+            container.innerHTML = '<p style="color:#ff6b6b;">Error al cargar los consejos.</p>';
         }
     } catch (error) {
-        container.innerHTML = '<p style="color:#ff6b6b;">Error al cargar consejos. Intenta de nuevo.</p>';
+        console.error('Error:', error);
+        container.innerHTML = '<p style="color:#ff6b6b;">Error de conexión.</p>';
     }
 }
 
 // ============================================
-// PREGUNTAR A GEMINI
+// PREGUNTAR A GROQ
 // ============================================
 document.addEventListener('click', async (e) => {
     if (e.target.id === 'tipsPreguntarBtn' || e.target.closest('#tipsPreguntarBtn')) {
@@ -439,7 +448,7 @@ document.addEventListener('click', async (e) => {
         if (!pregunta || !juego) return;
 
         const respuestaDiv = document.getElementById('tipsRespuesta');
-        respuestaDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>Gemini está pensando...</p></div>';
+        respuestaDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>Groq está pensando...</p></div>';
 
         try {
             const res = await fetch(`${API_URL}/ia/tips`, {
@@ -489,99 +498,57 @@ window.cambiarPaginaTarjetas = function (pagina) {
 };
 
 // ============================================
-// APLICAR FILTROS - VERSIÓN MEJORADA (DESKTOP + MÓVIL)
+// APLICAR FILTROS
 // ============================================
 window.aplicarFiltros = async function () {
     try {
-        console.log('🎯 aplicarFiltros() ejecutada');
-
         const isMobile = window.innerWidth <= 768;
-
         const busquedaTexto = document.getElementById('searchInput')?.value || '';
-
         let plataformasSeleccionadas = [];
         let generosSeleccionados = [];
         let precioMax = undefined;
 
         if (isMobile) {
-            document.querySelectorAll('#filtro-plataformas-mobile input[type="checkbox"]:checked').forEach(cb => {
-                plataformasSeleccionadas.push(cb.value);
-            });
-
-            document.querySelectorAll('#filtro-generos-mobile input[type="checkbox"]:checked').forEach(cb => {
-                generosSeleccionados.push(cb.value);
-            });
-
+            document.querySelectorAll('#filtro-plataformas-mobile input[type="checkbox"]:checked').forEach(cb => plataformasSeleccionadas.push(cb.value));
+            document.querySelectorAll('#filtro-generos-mobile input[type="checkbox"]:checked').forEach(cb => generosSeleccionados.push(cb.value));
             const precioRangeMobile = document.getElementById('precio-range-mobile');
-            if (precioRangeMobile && precioRangeMobile.value !== '500000') {
-                precioMax = parseInt(precioRangeMobile.value);
-            }
+            if (precioRangeMobile && precioRangeMobile.value !== '500000') precioMax = parseInt(precioRangeMobile.value);
         } else {
-            document.querySelectorAll('#filtro-plataformas input[type="checkbox"]:checked').forEach(cb => {
-                plataformasSeleccionadas.push(cb.value);
-            });
-
-            document.querySelectorAll('#filtro-generos input[type="checkbox"]:checked').forEach(cb => {
-                generosSeleccionados.push(cb.value);
-            });
-
+            document.querySelectorAll('#filtro-plataformas input[type="checkbox"]:checked').forEach(cb => plataformasSeleccionadas.push(cb.value));
+            document.querySelectorAll('#filtro-generos input[type="checkbox"]:checked').forEach(cb => generosSeleccionados.push(cb.value));
             const precioRange = document.getElementById('precio-range');
-            if (precioRange && precioRange.value !== '500000') {
-                precioMax = parseInt(precioRange.value);
-            }
+            if (precioRange && precioRange.value !== '500000') precioMax = parseInt(precioRange.value);
         }
 
         const params = new URLSearchParams();
         params.append('tipo', 'Juego');
-
-        if (busquedaTexto && busquedaTexto.trim() !== '') {
-            params.append('busqueda', busquedaTexto.trim());
-        }
-
-        if (plataformasSeleccionadas.length > 0) {
-            params.append('plataforma', plataformasSeleccionadas.join(','));
-        }
-
-        if (precioMax) {
-            params.append('precio_max', precioMax);
-        }
+        if (busquedaTexto && busquedaTexto.trim() !== '') params.append('busqueda', busquedaTexto.trim());
+        if (plataformasSeleccionadas.length > 0) params.append('plataforma', plataformasSeleccionadas.join(','));
+        if (precioMax) params.append('precio_max', precioMax);
 
         const url = `${API_URL}/productos?${params.toString()}`;
-
         const response = await fetch(url, { headers: API.getHeaders() });
         const data = await response.json();
 
         if (data.success && data.productos) {
             let juegosFiltrados = data.productos;
-
             if (generosSeleccionados.length > 0) {
                 juegosFiltrados = juegosFiltrados.filter(juego => {
                     if (!juego.genero) return false;
                     const generosJuego = juego.genero.toLowerCase().split(',').map(g => g.trim());
-                    return generosSeleccionados.some(genSel =>
-                        generosJuego.includes(genSel.toLowerCase())
-                    );
+                    return generosSeleccionados.some(genSel => generosJuego.includes(genSel.toLowerCase()));
                 });
             }
-
             window.juegosActuales = juegosFiltrados;
             Productos.renderizarJuegos(juegosFiltrados, 'juegos-grid', 1, 9);
-
             const resultadosCount = document.getElementById('resultados-count');
-            if (resultadosCount) {
-                resultadosCount.textContent = `${juegosFiltrados.length} juegos encontrados`;
-            }
+            if (resultadosCount) resultadosCount.textContent = `${juegosFiltrados.length} juegos encontrados`;
         } else {
             window.juegosActuales = [];
             Productos.renderizarJuegos([], 'juegos-grid');
         }
-
     } catch (error) {
         console.error('❌ Error aplicando filtros:', error);
-        const grid = document.getElementById('juegos-grid');
-        if (grid) {
-            grid.innerHTML = '<p class="error-message">Error al cargar los juegos</p>';
-        }
     }
 };
 
@@ -590,390 +557,89 @@ window.aplicarFiltros = async function () {
 // ============================================
 window.aplicarFiltrosTarjetas = async function () {
     try {
-        console.log('🎯 aplicarFiltrosTarjetas() ejecutada');
-
         const isMobile = window.innerWidth <= 768;
-
         const busquedaTexto = document.getElementById('searchInputTarjetas')?.value || '';
-
         let plataformasSeleccionadas = [];
         let precioMax = undefined;
 
         if (isMobile) {
-            document.querySelectorAll('#filtro-plataformas-tarjetas-mobile input[type="checkbox"]:checked').forEach(cb => {
-                plataformasSeleccionadas.push(cb.value);
-            });
-
+            document.querySelectorAll('#filtro-plataformas-tarjetas-mobile input[type="checkbox"]:checked').forEach(cb => plataformasSeleccionadas.push(cb.value));
             const precioRangeMobile = document.getElementById('precio-range-tarjetas-mobile');
-            if (precioRangeMobile && precioRangeMobile.value !== '500000') {
-                precioMax = parseInt(precioRangeMobile.value);
-            }
+            if (precioRangeMobile && precioRangeMobile.value !== '500000') precioMax = parseInt(precioRangeMobile.value);
         } else {
-            document.querySelectorAll('#filtro-plataformas-tarjetas input[type="checkbox"]:checked').forEach(cb => {
-                plataformasSeleccionadas.push(cb.value);
-            });
-
+            document.querySelectorAll('#filtro-plataformas-tarjetas input[type="checkbox"]:checked').forEach(cb => plataformasSeleccionadas.push(cb.value));
             const precioRange = document.getElementById('precio-range-tarjetas');
-            if (precioRange && precioRange.value !== '500000') {
-                precioMax = parseInt(precioRange.value);
-            }
+            if (precioRange && precioRange.value !== '500000') precioMax = parseInt(precioRange.value);
         }
 
         const params = new URLSearchParams();
         params.append('tipo', 'Tarjeta regalo');
-
-        if (busquedaTexto && busquedaTexto.trim() !== '') {
-            params.append('busqueda', busquedaTexto.trim());
-        }
-
-        if (plataformasSeleccionadas.length > 0) {
-            params.append('plataforma', plataformasSeleccionadas.join(','));
-        }
-
-        if (precioMax) {
-            params.append('precio_max', precioMax);
-        }
+        if (busquedaTexto && busquedaTexto.trim() !== '') params.append('busqueda', busquedaTexto.trim());
+        if (plataformasSeleccionadas.length > 0) params.append('plataforma', plataformasSeleccionadas.join(','));
+        if (precioMax) params.append('precio_max', precioMax);
 
         const url = `${API_URL}/productos?${params.toString()}`;
-
         const response = await fetch(url, { headers: API.getHeaders() });
         const data = await response.json();
 
         if (data.success && data.productos) {
             window.tarjetasActuales = data.productos;
             Productos.renderizarTarjetas(data.productos, 'tarjetas-grid', 1, 9);
-
-            const countEl = document.getElementById('resultados-count-tarjetas');
-            if (countEl) {
-                countEl.textContent = `${data.productos.length} tarjetas encontradas`;
-            }
         } else {
             window.tarjetasActuales = [];
             Productos.renderizarTarjetas([], 'tarjetas-grid');
-            const countEl = document.getElementById('resultados-count-tarjetas');
-            if (countEl) {
-                countEl.textContent = '0 tarjetas encontradas';
-            }
         }
-
     } catch (error) {
         console.error('❌ Error aplicando filtros a tarjetas:', error);
-        const grid = document.getElementById('tarjetas-grid');
-        if (grid) {
-            grid.innerHTML = '<p class="error-message">Error al cargar tarjetas</p>';
-        }
     }
 };
-
-// ============================================
-// ACTUALIZAR PRECIO
-// ============================================
-window.actualizarPrecio = function () {
-    const range = document.getElementById('precio-range');
-    const precioValor = document.getElementById('precio-valor');
-    if (range && precioValor) {
-        const valor = parseInt(range.value);
-        precioValor.textContent = `$${formatearPrecio(valor)}`;
-    }
-
-    const rangeMobile = document.getElementById('precio-range-mobile');
-    const valorMobile = document.getElementById('precio-valor-mobile');
-    if (rangeMobile && valorMobile) {
-        rangeMobile.value = range ? range.value : '500000';
-        valorMobile.textContent = `$${formatearPrecio(range ? parseInt(range.value) : 500000)}`;
-    }
-};
-
-window.actualizarPrecioTarjetas = function () {
-    const range = document.getElementById('precio-range-tarjetas');
-    const valor = document.getElementById('precio-valor-tarjetas');
-    if (range && valor) {
-        const valorNum = parseInt(range.value);
-        valor.textContent = `$${formatearPrecio(valorNum)}`;
-    }
-
-    const rangeMobile = document.getElementById('precio-range-tarjetas-mobile');
-    const valorMobile = document.getElementById('precio-valor-tarjetas-mobile');
-    if (rangeMobile && valorMobile) {
-        rangeMobile.value = range ? range.value : '500000';
-        valorMobile.textContent = `$${formatearPrecio(range ? parseInt(range.value) : 500000)}`;
-    }
-
-    window.aplicarFiltrosTarjetas();
-};
-
-window.actualizarPrecioTarjetasMobile = function () {
-    const range = document.getElementById('precio-range-tarjetas-mobile');
-    const valor = document.getElementById('precio-valor-tarjetas-mobile');
-    if (range && valor) {
-        const valorNum = parseInt(range.value);
-        valor.textContent = `$${formatearPrecio(valorNum)}`;
-    }
-    window.aplicarFiltrosTarjetas();
-};
-
-// ============================================
-// ORDENAR PRODUCTOS
-// ============================================
-window.ordenarProductos = function () {
-    const orden = document.getElementById('ordenar')?.value || 'relevancia';
-    const grid = document.getElementById('juegos-grid');
-    if (!grid) return;
-
-    if (!window.juegosActuales) return;
-
-    let juegosOrdenados = [...window.juegosActuales];
-
-    switch (orden) {
-        case 'precio-asc':
-            juegosOrdenados.sort((a, b) => (a.precio || 0) - (b.precio || 0));
-            break;
-        case 'precio-desc':
-            juegosOrdenados.sort((a, b) => (b.precio || 0) - (a.precio || 0));
-            break;
-        case 'nombre':
-            juegosOrdenados.sort((a, b) => (a.nombre_producto || '').localeCompare(b.nombre_producto || ''));
-            break;
-        default:
-            break;
-    }
-
-    window.juegosActuales = juegosOrdenados;
-    Productos.renderizarJuegos(juegosOrdenados, 'juegos-grid', 1, 9);
-};
-
-window.ordenarTarjetas = function () {
-    const orden = document.getElementById('ordenar-tarjetas')?.value || 'relevancia';
-    const grid = document.getElementById('tarjetas-grid');
-    if (!grid) return;
-
-    if (!window.tarjetasActuales) return;
-
-    let tarjetasOrdenadas = [...window.tarjetasActuales];
-
-    switch (orden) {
-        case 'precio-asc':
-            tarjetasOrdenadas.sort((a, b) => (a.precio || 0) - (b.precio || 0));
-            break;
-        case 'precio-desc':
-            tarjetasOrdenadas.sort((a, b) => (b.precio || 0) - (a.precio || 0));
-            break;
-        case 'nombre':
-            tarjetasOrdenadas.sort((a, b) => (a.nombre_producto || '').localeCompare(b.nombre_producto || ''));
-            break;
-        default:
-            break;
-    }
-
-    window.tarjetasActuales = tarjetasOrdenadas;
-    Productos.renderizarTarjetas(tarjetasOrdenadas, 'tarjetas-grid', 1, 9);
-};
-
-// ============================================
-// BUSCAR TARJETAS
-// ============================================
-window.buscarTarjetas = function () {
-    console.log('🔍 buscarTarjetas() ejecutada');
-    window.aplicarFiltrosTarjetas();
-};
-
-// ============================================
-// FUNCIONES PARA MODAL DE TARJETAS
-// ============================================
-window.abrirModalFiltrosTarjetas = function () {
-    const modal = document.getElementById('filtrosModal');
-    const overlay = document.getElementById('filtrosOverlay');
-
-    if (modal) {
-        cargarFiltrosTarjetasModal();
-        modal.classList.add('active');
-        if (overlay) overlay.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-};
-
-window.cerrarModalFiltrosTarjetas = function () {
-    const modal = document.getElementById('filtrosModal');
-    const overlay = document.getElementById('filtrosOverlay');
-
-    if (modal) {
-        modal.classList.remove('active');
-        if (overlay) overlay.classList.remove('active');
-        document.body.style.overflow = '';
-    }
-};
-
-async function cargarFiltrosTarjetasModal() {
-    try {
-        const container = document.getElementById('filtro-plataformas-tarjetas-mobile');
-        if (container && container.children.length === 0) {
-            const response = await fetch(`${API_URL}/productos/plataformas`);
-            const data = await response.json();
-            const plataformas = data.plataformas || [];
-
-            let html = '';
-            plataformas.forEach(p => {
-                html += `
-                    <label class="filtro-opcion">
-                        <input type="checkbox" value="${p.id_plataforma}" onclick="aplicarFiltrosTarjetas()">
-                        ${p.nombre_plataforma}
-                    </label>
-                `;
-            });
-            container.innerHTML = html;
-        }
-    } catch (error) {
-        console.error('Error cargando filtros de tarjetas:', error);
-    }
-}
 
 // ============================================
 // INICIALIZACIÓN
 // ============================================
 if (document.getElementById('juegos-grid')) {
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => window.aplicarFiltros(), 200);
-        });
-    } else {
-        setTimeout(() => window.aplicarFiltros(), 200);
-    }
+    setTimeout(() => window.aplicarFiltros(), 200);
 }
 
 async function inicializarTarjetas() {
-    const isTarjetasPage = document.getElementById('tarjetas-grid') !== null;
-    if (isTarjetasPage) {
-        console.log('💳 Inicializando página de tarjetas...');
-
+    if (document.getElementById('tarjetas-grid')) {
         const containerDesktop = document.getElementById('filtro-plataformas-tarjetas');
         if (containerDesktop) {
             await Productos.cargarFiltrosPlataformas('filtro-plataformas-tarjetas', 'aplicarFiltrosTarjetas()');
         }
-
         setTimeout(() => window.aplicarFiltrosTarjetas(), 200);
     }
 }
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', inicializarTarjetas);
-} else {
-    inicializarTarjetas();
-}
-
-window.toggleFiltrosSidebar = function () {
-    const sidebar = document.getElementById('filtrosSidebar');
-    const overlay = document.getElementById('filtrosOverlay');
-
-    if (window.innerWidth <= 768) {
-        window.abrirModalFiltrosTarjetas();
-    } else {
-        if (sidebar) {
-            sidebar.classList.toggle('active');
-            if (overlay) overlay.classList.toggle('active');
-        }
-    }
-};
-
-window.addEventListener('resize', function () {
-    if (window.innerWidth > 768) {
-        const sidebar = document.getElementById('filtrosSidebar');
-        const overlay = document.getElementById('filtrosOverlay');
-        const modal = document.getElementById('filtrosModal');
-        if (sidebar) sidebar.classList.remove('active');
-        if (overlay) overlay.classList.remove('active');
-        if (modal) modal.classList.remove('active');
-        document.body.style.overflow = '';
-    }
-});
+inicializarTarjetas();
 
 // ============================================
 // MANEJAR CLIC EN COMPRA
 // ============================================
 window.manejarClickCompra = async function (productoId) {
-    console.log('🛒 Click en comprar producto:', productoId);
-
     try {
         const producto = await Productos.buscarProducto(productoId);
-
-        if (!producto) {
-            console.error('Producto no encontrado');
-            return;
-        }
+        if (!producto) return;
 
         const resultado = await agregarAlCarrito(productoId, 1);
-
         if (resultado && resultado.success !== false) {
             const token = localStorage.getItem('nexpixel_token');
             const usuario = Auth.usuarioActual;
-
             if (token && usuario && usuario.id_usuario) {
-                try {
-                    const response = await fetch(`${API_URL}/ia/interaccion`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        },
-                        body: JSON.stringify({
-                            usuarioId: usuario.id_usuario,
-                            productoId: productoId,
-                            tipoInteraccion: 'carrito'
-                        })
-                    });
-
-                    if (response.ok) {
-                        console.log('✅ Interacción registrada en IA');
-                        await mostrarRecomendacionIA(producto);
-                    }
-                } catch (err) {
-                    console.error('❌ Error registrando interacción:', err);
-                }
-            } else {
-                mostrarNotificacion(`✅ ${producto.nombre_producto} agregado al carrito`, 'success');
+                await fetch(`${API_URL}/ia/interaccion`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ usuarioId: usuario.id_usuario, productoId, tipoInteraccion: 'carrito' })
+                });
             }
+            mostrarNotificacion(`✅ ${producto.nombre_producto} agregado al carrito`, 'success');
         }
-
     } catch (error) {
-        console.error('❌ Error en manejarClickCompra:', error);
-        mostrarNotificacion('Error al agregar al carrito', 'error');
+        console.error('Error en manejarClickCompra:', error);
     }
 };
 
 // ============================================
-// MOSTRAR RECOMENDACIÓN DE IA
+// EXPONER GLOBALMENTE
 // ============================================
-async function mostrarRecomendacionIA(productoAgregado) {
-    try {
-        const usuario = Auth.usuarioActual;
-        let url = `${API_URL}/ia/recomendaciones?limite=1`;
-
-        if (usuario && usuario.id_usuario) {
-            url += `&usuarioId=${usuario.id_usuario}`;
-        }
-
-        const response = await fetch(url, {
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('nexpixel_token')}`
-            }
-        });
-
-        const data = await response.json();
-
-        if (data.success && data.productos && data.productos.length > 0) {
-            const recomendado = data.productos[0];
-            const razonamiento = data.razonamiento || 'Basado en tu actividad reciente';
-
-            mostrarNotificacion(
-                `<i class="fa-solid fa-fire"></i> ¡No te pierdas ${recomendado.nombre_producto}! ${razonamiento}`,
-                'info',
-                6000
-            );
-        }
-    } catch (error) {
-        console.error('❌ Error obteniendo recomendación IA:', error);
-    }
-}
-
-// Exponer globalmente
 window.Productos = Productos;
 window.cargarTipsDelJuego = cargarTipsDelJuego;

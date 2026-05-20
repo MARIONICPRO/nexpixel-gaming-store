@@ -1,6 +1,6 @@
 // backend/src/routes/iaRoutes.js
 import express from 'express';
-import geminiTipsService from '../services/geminiTipsService.js';
+import groqTipsService from '../services/groqTipsService.js';
 import {
   getRecomendaciones,
   getPopulares,
@@ -10,6 +10,10 @@ import {
 } from '../controllers/iaController.js';
 
 const router = express.Router();
+
+// ============================================
+// RUTA: CONSEJOS Y TRUCOS CON GROQ
+// ============================================
 router.post('/tips', async (req, res) => {
     try {
         const { juego, pregunta } = req.body;
@@ -23,11 +27,11 @@ router.post('/tips', async (req, res) => {
         
         if (pregunta) {
             // Pregunta específica
-            const resultado = await geminiTipsService.buscarConsejoRapido(juego, pregunta);
+            const resultado = await groqTipsService.buscarConsejoRapido(juego, pregunta);
             return res.json(resultado);
         } else {
             // Búsqueda completa
-            const resultado = await geminiTipsService.buscarConsejos(juego);
+            const resultado = await groqTipsService.buscarConsejos(juego);
             return res.json(resultado);
         }
         
@@ -43,7 +47,7 @@ router.post('/tips', async (req, res) => {
 // Rutas públicas (no requieren autenticación)
 router.get('/recomendaciones', getRecomendaciones);
 router.get('/populares', getPopulares);
-router.get('/test', testIA);  // Ruta para probar que funciona
+router.get('/test', testIA);
 router.get('/productos/:productoId/similares', getSimilares);
 router.post('/interaccion', registrarInteraccion);
 
