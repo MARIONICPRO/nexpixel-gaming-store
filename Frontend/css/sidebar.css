@@ -35,9 +35,9 @@
     width: 45px;
     height: 45px;
     border-radius: 50%;
-    background: rgba(77, 140, 255, 0.15);
+    background: rgba(77, 140, 255, 0.2);
     color: white;
-    border: 1px solid rgba(77, 140, 255, 0.3);
+    border: 1px solid rgba(77, 140, 255, 0.4);
     font-size: 1.3rem;
     cursor: pointer;
     backdrop-filter: blur(5px);
@@ -46,8 +46,8 @@
 }
 
 .sidebar-toggle:hover {
-    background: rgba(77, 140, 255, 0.25);
-    border-color: rgba(77, 140, 255, 0.5);
+    background: rgba(77, 140, 255, 0.35);
+    border-color: rgba(77, 140, 255, 0.7);
     transform: scale(1.05);
 }
 
@@ -100,34 +100,36 @@
     left: 0;
 }
 
-/* ===== LOGO ===== */
+/* ===== LOGO - CON PADDING SUPERIOR PARA NO CHOCAR CON MENÚ ===== */
 .sidebar-logo {
     text-align: center;
     margin-bottom: 2rem;
+    padding-top: 30px; /* Bajado el texto */
     padding-bottom: 1rem;
     border-bottom: 1px solid rgba(77, 140, 255, 0.2);
 }
 
+/* ✅ Gradiente ORIGINAL restaurado (azul a verde) */
 .sidebar-logo .nex,
 .sidebar-logo .pixel {
     background: linear-gradient(90deg, #3aa0ff, #7bff7b);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .sidebar-logo h1 {
-    color: #4d8cff;
     font-size: 2rem;
     font-weight: bold;
     letter-spacing: 1px;
-    text-shadow: 0 0 10px rgba(77, 140, 255, 0.3);
+    margin: 0;
 }
 
 .sidebar-logo p {
     color: #aaccff;
     font-size: 0.8rem;
-    margin-top: 0.3rem;
-    opacity: 0.7;
+    margin-top: 0.5rem;
+    opacity: 0.8;
 }
 
 /* ===== PERFIL DE USUARIO ===== */
@@ -317,43 +319,6 @@
     border-color: #4d8cff;
 }
 
-/* ===== BOTÓN CERRAR ===== */
-.close-sidebar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 1.2rem;
-    color: #aaccff;
-    background: rgba(0, 0, 0, 0.3);
-    border: none;
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    cursor: pointer;
-    z-index: 1001;
-    transition: all 0.2s ease;
-}
-
-.close-sidebar:hover {
-    background: rgba(244, 67, 54, 0.3);
-    color: #ff6b6b;
-}
-
-/* ===== BADGE DEL CARRITO ===== */
-.carrito-badge {
-    background: #4d8cff;
-    color: white;
-    border-radius: 50%;
-    padding: 0.2rem 0.5rem;
-    font-size: 0.7rem;
-    margin-left: auto;
-    min-width: 20px;
-    text-align: center;
-}
-
 /* ===== FOOTER DEL SIDEBAR ===== */
 .sidebar-footer {
     text-align: center;
@@ -385,5 +350,25 @@
         width: 40px;
         height: 40px;
         font-size: 1.2rem;
+    }
+    
+    /* Ajuste responsive para el logo en móvil */
+    .sidebar-logo {
+        padding-top: 25px;
+    }
+    
+    .sidebar-logo h1 {
+        font-size: 1.6rem;
+    }
+}
+
+/* Ajuste para pantallas muy pequeñas */
+@media screen and (max-width: 480px) {
+    .sidebar-logo {
+        padding-top: 20px;
+    }
+    
+    .sidebar-logo h1 {
+        font-size: 1.4rem;
     }
 }

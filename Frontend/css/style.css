@@ -72,16 +72,19 @@ h1, h2, h3 {
 h1 {
     color: #ffffff;
 }
-
+.icon-gradient   {
+  background: linear-gradient(135deg, #4fd1ff, #38f895);
+  -webkit-background-clip: text;    
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
 h2 i {
     color: #6effcc;
     margin-right: 10px;
     transition: 0.3s;
 }
 
-h2 i:hover {
-    filter: drop-shadow(0 0 10px rgba(77,140,255,0.8));
-}
+
 
 p {
     color: rgba(255,255,255,0.6);
@@ -509,21 +512,11 @@ p {
 .ia-icon {
     font-size: 32px;
     color: #6ea8ff;
-    text-shadow: 0 0 10px rgba(77, 140, 255, 0.8);
     animation: pulse-glow 2s ease-in-out infinite;
-    filter: drop-shadow(0 0 5px rgba(77, 140, 255, 0.5));
+   
 }
 
-@keyframes pulse-glow {
-    0%, 100% {
-        text-shadow: 0 0 5px rgba(77, 140, 255, 0.6);
-        filter: drop-shadow(0 0 3px rgba(77, 140, 255, 0.4));
-    }
-    50% {
-        text-shadow: 0 0 20px rgba(77, 140, 255, 1);
-        filter: drop-shadow(0 0 10px rgba(77, 140, 255, 0.8));
-    }
-}
+
 
 .ia-header h3 {
     color: white;
@@ -635,7 +628,6 @@ p {
     font-size: 1.3rem;
     font-weight: bold;
     color: #6ea8ff;
-    text-shadow: 0 0 10px rgba(110, 168, 255, 0.5);
 }
 
 #recomendaciones-container .btn-agregar,
