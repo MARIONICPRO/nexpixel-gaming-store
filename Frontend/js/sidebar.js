@@ -112,13 +112,13 @@ async function renderizarSidebar() {
         if (usuario.tipo_usuario === 'admin') {
             dashboardButtons = `
                 <a href="dashboard-admin.html" class="menu-item" onclick="cerrarSidebar()">
-                    <span class="menu-icon"><i class="fa-solid fa-crown"></i></span> Panel Administrador
+                    <span class="menu-icon"><i class="fa-solid fa-crown icon-gradient"></i></span> Panel Administrador
                 </a>
             `;
         } else if (usuario.tipo_usuario === 'proveedor') {
             dashboardButtons = `
                 <a href="dashboard-prove.html" class="menu-item" onclick="cerrarSidebar()">
-                    <span class="menu-icon"><i class="fa-solid fa-building"></i></span> Panel Proveedor
+                    <span class="menu-icon"><i class="fa-solid fa-building icon-gradient"></i></span> Panel Proveedor
                 </a>
             `;
         }
@@ -135,15 +135,15 @@ async function renderizarSidebar() {
                 <div class="user-name">${usuario.nombre}</div>
                 <div class="user-email">${usuario.email}</div>
                 <div class="user-role">
-                    ${usuario.tipo_usuario === 'admin' ? '<i class="fa-solid fa-crown"></i> Administrador' :
-                      usuario.tipo_usuario === 'proveedor' ? '<i class="fa-solid fa-building"></i> Proveedor' : 
+                    ${usuario.tipo_usuario === 'admin' ? '<i class="fa-solid fa-crown icon-gradient"></i> Administrador' :
+                      usuario.tipo_usuario === 'proveedor' ? '<i class="fa-solid fa-building icon-gradient"></i> Proveedor' : 
                       '<i class="fa-solid fa-user"></i> Cliente'}
                 </div>
                 <button class="btn-editar-perfil" onclick="abrirModalPerfil()">
-                    <i class="fa-solid fa-pen"></i> Editar perfil
+                    <i class="fa-solid fa-pen icon-gradient"></i> Editar perfil
                 </button>
                 <button class="btn-sidebar-logout" onclick="Auth.cerrarSesion()">
-                    <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
+                    <i class="fa-solid fa-right-from-bracket icon-gradient"></i> Cerrar sesión
                 </button>
             </div>
         `;
