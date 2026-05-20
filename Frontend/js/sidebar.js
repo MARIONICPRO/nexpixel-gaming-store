@@ -125,7 +125,6 @@ async function renderizarSidebar() {
 
         perfilHTML = `
             <div class="user-profile-sidebar">
-                <button class="close-sidebar" onclick="cerrarSidebar()" aria-label="Cerrar menú">✕</button>
                 <div class="user-avatar-large">
                     ${usuario.foto_perfil ?
                         `<img src="${usuario.foto_perfil}?t=${Date.now()}" alt="${usuario.nombre}" 
@@ -152,13 +151,12 @@ async function renderizarSidebar() {
         // Usuario no logueado
         perfilHTML = `
             <div class="user-profile-sidebar">
-                <button class="close-sidebar" onclick="cerrarSidebar()" aria-label="Cerrar menú">✕</button>
                 <div class="auth-buttons-sidebar">
                     <button class="btn-sidebar btn-sidebar-login" onclick="abrirModalLogin()">
-                        <i class="fa-solid fa-right-to-bracket"></i> Iniciar Sesión
+                        <i class="fa-solid fa-right-to-bracket icon-gradient"></i> Iniciar Sesión
                     </button>
                     <button class="btn-sidebar btn-sidebar-register" onclick="abrirModalRegistro()">
-                        <i class="fa-solid fa-user-plus"></i> Crear Cuenta
+                        <i class="fa-solid fa-user-plus icon-gradient"></i> Crear Cuenta
                     </button>
                 </div>
             </div>
@@ -175,19 +173,19 @@ async function renderizarSidebar() {
         
         <nav class="sidebar-menu" aria-label="Menú principal">
             <a href="index.html" class="menu-item ${paginaActual === 'index.html' ? 'active' : ''}" onclick="cerrarSidebar()">
-                <span class="menu-icon"><i class="fa-solid fa-house"></i></span> Inicio
+                <span class="menu-icon"><i class="fa-solid fa-house icon-gradient"></i></span> Inicio
             </a>
             <a href="juegos.html" class="menu-item ${paginaActual === 'juegos.html' ? 'active' : ''}" onclick="cerrarSidebar()">
-                <span class="menu-icon"><i class="fa-solid fa-gamepad"></i></span> Juegos
+                <span class="menu-icon"><i class="fa-solid fa-gamepad icon-gradient"></i></span> Juegos
             </a>
             <a href="tarjetas.html" class="menu-item ${paginaActual === 'tarjetas.html' ? 'active' : ''}" onclick="cerrarSidebar()">
-                <span class="menu-icon"><i class="fa-solid fa-credit-card"></i></span> Tarjetas
+                <span class="menu-icon"><i class="fa-solid fa-credit-card icon-gradient"></i></span> Tarjetas
             </a>
             <a href="contacto.html" class="menu-item ${paginaActual === 'contacto.html' ? 'active' : ''}" onclick="cerrarSidebar()">
-                <span class="menu-icon"><i class="fa-solid fa-headset"></i></span> Contacto
+                <span class="menu-icon"><i class="fa-solid fa-headset icon-gradient"></i></span> Contacto
             </a>
             <a href="carrito.html" class="menu-item ${paginaActual === 'carrito.html' ? 'active' : ''}" onclick="cerrarSidebar()">
-                <span class="menu-icon"><i class="fa-solid fa-cart-shopping"></i></span> Carrito
+                <span class="menu-icon"><i class="fa-solid fa-cart-shopping icon-gradient"></i></span> Carrito
                 <span class="carrito-badge" id="sidebar-carrito-contador">${Carrito?.items?.length || 0}</span>
             </a>
             ${dashboardButtons}

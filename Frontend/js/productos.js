@@ -378,7 +378,7 @@ async function cargarTipsDelJuego(nombreJuego) {
 
             // 🔥 TRUCOS - Cada uno en su propia tarjeta
             if (data.trucos && data.trucos.length > 0) {
-                html += '<h3 style="color:white;margin:1.2rem 0 0.8rem;font-family:Orbitron;">🎯 Trucos</h3>';
+                html += '<h3 style="color:white;margin:1.2rem 0 0.8rem;font-family:Orbitron;"><i class="fa-solid fa-bullseye"></i> Trucos</h3>';
                 html += '<div class="tips-grid">';
                 data.trucos.forEach(tip => {
                     html += `
@@ -396,7 +396,7 @@ async function cargarTipsDelJuego(nombreJuego) {
 
             // 🔥 CONSEJOS PRO - Cada uno en su propia tarjeta
             if (data.consejos_pro && data.consejos_pro.length > 0) {
-                html += '<h3 style="color:white;margin:1.2rem 0 0.8rem;font-family:Orbitron;">💡 Consejos Pro</h3>';
+                html += '<h3 style="color:white;margin:1.2rem 0 0.8rem;font-family:Orbitron;"><i class="fa-solid fa-crosshairs"></i> Consejos Pro</h3>';
                 html += '<div class="tips-grid">';
                 data.consejos_pro.forEach(tip => {
                     html += `
@@ -410,7 +410,7 @@ async function cargarTipsDelJuego(nombreJuego) {
 
             // 🔥 SECRETOS - Cada uno en su propia tarjeta
             if (data.secretos && data.secretos.length > 0) {
-                html += '<h3 style="color:white;margin:1.2rem 0 0.8rem;font-family:Orbitron;">🔒 Secretos</h3>';
+                html += '<h3 style="color:white;margin:1.2rem 0 0.8rem;font-family:Orbitron;"><i class="fa-solid fa-lock"></i> Secretos</h3>';
                 html += '<div class="tips-grid">';
                 data.secretos.forEach(tip => {
                     html += `
@@ -418,7 +418,7 @@ async function cargarTipsDelJuego(nombreJuego) {
                             <h3>${tip.titulo || 'Secreto'}</h3>
                             <p>${tip.descripcion || ''}</p>
                             <div class="tip-meta">
-                                ${tip.ubicacion ? `<span class="tip-ubicacion">📍 ${tip.ubicacion}</span>` : ''}
+                                ${tip.ubicacion ? `<span class="tip-ubicacion"><i class="fa-solid fa-star"></i> ${tip.ubicacion}</span>` : ''}
                             </div>
                         </div>`;
                 });

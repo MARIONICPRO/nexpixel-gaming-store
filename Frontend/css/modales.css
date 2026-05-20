@@ -86,8 +86,7 @@
     color: #4d8cff; /* Azul claro */
     margin-bottom: 2rem;
     text-align: center;
-    font-size: 2rem;
-    text-shadow: 0 0 10px rgba(77, 140, 255, 0.3);
+    font-size: 2rem; 
 }
 
 .modal-tabs {

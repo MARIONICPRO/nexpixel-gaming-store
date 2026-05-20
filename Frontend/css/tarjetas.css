@@ -11,19 +11,7 @@
 }
 
 /* ===== SIDEBAR DE FILTROS ===== */
-.filtros-sidebar {
-    width: 280px;
-    flex-shrink: 0;
-    background: rgba(16, 36, 64, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 12px;
-    border: 1px solid rgba(77, 140, 255, 0.2);
-    padding: 1.5rem;
-    position: sticky;
-    top: 20px;
-    height: calc(100vh - 40px);
-    overflow-y: auto;
-}
+
 
 .filtros-sidebar h3 {
     color: var(--color-primario-claro, #4d8cff);
