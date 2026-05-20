@@ -1,5 +1,8 @@
+/* ============================================
+   DASHBOARD ADMIN - VERSIÓN FULL WIDTH
+   ============================================ */
 
-/* Contenedor principal */
+/* Contenedor principal - más ancho */
 .dashboard-header {
     margin-bottom: 2rem;
 }
@@ -12,28 +15,37 @@
     padding-left: 1rem;
 }
 
-/* Grid de estadísticas */
+/* Grid de estadísticas - más compacto y ancho */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
     margin-bottom: 2rem;
 }
 
 .stat-card {
     background: rgba(16, 36, 64, 0.8);
-    padding: 1.5rem;
+    padding: 1.2rem 1rem;
     border-radius: 10px;
     text-align: center;
     border: 1px solid rgba(77, 140, 255, 0.2);
     backdrop-filter: blur(10px);
+    transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(77, 140, 255, 0.4);
+    background: rgba(16, 36, 64, 0.9);
 }
 
 .stat-card h4 {
     color: #aaccff;
     margin-bottom: 0.5rem;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: normal;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .stat-number {
@@ -42,289 +54,399 @@
     color: #4d8cff;
 }
 
-/* Tabs de navegación */
+/* Tabs de navegación - más compactos */
 .dashboard-tabs {
     display: flex;
-    gap: 0.5rem;
-    margin-bottom: 2rem;
-    border-bottom: 1px solid rgba(77, 140, 255, 0.2);
-    padding-bottom: 0.5rem;
+    gap: 0.3rem;
+    margin-bottom: 1.5rem;
+    background: rgba(16, 36, 64, 0.5);
+    border-radius: 12px;
+    padding: 0.5rem;
     flex-wrap: wrap;
+    border: 1px solid rgba(77, 140, 255, 0.1);
 }
 
 .tab-btn {
-    padding: 0.8rem 1.5rem;
+    padding: 0.6rem 1.2rem;
     background: transparent;
     border: none;
     color: #aaccff;
     cursor: pointer;
-    font-size: 1rem;
-    border-radius: 6px;
+    font-size: 0.9rem;
+    border-radius: 8px;
     transition: all 0.2s ease;
     font-weight: 500;
 }
 
 .tab-btn:hover {
-    background: rgba(77, 140, 255, 0.1);
+    background: rgba(77, 140, 255, 0.15);
     color: white;
 }
 
 .tab-btn.active {
     background: #2a6fdb;
     color: white;
+    box-shadow: 0 2px 8px rgba(42, 111, 219, 0.3);
 }
 
-/* Contenido del dashboard */
+/* Contenido del dashboard - MÁS ANCHO */
 .dashboard-content {
-    background: rgba(16, 36, 64, 0.8);
-    border-radius: 12px;
-    padding: 2rem;
-    border: 1px solid rgba(77, 140, 255, 0.2);
+    background: rgba(16, 36, 64, 0.6);
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid rgba(77, 140, 255, 0.15);
     backdrop-filter: blur(10px);
     color: white;
-    min-height: 400px;
+    min-height: 500px;
+    width: 100%;
+    overflow-x: auto;
 }
 
-/* ===== FORMULARIO PARA AÑADIR PRODUCTO ===== */
-.form-producto {
-    max-width: 800px;
-    margin: 0 auto;
-    background: rgba(16, 36, 64, 0.5);
-    border: 1px solid rgba(77, 140, 255, 0.3);
-    border-radius: 15px;
-    padding: 2rem;
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin-bottom: 0;
-}
-
-.form-group {
+/* ===== SECCIÓN DE BÚSQUEDA ESTILO MODERNO ===== */
+.search-section {
     margin-bottom: 1.5rem;
 }
 
-.form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: #aaccff;
-    font-weight: 500;
-    font-size: 0.95rem;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
+.search-input {
     width: 100%;
-    padding: 0.8rem 1rem;
+    padding: 12px 15px;
     background: rgba(26, 47, 79, 0.8);
     border: 1px solid rgba(77, 140, 255, 0.3);
-    border-radius: 8px;
+    border-radius: 10px;
     color: white;
-    font-size: 1rem;
+    font-size: 0.95rem;
     transition: all 0.2s ease;
 }
 
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
+.search-input:focus {
     outline: none;
     border-color: #4d8cff;
     box-shadow: 0 0 0 3px rgba(77, 140, 255, 0.2);
 }
 
-.form-group input::placeholder,
-.form-group textarea::placeholder {
+.search-input::placeholder {
     color: #6688aa;
 }
 
-.form-group small {
+.search-stats {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
     color: #aaccff;
-    font-size: 0.8rem;
-    display: block;
-    margin-top: 0.3rem;
 }
 
-/* Campos específicos por tipo */
-#campos-juego h3,
-#campos-tarjeta h3 {
-    color: #4d8cff;
-    margin: 1.5rem 0 1rem;
-    font-size: 1.2rem;
-    border-bottom: 1px solid rgba(77, 140, 255, 0.3);
-    padding-bottom: 0.5rem;
-}
-
-/* Botón principal */
-.btn-nuevo {
-    background: #2a6fdb;
-    color: white;
-    border: none;
-    padding: 0.8rem 1.5rem;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.btn-nuevo:hover {
-    background: #4d8cff;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(42, 111, 219, 0.3);
-}
-
-/* ===== LISTA DE PRODUCTOS DEL PROVEEDOR ===== */
-.productos-proveedor {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1rem;
-}
-
-.producto-proveedor-card {
-    background: rgba(16, 36, 64, 0.6);
-    border: 1px solid rgba(77, 140, 255, 0.2);
-    border-radius: 12px;
-    overflow: hidden;
-    transition: all 0.2s ease;
-}
-
-.producto-proveedor-card:hover {
-    transform: translateY(-4px);
-    border-color: rgba(77, 140, 255, 0.5);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-}
-
-.producto-proveedor-img {
+/* ===== TABLAS - FULL WIDTH ===== */
+.table-responsive {
     width: 100%;
-    height: 160px;
-    object-fit: cover;
-    background: #1a2f4f;
-    border-bottom: 1px solid rgba(77, 140, 255, 0.2);
+    overflow-x: auto;
+    border-radius: 12px;
 }
 
-.producto-proveedor-info {
-    padding: 1.2rem;
+.tabla-admin {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
 }
 
-.producto-proveedor-info h3 {
-    font-size: 1.1rem;
-    margin-bottom: 0.5rem;
-    color: white;
-    font-weight: 600;
-}
-
-.producto-proveedor-precio {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #4d8cff;
-    margin-bottom: 0.5rem;
-}
-
-.producto-proveedor-stock {
-    color: #81c784;
-    font-size: 0.9rem;
-    margin-bottom: 0.3rem;
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-}
-
-.producto-proveedor-tipo {
+.tabla-admin th {
+    text-align: left;
+    padding: 0.9rem 0.8rem;
+    background: rgba(26, 47, 79, 0.8);
     color: #aaccff;
-    font-size: 0.9rem;
-    margin-bottom: 0.3rem;
+    font-weight: 600;
+    border-bottom: 2px solid rgba(77, 140, 255, 0.3);
+    white-space: nowrap;
 }
 
-.producto-proveedor-ventas {
-    color: #ffb74d;
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
-}
-
-.producto-acciones {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 1rem;
-}
-
-.btn-editar {
-    padding: 0.5rem 1rem;
-    background: rgba(33, 150, 243, 0.2);
-    color: #64b5f6;
-    border: 1px solid rgba(33, 150, 243, 0.3);
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 0.9rem;
-    flex: 1;
-}
-
-.btn-editar:hover {
-    background: #2196f3;
+.tabla-admin td {
+    padding: 0.8rem;
+    border-bottom: 1px solid rgba(77, 140, 255, 0.1);
     color: white;
+    vertical-align: middle;
 }
 
-.btn-eliminar {
-    padding: 0.5rem 1rem;
+.tabla-admin tr:hover td {
+    background: rgba(77, 140, 255, 0.08);
+}
+
+/* Columnas con ancho específico para mejor distribución */
+.tabla-admin th:nth-child(1) { width: 50px; }  /* ID */
+.tabla-admin th:nth-child(2) { width: 120px; } /* Nombre */
+.tabla-admin th:nth-child(3) { width: 180px; } /* Email */
+.tabla-admin th:nth-child(4) { width: 100px; } /* Rol */
+.tabla-admin th:nth-child(5) { width: 150px; } /* Cambiar Rol */
+.tabla-admin th:nth-child(6) { width: 90px; }  /* Estado */
+.tabla-admin th:nth-child(7) { width: 80px; }  /* Verificado */
+.tabla-admin th:nth-child(8) { width: 100px; } /* Registro */
+.tabla-admin th:nth-child(9) { width: 140px; } /* Acciones */
+
+/* ===== BADGES ===== */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.badge-cliente {
+    background: rgba(77, 140, 255, 0.2);
+    color: #4d8cff;
+    border: 1px solid rgba(77, 140, 255, 0.3);
+}
+
+.badge-proveedor {
+    background: rgba(0, 212, 255, 0.2);
+    color: #00d4ff;
+    border: 1px solid rgba(0, 212, 255, 0.3);
+}
+
+.badge-admin {
+    background: rgba(255, 193, 7, 0.2);
+    color: #ffc107;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.badge-activo,
+.badge-success {
+    background: rgba(76, 175, 80, 0.2);
+    color: #81c784;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.badge-inactivo,
+.badge-danger {
     background: rgba(244, 67, 54, 0.2);
     color: #ff8a80;
     border: 1px solid rgba(244, 67, 54, 0.3);
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 0.9rem;
-    flex: 1;
 }
 
-.btn-eliminar:hover {
+.badge-warning {
+    background: rgba(255, 152, 0, 0.2);
+    color: #ffb74d;
+    border: 1px solid rgba(255, 152, 0, 0.3);
+}
+
+/* ===== SELECTORES DENTRO DE TABLA ===== */
+.rol-select,
+.suspender-select {
+    background: rgba(26, 47, 79, 0.9);
+    border: 1px solid rgba(77, 140, 255, 0.3);
+    color: white;
+    padding: 6px 8px;
+    border-radius: 6px;
+    width: 100%;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.rol-select:focus,
+.suspender-select:focus {
+    outline: none;
+    border-color: #4d8cff;
+}
+
+/* ===== BOTONES DE ACCIÓN ===== */
+.btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.7rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn-action i {
+    font-size: 0.7rem;
+}
+
+.btn-primary {
+    background: rgba(77, 140, 255, 0.2);
+    color: #4d8cff;
+    border: 1px solid rgba(77, 140, 255, 0.3);
+}
+
+.btn-primary:hover {
+    background: #4d8cff;
+    color: white;
+}
+
+.btn-warning {
+    background: rgba(255, 152, 0, 0.2);
+    color: #ffb74d;
+    border: 1px solid rgba(255, 152, 0, 0.3);
+}
+
+.btn-warning:hover {
+    background: #ff9800;
+    color: white;
+}
+
+.btn-success {
+    background: rgba(76, 175, 80, 0.2);
+    color: #81c784;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.btn-success:hover {
+    background: #4caf50;
+    color: white;
+}
+
+.btn-delete {
+    background: rgba(244, 67, 54, 0.2);
+    color: #ff8a80;
+    border: 1px solid rgba(244, 67, 54, 0.3);
+}
+
+.btn-delete:hover {
     background: #f44336;
     color: white;
 }
 
-/* ===== TABLAS DE VENTAS ===== */
-.tabla-ventas {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 1rem;
+.btn-edit {
+    background: rgba(33, 150, 243, 0.2);
+    color: #64b5f6;
+    border: 1px solid rgba(33, 150, 243, 0.3);
 }
 
-.tabla-ventas th {
-    text-align: left;
-    padding: 1rem;
-    background: rgba(26, 47, 79, 0.8);
-    color: #aaccff;
-    font-weight: 500;
-    border-bottom: 2px solid rgba(77, 140, 255, 0.3);
-}
-
-.tabla-ventas td {
-    padding: 1rem;
-    border-bottom: 1px solid rgba(77, 140, 255, 0.1);
+.btn-edit:hover {
+    background: #2196f3;
     color: white;
 }
 
-.tabla-ventas tr:hover td {
-    background: rgba(77, 140, 255, 0.05);
+/* ===== BOTONES DE BÚSQUEDA ===== */
+.btn-buscar {
+    background: #2a6fdb;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
-/* ===== FORMULARIO DE CÓDIGOS ===== */
-#codigos-lista {
-    font-family: monospace;
-    background: #1a2f4f;
+.btn-buscar:hover {
+    background: #4d8cff;
+    transform: translateY(-1px);
 }
 
-/* ===== RESPONSIVE ===== */
-@media screen and (max-width: 1024px) {
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
+.btn-limpiar {
+    background: rgba(255, 255, 255, 0.1);
+    color: #aaccff;
+    border: 1px solid rgba(77, 140, 255, 0.3);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-limpiar:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+/* ===== FILTROS ===== */
+.filtros-bar {
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.filtros-bar select {
+    background: rgba(26, 47, 79, 0.8);
+    border: 1px solid rgba(77, 140, 255, 0.3);
+    border-radius: 8px;
+    color: white;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.filtros-bar select:focus {
+    outline: none;
+    border-color: #4d8cff;
+}
+
+/* ===== MENSAJES VACÍOS Y ERROR ===== */
+.empty-message,
+.error-message {
+    text-align: center;
+    padding: 3rem;
+    color: #aaccff;
+    font-size: 0.95rem;
+}
+
+.error-message {
+    color: #ff8a80;
+}
+
+.loading {
+    text-align: center;
+    padding: 3rem;
+    color: #aaccff;
+}
+
+/* ===== RESPONSIVE - FULL WIDTH EN TODOS LOS TAMAÑOS ===== */
+@media screen and (min-width: 1400px) {
+    .dashboard-content {
+        padding: 2rem;
     }
     
-    .productos-proveedor {
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    .tabla-admin th,
+    .tabla-admin td {
+        padding: 1rem;
+    }
+    
+    .tabla-admin {
+        font-size: 0.9rem;
+    }
+}
+
+@media screen and (max-width: 1200px) {
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    
+    .tabla-admin th,
+    .tabla-admin td {
+        padding: 0.7rem 0.5rem;
+        font-size: 0.8rem;
+    }
+}
+
+@media screen and (max-width: 992px) {
+    .dashboard-tabs {
+        gap: 0.2rem;
+        padding: 0.4rem;
+    }
+    
+    .tab-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+    
+    .dashboard-content {
+        padding: 1rem;
     }
 }
 
@@ -334,54 +456,89 @@
     }
 
     .dashboard-tabs {
-        flex-direction: column;
-        gap: 0.3rem;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
     }
 
     .tab-btn {
-        width: 100%;
+        width: auto;
+        flex: 1;
+        min-width: 100px;
         text-align: center;
     }
 
     .stats-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.8rem;
     }
-
+    
+    .stat-card {
+        padding: 1rem;
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
+    }
+    
     .dashboard-content {
-        padding: 1rem;
-        overflow-x: auto;
+        padding: 0.8rem;
     }
-
-    .form-row {
-        grid-template-columns: 1fr;
-        gap: 0;
+    
+    .table-responsive {
+        border-radius: 8px;
     }
-
-    .form-producto {
-        padding: 1rem;
+    
+    .tabla-admin {
+        min-width: 800px;
     }
-
-    .productos-proveedor {
-        grid-template-columns: 1fr;
-    }
-
-    .tabla-ventas {
-        font-size: 0.9rem;
-    }
-
-    .tabla-ventas th,
-    .tabla-ventas td {
-        padding: 0.8rem 0.5rem;
+    
+    .btn-buscar,
+    .btn-limpiar {
+        padding: 6px 12px;
+        font-size: 0.8rem;
     }
 }
 
-@media screen and (max-width: 480px) {
-    .producto-acciones {
+@media screen and (max-width: 576px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .dashboard-tabs {
         flex-direction: column;
     }
-
-    .tabla-ventas {
-        font-size: 0.8rem;
+    
+    .tab-btn {
+        width: 100%;
     }
+    
+    .dashboard-header h1 {
+        font-size: 1.3rem;
+    }
+    
+    .btn-action {
+        padding: 4px 8px;
+        font-size: 0.65rem;
+    }
+}
+
+/* Scrollbar personalizado */
+.table-responsive::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: rgba(26, 47, 79, 0.5);
+    border-radius: 3px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: #4d8cff;
+    border-radius: 3px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background: #2a6fdb;
 }
