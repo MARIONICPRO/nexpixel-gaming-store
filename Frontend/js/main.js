@@ -656,6 +656,35 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     IARecomendaciones.cargarRecomendaciones('recomendaciones-container', 4);
 });
+// ============================================
+// PANTALLA DE CARGA
+// ============================================
+function ocultarLoader() {
+    const loader = document.getElementById('page-loader');
+    if (loader) {
+        // Esperar a que termine la animación de la barra (2s)
+        setTimeout(() => {
+            loader.classList.add('hidden');
+            // Eliminar el loader del DOM después de la transición
+            setTimeout(() => {
+                if (loader.parentNode) {
+                    loader.parentNode.removeChild(loader);
+                }
+            }, 500);
+        }, 2000);
+    }
+}
+
+// Ocultar cuando la página cargue
+window.addEventListener('load', ocultarLoader);
+
+// Fallback: ocultar después de 5 segundos máximo
+setTimeout(() => {
+    const loader = document.getElementById('page-loader');
+    if (loader && !loader.classList.contains('hidden')) {
+        loader.classList.add('hidden');
+    }
+}, 5000);
 
 // ============================================
 // EXPORTAR FUNCIONES GLOBALES
