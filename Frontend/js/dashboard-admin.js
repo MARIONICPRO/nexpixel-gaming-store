@@ -242,7 +242,7 @@ async function cargarTablaProveedores(search = '') {
 
             if (p.suspendido_hasta && new Date(p.suspendido_hasta) > new Date()) {
                 const horasRestantes = Math.ceil((new Date(p.suspendido_hasta) - new Date()) / (1000 * 60 * 60));
-                estadoTexto = `⏳ Suspendido (${horasRestantes} horas)`;
+                estadoTexto = `<i class="fas fa-hourglass-half"></i> Suspendido: <br> (${horasRestantes} horas)`;
                 estadoClase = 'badge-warning';
                 tiempoRestante = ` hasta ${new Date(p.suspendido_hasta).toLocaleString()}`;
             } else if (p.estado === 'inactivo') {

@@ -874,3 +874,131 @@ h1, h2, h3, h4 {
     padding: 2px 3px !important;
   }
 }
+
+/* ============================================
+   TABLA DE PROVEEDORES - ANCHOS FIJOS CORREGIDOS
+   ============================================ */
+
+/* Contenedor de la tabla para mejor control */
+.tabla-proveedores {
+    width: 100%;
+    table-layout: fixed; /* Fuerza anchos fijos */
+    border-collapse: collapse;
+}
+
+/* Anchos específicos para cada columna de proveedores */
+.tabla-proveedores th:nth-child(1) { width: 18%; }  /* Empresa */
+.tabla-proveedores th:nth-child(2) { width: 18%; }  /* Email */
+.tabla-proveedores th:nth-child(3) { width: 10%; }  /* NIT */
+.tabla-proveedores th:nth-child(4) { width: 10%; }  /* Teléfono */
+.tabla-proveedores th:nth-child(5) { width: 8%; }   /* Verificado */
+.tabla-proveedores th:nth-child(6) { width: 12%; }  /* Estado - FIJO */
+.tabla-proveedores th:nth-child(7) { width: 14%; }  /* Suspender */
+.tabla-proveedores th:nth-child(8) { width: 10%; }  /* Acciones */
+
+/* Estilos para las celdas */
+.tabla-proveedores th,
+.tabla-proveedores td {
+    padding: 0.8rem 0.6rem;
+    vertical-align: middle;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Columna Estado - que no se desborde */
+.tabla-proveedores td:nth-child(6) {
+    white-space: normal;
+    word-break: break-word;
+}
+
+/* Columna Suspender - contenedor compacto */
+.tabla-proveedores td:nth-child(7) {
+    padding: 0.5rem;
+}
+
+/* Contenedor de suspender - en columna para mejor ajuste */
+.suspender-container {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+}
+
+.suspender-select {
+    width: 100% !important;
+    padding: 6px 8px !important;
+    font-size: 0.75rem !important;
+    background: rgba(26, 47, 79, 0.9);
+    border: 1px solid rgba(77, 140, 255, 0.3);
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+}
+
+.suspender-select:focus {
+    outline: none;
+    border-color: #4d8cff;
+}
+
+/* Botón suspender dentro del contenedor */
+.suspender-container .btn-action {
+    width: 100%;
+    justify-content: center;
+    padding: 5px 8px !important;
+    font-size: 0.7rem !important;
+    margin: 0 !important;
+}
+
+/* Badge de estado - que no ocupe mucho espacio */
+.tabla-proveedores .badge {
+    display: inline-block;
+    white-space: nowrap;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Acciones de proveedor - compactas */
+.acciones-proveedor {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.acciones-proveedor .btn-action {
+    width: 100%;
+    justify-content: center;
+    padding: 5px 6px !important;
+    font-size: 0.7rem !important;
+    white-space: nowrap;
+}
+
+/* Para pantallas medianas */
+@media screen and (max-width: 1200px) {
+    .tabla-proveedores th:nth-child(1) { width: 16%; }
+    .tabla-proveedores th:nth-child(2) { width: 16%; }
+    .tabla-proveedores th:nth-child(3) { width: 9%; }
+    .tabla-proveedores th:nth-child(4) { width: 9%; }
+    .tabla-proveedores th:nth-child(5) { width: 7%; }
+    .tabla-proveedores th:nth-child(6) { width: 14%; }
+    .tabla-proveedores th:nth-child(7) { width: 15%; }
+    .tabla-proveedores th:nth-child(8) { width: 14%; }
+}
+
+/* Para tablets */
+@media screen and (max-width: 992px) {
+    .tabla-proveedores {
+        min-width: 800px;
+    }
+}
+
+/* Para móviles - scroll horizontal */
+@media screen and (max-width: 768px) {
+    .table-responsive {
+        overflow-x: auto;
+    }
+    
+    .tabla-proveedores {
+        min-width: 750px;
+    }
+}
