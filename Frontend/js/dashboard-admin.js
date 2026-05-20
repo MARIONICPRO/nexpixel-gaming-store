@@ -1,6 +1,6 @@
 // frontend/js/dashboard-admin.js
 // ============================================
-// DASHBOARD ADMIN - VERSIÓN COMPLETA (ICONOS ORIGINALES)
+// DASHBOARD ADMIN - VERSIÓN COMPLETA
 // ============================================
 
 let currentTab = 'usuarios';
@@ -256,11 +256,7 @@ async function cargarTablaProveedores(search = '') {
 
             if (p.suspendido_hasta && new Date(p.suspendido_hasta) > new Date()) {
                 const horasRestantes = Math.ceil((new Date(p.suspendido_hasta) - new Date()) / (1000 * 60 * 60));
-<<<<<<< HEAD
                 estadoTexto = `<i class="fa-solid fa-clock"></i> Suspendido (${horasRestantes}h)`;
-=======
-                estadoTexto = `<i class="fas fa-hourglass-half"></i> Suspendido: <br> (${horasRestantes} horas)`;
->>>>>>> e75ea80c30f6e7bca84137574c64bd603b92eb64
                 estadoClase = 'badge-warning';
                 tiempoRestante = ` hasta ${new Date(p.suspendido_hasta).toLocaleString()}`;
             } else if (p.estado === 'inactivo') {
