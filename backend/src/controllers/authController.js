@@ -19,10 +19,8 @@ export const authController = {
                 });
             }
 
-            // ✅ CONVERTIR EMAIL A MINÚSCULAS
             const emailLower = email.toLowerCase();
 
-            // Verificar si el email ya existe
             const { data: existente, error: errorExistente } = await supabase
                 .from('usuarios')
                 .select('email')
@@ -73,7 +71,6 @@ export const authController = {
                 });
             }
 
-            // Procesar foto si existe
             let fotoUrl = null;
             if (req.file) {
                 try {
@@ -113,10 +110,19 @@ export const authController = {
                 { expiresIn: process.env.JWT_EXPIRES_IN }
             );
 
+            // 🔥 URL de redirección según rol
+            let redirectUrl = '/Frontend/index.html';
+            if (usuario.tipo_usuario === 'admin') {
+                redirectUrl = '/Frontend/dashboard-admin.html';
+            } else if (usuario.tipo_usuario === 'proveedor') {
+                redirectUrl = '/Frontend/dashboard-prove.html';
+            }
+
             res.status(201).json({
                 success: true,
                 message: 'Usuario registrado exitosamente',
                 token,
+                redirectUrl,
                 usuario: {
                     id: usuario.id_usuario,
                     nombre: usuario.nombre,
@@ -139,7 +145,7 @@ export const authController = {
     },
 
     // ============================================
-    // LOGIN DE USUARIO (CON VALIDACIÓN DE ESTADO)
+    // LOGIN DE USUARIO (CON VALIDACIÓN DE ESTADO + REDIRECCIÓN)
     // ============================================
     async login(req, res) {
         try {
@@ -152,7 +158,6 @@ export const authController = {
                 });
             }
 
-            // ✅ CONVERTIR EMAIL A MINÚSCULAS
             const emailLower = email.toLowerCase();
 
             const { data: usuario, error } = await supabase
@@ -185,10 +190,9 @@ export const authController = {
             }
 
             // ============================================
-            // 🔥 VALIDAR ESTADO DEL USUARIO (TODOS LOS TIPOS)
+            // 🔥 VALIDAR ESTADO DEL USUARIO
             // ============================================
 
-            // 1. Verificar si el usuario está INACTIVO
             if (usuario.estado === 'inactivo') {
                 console.log(`🚫 Login bloqueado: ${usuario.email} está INACTIVO`);
                 return res.status(403).json({ 
@@ -197,15 +201,12 @@ export const authController = {
                 });
             }
 
-            // 2. Verificar si el usuario está SUSPENDIDO
             if (usuario.estado === 'suspendido') {
                 console.log(`🚫 Login bloqueado: ${usuario.email} está SUSPENDIDO`);
                 
-                // Si tiene fecha de fin de suspensión
                 if (usuario.suspendido_hasta) {
                     const fechaFin = new Date(usuario.suspendido_hasta);
                     
-                    // Si la suspensión ya venció, reactivar automáticamente
                     if (fechaFin <= new Date()) {
                         console.log(`✅ Suspensión vencida para ${usuario.email}. Reactivando...`);
                         await supabase
@@ -223,7 +224,6 @@ export const authController = {
                         });
                     }
                 } else {
-                    // Suspendido indefinidamente
                     return res.status(403).json({ 
                         success: false, 
                         error: '⚠️ Tu cuenta ha sido suspendida. Contacta al administrador para más información.' 
@@ -231,7 +231,6 @@ export const authController = {
                 }
             }
 
-            // 3. Verificar si el proveedor requiere verificación
             if (usuario.tipo_usuario === 'proveedor' && usuario.verificado === false) {
                 console.log(`⏳ Login bloqueado: proveedor ${usuario.email} no verificado`);
                 return res.status(403).json({ 
@@ -255,12 +254,21 @@ export const authController = {
                 { expiresIn: process.env.JWT_EXPIRES_IN }
             );
 
-            console.log('✅ Login exitoso:', usuario.email, '- Tipo:', usuario.tipo_usuario);
+            // 🔥 DETERMINAR URL DE REDIRECCIÓN SEGÚN ROL
+            let redirectUrl = '/Frontend/index.html';
+            if (usuario.tipo_usuario === 'admin') {
+                redirectUrl = '/Frontend/dashboard-admin.html';
+            } else if (usuario.tipo_usuario === 'proveedor') {
+                redirectUrl = '/Frontend/dashboard-prove.html';
+            }
+
+            console.log('✅ Login exitoso:', usuario.email, '- Tipo:', usuario.tipo_usuario, '- Redirect:', redirectUrl);
 
             res.json({
                 success: true,
                 message: 'Login exitoso',
                 token,
+                redirectUrl,
                 usuario: {
                     id: usuario.id_usuario,
                     nombre: usuario.nombre,
@@ -328,7 +336,6 @@ export const authController = {
 
             const datosActualizar = {};
 
-            // Procesar datos de texto del perfil
             if (req.body) {
                 const nombre = req.body.nombre;
                 const telefono = req.body.telefono;
@@ -347,7 +354,6 @@ export const authController = {
                 }
             }
 
-            // Procesar cambio de contraseña
             let passwordCambiada = false;
             if (req.body && req.body.password_actual && req.body.password_nueva) {
                 const { password_actual, password_nueva } = req.body;
@@ -359,7 +365,6 @@ export const authController = {
                     });
                 }
 
-                // Verificar contraseña actual
                 const { data: usuario, error } = await supabase
                     .from('usuarios')
                     .select('password_hash')
@@ -388,7 +393,6 @@ export const authController = {
                 passwordCambiada = true;
             }
 
-            // Procesar foto si existe
             if (req.file) {
                 try {
                     const timestamp = Date.now();
@@ -552,7 +556,6 @@ export const authController = {
                 }
             }
 
-            // Eliminar carrito
             const { data: carrito } = await supabase
                 .from('carrito')
                 .select('id')
@@ -564,7 +567,6 @@ export const authController = {
                 await supabase.from('carrito').delete().eq('id', carrito.id);
             }
 
-            // Eliminar compras
             const { data: compras } = await supabase
                 .from('compra')
                 .select('id_compra')
@@ -577,7 +579,6 @@ export const authController = {
                 await supabase.from('compra').delete().in('id_compra', compraIds);
             }
 
-            // Eliminar otros registros
             await supabase.from('devolucion').delete().eq('id_usuario', usuario.id_usuario);
             await supabase.from('historial_ventas').delete().eq('id_cuenta', usuario.id_usuario);
             await supabase.from('interacciones_usuario').delete().eq('id_usuario', usuario.id_usuario);
@@ -585,7 +586,6 @@ export const authController = {
             await supabase.from('busquedas_usuario').delete().eq('id_usuario', usuario.id_usuario);
             await supabase.from('recomendacion').delete().eq('id_usuario', usuario.id_usuario);
 
-            // Eliminar usuario
             const { error } = await supabase
                 .from('usuarios')
                 .delete()
