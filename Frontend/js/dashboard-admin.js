@@ -145,7 +145,7 @@ async function cargarTablaUsuarios(search = '') {
         let html = `
             <div class="search-bar">
                 <div style="display: flex; gap: 10px;">
-                    <input type="text" id="search-usuario" placeholder="🔍 Buscar por nombre o email..." value="${escapeHtml(search)}" style="flex: 1;" autocomplete="off">
+                    <input type="text" id="search-usuario" placeholder=" Buscar por nombre o email..." value="${escapeHtml(search)}" style="flex: 1;" autocomplete="off">
                     <button class="btn-limpiar" onclick="limpiarBusquedaUsuarios()"><i class="fa-solid fa-xmark"></i> Limpiar</button>
                 </div>
             </div>`;
@@ -233,7 +233,7 @@ async function cargarTablaProveedores(search = '') {
         let html = `
             <div class="search-bar">
                 <div style="display: flex; gap: 10px;">
-                    <input type="text" id="search-proveedor" placeholder="🔍 Buscar por empresa, nombre o email..." value="${escapeHtml(search)}" style="flex: 1;" autocomplete="off">
+                    <input type="text" id="search-proveedor" placeholder=" Buscar por empresa, nombre o email..." value="${escapeHtml(search)}" style="flex: 1;" autocomplete="off">
                     <button class="btn-limpiar" onclick="limpiarBusquedaProveedores()"><i class="fa-solid fa-xmark"></i> Limpiar</button>
                 </div>
             </div>`;
@@ -256,7 +256,7 @@ async function cargarTablaProveedores(search = '') {
 
             if (p.suspendido_hasta && new Date(p.suspendido_hasta) > new Date()) {
                 const horasRestantes = Math.ceil((new Date(p.suspendido_hasta) - new Date()) / (1000 * 60 * 60));
-                estadoTexto = `<i class="fa-solid fa-clock"></i> Suspendido (${horasRestantes}h)`;
+                estadoTexto = `<i class="fa-solid fa-clock"></i> Suspendido <br>(${horasRestantes}h)`;
                 estadoClase = 'badge-warning';
                 tiempoRestante = ` hasta ${new Date(p.suspendido_hasta).toLocaleString()}`;
             } else if (p.estado === 'inactivo') {
@@ -313,7 +313,7 @@ async function cargarTablaProductosAdmin(search = '', estado = 'todos') {
         let html = `
             <div class="filtros-bar">
                 <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                    <input type="text" id="search-producto" placeholder="🔍 Buscar producto..." value="${escapeHtml(search)}" style="flex: 1;" autocomplete="off">
+                    <input type="text" id="search-producto" placeholder=" Buscar producto..." value="${escapeHtml(search)}" style="flex: 1;" autocomplete="off">
                     <button class="btn-limpiar" onclick="limpiarBusquedaProductos()"><i class="fa-solid fa-xmark"></i> Limpiar</button>
                 </div>
                 <select id="filtro-estado" onchange="filtrarPorEstado()">
