@@ -39,42 +39,39 @@ export const authController = {
             const salt = await bcrypt.genSalt(10);
             const password_hash = await bcrypt.hash(password, salt);
 
-// Reemplaza esta parte en la función registrar (aproximadamente línea 50-70)
+            const { data: usuario, error } = await supabase
+                .from('usuarios')
+                .insert([{
+                    nombre,
+                    email: emailLower,
+                    password_hash,
+                    tipo_usuario: tipo_usuario || 'cliente',
+                    telefono: telefono || null,
+                    empresa: empresa || null,
+                    nit: nit || null,
+                    foto_perfil: null,
+                    estado: 'activo',
+                    verificado: tipo_usuario === 'proveedor' ? false : true,
+                    fecha_registro: new Date()
+                }])
+                .select()
+                .single();
 
-const { data: usuario, error } = await supabase
-    .from('usuarios')
-    .insert([{
-        nombre,
-        email: emailLower,
-        password_hash,
-        tipo_usuario: tipo_usuario || 'cliente',
-        telefono: telefono || null,
-        empresa: empresa || null,
-        nit: nit || null,
-        foto_perfil: null,
-        verificado: tipo_usuario === 'proveedor' ? false : true,
-        fecha_registro: new Date()
-    }])
-    .select()
-    .single();
-
-// 👇 AÑADE ESTE CÓDIGO PARA VER EL ERROR DETALLADO
-if (error) {
-    console.log('='.repeat(60));
-    console.log('❌ ERROR DE SUPABASE:');
-    console.log('Código:', error.code);
-    console.log('Mensaje:', error.message);
-    console.log('Detalles:', error.details);
-    console.log('Cuerpo completo:', error);
-    console.log('='.repeat(60));
-    
-    return res.status(400).json({
-        success: false,
-        error: error.message,
-        code: error.code,
-        details: error.details
-    });
-}
+            if (error) {
+                console.log('='.repeat(60));
+                console.log('❌ ERROR DE SUPABASE:');
+                console.log('Código:', error.code);
+                console.log('Mensaje:', error.message);
+                console.log('Detalles:', error.details);
+                console.log('='.repeat(60));
+                
+                return res.status(400).json({
+                    success: false,
+                    error: error.message,
+                    code: error.code,
+                    details: error.details
+                });
+            }
 
             // Procesar foto si existe
             let fotoUrl = null;
@@ -140,101 +137,151 @@ if (error) {
             });
         }
     },
-// ============================================
-// LOGIN DE USUARIO (VERSIÓN ÚNICA)
-// ============================================
-async login(req, res) {
-    try {
-        const { email, password } = req.body;
 
-        if (!email || !password) {
-            return res.status(400).json({
-                success: false,
-                error: 'Email y contraseña son obligatorios'
-            });
-        }
+    // ============================================
+    // LOGIN DE USUARIO (CON VALIDACIÓN DE ESTADO)
+    // ============================================
+    async login(req, res) {
+        try {
+            const { email, password } = req.body;
 
-        // ✅ CONVERTIR EMAIL A MINÚSCULAS
-        const emailLower = email.toLowerCase();
-
-        const { data: usuario, error } = await supabase
-            .from('usuarios')
-            .select('*')
-            .eq('email', emailLower)
-            .single();
-
-        if (error || !usuario) {
-            return res.status(401).json({
-                success: false,
-                error: 'Credenciales inválidas'
-            });
-        }
-
-        if (!usuario.password_hash) {
-            return res.status(500).json({
-                success: false,
-                error: 'Error en configuración de usuario'
-            });
-        }
-
-        const passwordValida = await bcrypt.compare(password, usuario.password_hash);
-
-        if (!passwordValida) {
-            return res.status(401).json({
-                success: false,
-                error: 'Credenciales inválidas'
-            });
-        }
-
-        // ============================================
-        // 🚫 VALIDAR SUSPENSIÓN (SOLO PARA PROVEEDORES)
-        // ============================================
-        if (usuario.tipo_usuario === 'proveedor' && usuario.suspendido_hasta && new Date(usuario.suspendido_hasta) > new Date()) {
-            const fechaFin = new Date(usuario.suspendido_hasta).toLocaleString();
-            console.log(`⏳ Proveedor ${usuario.email} suspendido hasta ${fechaFin}`);
-            return res.status(403).json({ 
-                success: false, 
-                error: `⚠️ Tu cuenta está suspendida. Podrás acceder nuevamente el ${fechaFin}` 
-            });
-        }
-
-        await supabase
-            .from('usuarios')
-            .update({ ultima_conexion: new Date() })
-            .eq('id_usuario', usuario.id_usuario);
-
-        const token = jwt.sign(
-            { id: usuario.id_usuario, email: usuario.email, tipo: usuario.tipo_usuario },
-            process.env.JWT_SECRET,
-            { expiresIn: process.env.JWT_EXPIRES_IN }
-        );
-
-        console.log('✅ Login exitoso. Foto:', usuario.foto_perfil ? '✅' : '❌');
-
-        res.json({
-            success: true,
-            message: 'Login exitoso',
-            token,
-            usuario: {
-                id: usuario.id_usuario,
-                nombre: usuario.nombre,
-                email: usuario.email,
-                tipo: usuario.tipo_usuario,
-                foto: usuario.foto_perfil,
-                telefono: usuario.telefono,
-                empresa: usuario.empresa,
-                verificado: usuario.verificado
+            if (!email || !password) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Email y contraseña son obligatorios'
+                });
             }
-        });
 
-    } catch (error) {
-        console.error('❌ Error en login:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Error al iniciar sesión'
-        });
-    }
-},
+            // ✅ CONVERTIR EMAIL A MINÚSCULAS
+            const emailLower = email.toLowerCase();
+
+            const { data: usuario, error } = await supabase
+                .from('usuarios')
+                .select('*')
+                .eq('email', emailLower)
+                .single();
+
+            if (error || !usuario) {
+                return res.status(401).json({
+                    success: false,
+                    error: 'Credenciales inválidas'
+                });
+            }
+
+            if (!usuario.password_hash) {
+                return res.status(500).json({
+                    success: false,
+                    error: 'Error en configuración de usuario'
+                });
+            }
+
+            const passwordValida = await bcrypt.compare(password, usuario.password_hash);
+
+            if (!passwordValida) {
+                return res.status(401).json({
+                    success: false,
+                    error: 'Credenciales inválidas'
+                });
+            }
+
+            // ============================================
+            // 🔥 VALIDAR ESTADO DEL USUARIO (TODOS LOS TIPOS)
+            // ============================================
+
+            // 1. Verificar si el usuario está INACTIVO
+            if (usuario.estado === 'inactivo') {
+                console.log(`🚫 Login bloqueado: ${usuario.email} está INACTIVO`);
+                return res.status(403).json({ 
+                    success: false, 
+                    error: '⚠️ Tu cuenta está inactiva. Contacta al administrador para reactivarla.' 
+                });
+            }
+
+            // 2. Verificar si el usuario está SUSPENDIDO
+            if (usuario.estado === 'suspendido') {
+                console.log(`🚫 Login bloqueado: ${usuario.email} está SUSPENDIDO`);
+                
+                // Si tiene fecha de fin de suspensión
+                if (usuario.suspendido_hasta) {
+                    const fechaFin = new Date(usuario.suspendido_hasta);
+                    
+                    // Si la suspensión ya venció, reactivar automáticamente
+                    if (fechaFin <= new Date()) {
+                        console.log(`✅ Suspensión vencida para ${usuario.email}. Reactivando...`);
+                        await supabase
+                            .from('usuarios')
+                            .update({ 
+                                estado: 'activo', 
+                                suspendido_hasta: null 
+                            })
+                            .eq('id_usuario', usuario.id_usuario);
+                    } else {
+                        const fechaFinStr = fechaFin.toLocaleString();
+                        return res.status(403).json({ 
+                            success: false, 
+                            error: `⚠️ Tu cuenta está suspendida hasta ${fechaFinStr}. Contacta al administrador.` 
+                        });
+                    }
+                } else {
+                    // Suspendido indefinidamente
+                    return res.status(403).json({ 
+                        success: false, 
+                        error: '⚠️ Tu cuenta ha sido suspendida. Contacta al administrador para más información.' 
+                    });
+                }
+            }
+
+            // 3. Verificar si el proveedor requiere verificación
+            if (usuario.tipo_usuario === 'proveedor' && usuario.verificado === false) {
+                console.log(`⏳ Login bloqueado: proveedor ${usuario.email} no verificado`);
+                return res.status(403).json({ 
+                    success: false, 
+                    error: '⚠️ Tu cuenta de proveedor está pendiente de verificación. Te notificaremos cuando sea aprobada.' 
+                });
+            }
+
+            // ============================================
+            // ✅ USUARIO VÁLIDO - GENERAR TOKEN
+            // ============================================
+
+            await supabase
+                .from('usuarios')
+                .update({ ultima_conexion: new Date() })
+                .eq('id_usuario', usuario.id_usuario);
+
+            const token = jwt.sign(
+                { id: usuario.id_usuario, email: usuario.email, tipo: usuario.tipo_usuario },
+                process.env.JWT_SECRET,
+                { expiresIn: process.env.JWT_EXPIRES_IN }
+            );
+
+            console.log('✅ Login exitoso:', usuario.email, '- Tipo:', usuario.tipo_usuario);
+
+            res.json({
+                success: true,
+                message: 'Login exitoso',
+                token,
+                usuario: {
+                    id: usuario.id_usuario,
+                    nombre: usuario.nombre,
+                    email: usuario.email,
+                    tipo: usuario.tipo_usuario,
+                    foto: usuario.foto_perfil,
+                    telefono: usuario.telefono,
+                    empresa: usuario.empresa,
+                    verificado: usuario.verificado,
+                    estado: usuario.estado
+                }
+            });
+
+        } catch (error) {
+            console.error('❌ Error en login:', error);
+            res.status(500).json({
+                success: false,
+                error: 'Error al iniciar sesión'
+            });
+        }
+    },
 
     // ============================================
     // OBTENER PERFIL
