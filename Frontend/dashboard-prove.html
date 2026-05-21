@@ -19,30 +19,42 @@
     <div class="sidebar" id="sidebar"></div>
 
     <div class="content">
-        <div class="dashboard-header">
-            <h1>Panel de Proveedor</h1>
-            <div class="stats-grid" id="stats-proveedor"></div>
-        </div>
+        <!-- ✅ Wrapper principal con clase del CSS -->
+        <div class="proveedor-dashboard">
 
-        <div class="dashboard-tabs">
-            <button class="tab-btn active" onclick="cambiarTabProveedor('productos')">Mis productos</button>
-            <button class="tab-btn" onclick="cambiarTabProveedor('nuevo')"><i class="fa-solid fa-plus"></i> Añadir producto</button>
-            <button class="tab-btn" onclick="cambiarTabProveedor('codigos')">Cargar códigos</button>
-            <button class="tab-btn" onclick="cambiarTabProveedor('ventas')">Mis ventas</button>
-        </div>
+            <!-- ✅ Header con clase del CSS -->
+            <div class="proveedor-header">
+                <h1>Panel de Proveedor</h1>
+            </div>
 
-        <div id="proveedor-content" class="dashboard-content"></div>
+            <!-- ✅ Stats con clase del CSS (antes era "stats-grid") -->
+            <div class="proveedor-stats" id="stats-proveedor"></div>
+
+            <!-- ✅ Tabs con clases del CSS (antes era "dashboard-tabs" y "tab-btn") -->
+            <div class="proveedor-tabs">
+                <button class="proveedor-tab active" onclick="cambiarTabProveedor('productos')">Mis productos</button>
+                <button class="proveedor-tab" onclick="cambiarTabProveedor('nuevo')">
+                    <i class="fa-solid fa-plus"></i> Añadir producto
+                </button>
+                <button class="proveedor-tab" onclick="cambiarTabProveedor('codigos')">Cargar códigos</button>
+                <button class="proveedor-tab" onclick="cambiarTabProveedor('ventas')">Mis ventas</button>
+            </div>
+
+            <!-- Contenido dinámico -->
+            <div id="proveedor-content"></div>
+
+        </div>
     </div>
-    
+
     <a href="carrito.html" class="cart-floating" id="cartFloating">
-         <i class="fa-solid fa-cart-shopping"></i>
+        <i class="fa-solid fa-cart-shopping"></i>
         <span class="cart-badge" id="cartCount">0</span>
     </a>
 
     <div class="modal-overlay" id="auth-modal"></div>
     <div class="modal-overlay" id="perfil-modal"></div>
 
-    <!-- ✅ SCRIPTS EN ORDEN CORRECTO -->
+    <!-- Scripts en orden correcto -->
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/sidebar.js"></script>
@@ -51,7 +63,7 @@
     <script src="js/carrito-db.js"></script>
     <script src="js/ia-db.js"></script>
     <script src="js/compras.js"></script>
-    <script src="js/dashboard-prove.js"></script>  <!-- 👈 AGREGADO -->
+    <script src="js/dashboard-prove.js"></script>
     <script src="js/main.js"></script>
 </body>
 
