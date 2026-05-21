@@ -478,7 +478,7 @@ async function desactivarUsuario(id) {
     try {
         const res = await fetch(`${API_URL}/admin/usuarios/${id}/inactivar`, { method: 'PUT', headers: API.getHeaders() });
         const data = await res.json();
-        if (data.success) { mostrarNotificacion('<i class="fa-solid fa-circle-check"></i> Usuario desactivado correctamente', 'success'); cargarTablaUsuarios(); }
+        if (data.success) { mostrarNotificacion('Usuario desactivado correctamente', 'success'); cargarTablaUsuarios(); }
         else { mostrarNotificacion(data.error || 'Error al desactivar usuario', 'error'); }
     } catch (error) { mostrarNotificacion('Error de conexión al servidor', 'error'); }
 }
