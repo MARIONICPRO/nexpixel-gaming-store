@@ -21,7 +21,8 @@ async function inicializarApp() {
     const path = window.location.pathname;
     console.log('📄 Página actual:', path);
 
-    if (path.includes('index.html') || path === '/') {
+    // 🔥 CAMBIO 1
+    if (path === '/' || path === '/home') {
         try {
             const track = document.getElementById('carrusel-recientes');
             try {
@@ -45,7 +46,8 @@ async function inicializarApp() {
         }
     }
 
-    if (path.includes('juegos.html')) {
+    // 🔥 CAMBIO 2
+    if (path === '/juegos') {
         await Productos.cargarFiltrosPlataformas('filtro-plataformas');
         const containerMobile = document.getElementById('filtro-plataformas-mobile');
         if (containerMobile) {
@@ -59,17 +61,20 @@ async function inicializarApp() {
         }, 100);
     }
 
-    if (path.includes('tarjetas.html')) {
+    // 🔥 CAMBIO 3
+    if (path === '/tarjetas') {
         const tarjetas = await Productos.cargarTarjetas();
         Productos.renderizarTarjetas(tarjetas, 'tarjetas-grid');
         inicializarFiltros();
     }
 
-    if (path.includes('contacto.html')) {
+    // 🔥 CAMBIO 4
+    if (path === '/contacto') {
         // Solo sidebar
     }
 
-    if (path.includes('carrito.html')) {
+    // 🔥 CAMBIO 5
+    if (path === '/carrito') {
         if (!Auth.usuarioActual) {
             mostrarNotificacion('Debes iniciar sesión', 'error');
             setTimeout(() => abrirModalLogin(), 500);
@@ -81,7 +86,8 @@ async function inicializarApp() {
         }
     }
 
-    if (path.includes('producto.html')) {
+    // 🔥 CAMBIO 6
+    if (path === '/producto') {
         const urlParams = new URLSearchParams(window.location.search);
         const productoId = urlParams.get('id');
         if (productoId) {
@@ -95,11 +101,13 @@ async function inicializarApp() {
         }
     }
 
-    if (path.includes('dashboard-admin.html')) {
+    // 🔥 CAMBIO 7
+    if (path === '/admin') {
         cargarDashboardAdmin();
     }
 
-    if (path.includes('dashboard-prove.html')) {
+    // 🔥 CAMBIO 8
+    if (path === '/proveedor') {
         cargarDashboardProveedor();
     }
 
@@ -118,22 +126,22 @@ function protegerRutas() {
     const usuario = Auth?.usuarioActual;
     if (!usuario) return;
 
-    const pagina = window.location.pathname.split('/').pop();
-    const esDashboard = pagina.includes('dashboard');
+    // 🔥 CAMBIO 9
+    const path = window.location.pathname;
 
-    if (usuario.tipo_usuario === 'admin' && pagina !== 'dashboard-admin.html') {
+    if (usuario.tipo_usuario === 'admin' && path !== '/admin') {
         console.log('🚫 Admin redirigido a su panel');
-        window.location.href = 'dashboard-admin.html';
+        window.location.href = '/admin';
     }
 
-    if (usuario.tipo_usuario === 'proveedor' && pagina !== 'dashboard-prove.html') {
+    if (usuario.tipo_usuario === 'proveedor' && path !== '/proveedor') {
         console.log('🚫 Proveedor redirigido a su panel');
-        window.location.href = 'dashboard-prove.html';
+        window.location.href = '/proveedor';
     }
 
-    if (usuario.tipo_usuario === 'cliente' && esDashboard) {
+    if (usuario.tipo_usuario === 'cliente' && (path === '/admin' || path === '/proveedor')) {
         console.log('🚫 Cliente redirigido al inicio');
-        window.location.href = 'index.html';
+        window.location.href = '/home';
     }
 }
 
@@ -173,7 +181,6 @@ function cerrarBienvenida() {
     sessionStorage.setItem('welcomeShown', 'true');
 }
 
-// Eventos de teclado para cerrar bienvenida
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ') {
         const screen = document.getElementById('welcome-screen');
@@ -184,7 +191,6 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// Iniciar bienvenida al cargar
 document.addEventListener('DOMContentLoaded', () => {
     const alreadyShown = sessionStorage.getItem('welcomeShown');
     
@@ -198,7 +204,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Click en cualquier parte cierra la bienvenida
 document.addEventListener('click', (e) => {
     const screen = document.getElementById('welcome-screen');
     if (screen && !screen.classList.contains('hidden')) {
@@ -213,7 +218,8 @@ async function verProducto(id) {
     if (Auth.usuarioActual) {
         console.log('Vista de producto:', id);
     }
-    window.location.href = `producto.html?id=${id}`;
+    // 🔥 CAMBIO 10
+    window.location.href = `/producto?id=${id}`;
 }
 
 async function agregarAlCarrito(id) {
@@ -327,7 +333,8 @@ function toggleFiltrosPanel() {
 }
 
 function inicializarFiltros() {
-    if (!window.location.pathname.includes('juegos.html') && !window.location.pathname.includes('tarjetas.html')) return;
+    // 🔥 CAMBIO 11
+    if (window.location.pathname !== '/juegos' && window.location.pathname !== '/tarjetas') return;
 
     const guardado = localStorage.getItem('filtrosVisibles');
     if (guardado === null) {
@@ -485,6 +492,18 @@ window.addEventListener('resize', function () {
 });
 
 setTimeout(inicializarFiltros, 500);
+// Detectar navegación y reiniciar componentes
+window.addEventListener('popstate', () => {
+    inicializarApp();
+});
+
+// También cuando se usa el sidebar para navegar
+document.addEventListener('click', (e) => {
+    const link = e.target.closest('a[href^="/"]');
+    if (link && !link.getAttribute('target')) {
+        // Permitir navegación normal, el backend recargará la página
+    }
+});
 
 // ============================================
 // EXPORTAR FUNCIONES GLOBALES

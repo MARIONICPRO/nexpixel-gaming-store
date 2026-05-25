@@ -280,8 +280,8 @@ async eliminar(itemId) {
         const contadorFlotante = document.getElementById('cartCount');
         if (contadorFlotante) contadorFlotante.textContent = this.items.length;
 
-        // Si estamos en la página del carrito, renderizar
-        if (window.location.pathname.includes('carrito.html')) {
+        // 🔥 CAMBIO 1: URL limpia
+        if (window.location.pathname === '/carrito') {
             this.renderizarCarrito();
         }
     },
@@ -295,7 +295,8 @@ async eliminar(itemId) {
             container.innerHTML = `
             <div class="carrito-vacio">
                 <p>Tu carrito está vacío</p>
-                <a href="juegos.html" class="btn-ir-tienda">Ir a la tienda</a>
+                <!-- 🔥 CAMBIO 2: URL limpia -->
+                <a href="/juegos" class="btn-ir-tienda">Ir a la tienda</a>
             </div>
         `;
             if (totalSpan) totalSpan.textContent = '$0';

@@ -96,10 +96,8 @@ const Auth = {
                     Auth.actualizarUI();
                 }
 
-                // 🔥 REDIRIGIR SEGÚN ROL (Admin/Proveedor)
-                if (response.redirectUrl && 
-                    (response.usuario.tipo === 'admin' || response.usuario.tipo_usuario === 'admin' ||
-                     response.usuario.tipo === 'proveedor' || response.usuario.tipo_usuario === 'proveedor')) {
+                // 🔥 REDIRIGIR SEGÚN ROL
+                if (response.redirectUrl) {
                     console.log('🔄 Redirigiendo a:', response.redirectUrl);
                     window.location.href = response.redirectUrl;
                     return { success: true, usuario: response.usuario };
@@ -270,7 +268,7 @@ const Auth = {
         API.setToken(null);
         this.usuarioActual = null;
         mostrarNotificacion('Sesión cerrada correctamente', 'info');
-        window.location.href = 'index.html';
+        window.location.href = '/home';
     },
 
     // ============================================

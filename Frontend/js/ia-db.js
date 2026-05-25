@@ -3,8 +3,6 @@
 // VERSIÓN UNIFICADA - MISMO SISTEMA EN TODAS LAS PÁGINAS
 // ============================================
 
-const API_URL = 'http://localhost:3000/api';
-
 const IARecomendaciones = {
     cache: new Map(),
 
@@ -202,11 +200,9 @@ async function inicializarRecomendaciones() {
         console.log(`Usuario no logueado - recomendaciones generales`);
     }
 
-    // 🔥 MISMO CONTAINER PARA TODAS LAS PÁGINAS (usar siempre 'recomendaciones-container')
-    // o crear un contenedor específico si no existe
+    // 🔥 MISMO CONTAINER PARA TODAS LAS PÁGINAS
     let containerId = '';
     
-    // Detectar qué contenedor existe en la página actual
     if (document.getElementById('recomendaciones-ia-container')) {
         containerId = 'recomendaciones-ia-container';
     } else if (document.getElementById('recomendaciones-container')) {

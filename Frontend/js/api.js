@@ -2,6 +2,7 @@
 // API Client para NexPixel
 // ============================================
 
+const API_URL = '/api';
 
 class ApiClient {
     constructor() {

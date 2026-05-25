@@ -71,7 +71,7 @@ async function renderizarSidebar() {
     }
 
     const usuario = Auth?.usuarioActual;
-    const paginaActual = window.location.pathname.split('/').pop() || 'index.html';
+    const paginaActual = window.location.pathname;
 
     let perfilHTML = '';
     let menuHTML = '';
@@ -79,9 +79,6 @@ async function renderizarSidebar() {
     if (usuario) {
         const inicial = usuario.nombre ? usuario.nombre.charAt(0).toUpperCase() : 'U';
 
-        // ============================================
-        // PERFIL DEL USUARIO (TODOS LOS ROLES)
-        // ============================================
         perfilHTML = `
             <div class="user-profile-sidebar">
                 <div class="user-avatar-large">
@@ -99,7 +96,6 @@ async function renderizarSidebar() {
                       '<i class="fa-solid fa-user"></i> Cliente'}
                 </div>
                 
-                <!-- 🔥 EDITAR PERFIL PARA TODOS LOS ROLES -->
                 <button class="btn-editar-perfil" onclick="abrirModalPerfil()">
                     <i class="fa-solid fa-pen"></i> Editar perfil
                 </button>
@@ -110,48 +106,39 @@ async function renderizarSidebar() {
             </div>
         `;
 
-        // ============================================
-        // MENÚ SEGÚN ROL
-        // ============================================
         if (usuario.tipo_usuario === 'admin') {
-            // 🔥 ADMIN: Solo panel de administración
             menuHTML = `
-                <a href="dashboard-admin.html" class="menu-item ${paginaActual === 'dashboard-admin.html' ? 'active' : ''}" onclick="cerrarSidebar()">
+                <a href="/admin" class="menu-item ${paginaActual === '/admin' ? 'active' : ''}" onclick="cerrarSidebar()">
                     <span class="menu-icon"><i class="fa-solid fa-crown"></i></span> Panel Administrador
                 </a>
             `;
         } else if (usuario.tipo_usuario === 'proveedor') {
-            // 🔥 PROVEEDOR: Solo panel de proveedor
             menuHTML = `
-                <a href="dashboard-prove.html" class="menu-item ${paginaActual === 'dashboard-prove.html' ? 'active' : ''}" onclick="cerrarSidebar()">
+                <a href="/proveedor" class="menu-item ${paginaActual === '/proveedor' ? 'active' : ''}" onclick="cerrarSidebar()">
                     <span class="menu-icon"><i class="fa-solid fa-building"></i></span> Panel Proveedor
                 </a>
             `;
         } else {
-            // 🔥 CLIENTE: Tienda completa
             menuHTML = `
-                <a href="index.html" class="menu-item ${paginaActual === 'index.html' ? 'active' : ''}" onclick="cerrarSidebar()">
+                <a href="/home" class="menu-item ${paginaActual === '/home' || paginaActual === '/' ? 'active' : ''}" onclick="cerrarSidebar()">
                     <span class="menu-icon"><i class="fa-solid fa-house"></i></span> Inicio
                 </a>
-                <a href="juegos.html" class="menu-item ${paginaActual === 'juegos.html' ? 'active' : ''}" onclick="cerrarSidebar()">
+                <a href="/juegos" class="menu-item ${paginaActual === '/juegos' ? 'active' : ''}" onclick="cerrarSidebar()">
                     <span class="menu-icon"><i class="fa-solid fa-gamepad"></i></span> Juegos
                 </a>
-                <a href="tarjetas.html" class="menu-item ${paginaActual === 'tarjetas.html' ? 'active' : ''}" onclick="cerrarSidebar()">
+                <a href="/tarjetas" class="menu-item ${paginaActual === '/tarjetas' ? 'active' : ''}" onclick="cerrarSidebar()">
                     <span class="menu-icon"><i class="fa-solid fa-credit-card"></i></span> Tarjetas
                 </a>
-                <a href="contacto.html" class="menu-item ${paginaActual === 'contacto.html' ? 'active' : ''}" onclick="cerrarSidebar()">
+                <a href="/contacto" class="menu-item ${paginaActual === '/contacto' ? 'active' : ''}" onclick="cerrarSidebar()">
                     <span class="menu-icon"><i class="fa-solid fa-headset"></i></span> Contacto
                 </a>
-                <a href="carrito.html" class="menu-item ${paginaActual === 'carrito.html' ? 'active' : ''}" onclick="cerrarSidebar()">
+                <a href="/carrito" class="menu-item ${paginaActual === '/carrito' ? 'active' : ''}" onclick="cerrarSidebar()">
                     <span class="menu-icon"><i class="fa-solid fa-cart-shopping"></i></span> Carrito
                     <span class="carrito-badge" id="sidebar-carrito-contador">${Carrito?.items?.length || 0}</span>
                 </a>
             `;
         }
     } else {
-        // ============================================
-        // NO LOGUEADO
-        // ============================================
         perfilHTML = `
             <div class="user-profile-sidebar">
                 <div class="auth-buttons-sidebar">
@@ -166,16 +153,16 @@ async function renderizarSidebar() {
         `;
         
         menuHTML = `
-            <a href="index.html" class="menu-item ${paginaActual === 'index.html' ? 'active' : ''}" onclick="cerrarSidebar()">
+            <a href="/home" class="menu-item ${paginaActual === '/home' || paginaActual === '/' ? 'active' : ''}" onclick="cerrarSidebar()">
                 <span class="menu-icon"><i class="fa-solid fa-house"></i></span> Inicio
             </a>
-            <a href="juegos.html" class="menu-item ${paginaActual === 'juegos.html' ? 'active' : ''}" onclick="cerrarSidebar()">
+            <a href="/juegos" class="menu-item ${paginaActual === '/juegos' ? 'active' : ''}" onclick="cerrarSidebar()">
                 <span class="menu-icon"><i class="fa-solid fa-gamepad"></i></span> Juegos
             </a>
-            <a href="tarjetas.html" class="menu-item ${paginaActual === 'tarjetas.html' ? 'active' : ''}" onclick="cerrarSidebar()">
+            <a href="/tarjetas" class="menu-item ${paginaActual === '/tarjetas' ? 'active' : ''}" onclick="cerrarSidebar()">
                 <span class="menu-icon"><i class="fa-solid fa-credit-card"></i></span> Tarjetas
             </a>
-            <a href="contacto.html" class="menu-item ${paginaActual === 'contacto.html' ? 'active' : ''}" onclick="cerrarSidebar()">
+            <a href="/contacto" class="menu-item ${paginaActual === '/contacto' ? 'active' : ''}" onclick="cerrarSidebar()">
                 <span class="menu-icon"><i class="fa-solid fa-headset"></i></span> Contacto
             </a>
         `;

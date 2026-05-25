@@ -22,7 +22,8 @@
     <div class="carrito-wrapper">
         <div class="carrito-header">
             <h1>Tu Carrito de Compras</h1>
-            <a href="index.html" class="btn-volver">← Seguir comprando</a>
+            <!-- 🔥 CAMBIO: URL limpia -->
+            <a href="/home" class="btn-volver">← Seguir comprando</a>
         </div>
 
         <div class="carrito-container">
@@ -34,7 +35,6 @@
             <div class="panel-pago">
                 <h2>Proceso de pago</h2>
 
-                <!-- Campos comunes -->
                 <div id="campos-comunes">
                     <div class="form-group">
                         <label>Nombre completo</label>
@@ -50,13 +50,11 @@
                     </div>
                 </div>
 
-                <!-- Total -->
                 <div class="total-pagar">
                     <span>Total a pagar:</span>
                     <span id="total-pagar">$0</span>
                 </div>
 
-                <!-- 👇 NUEVO: Botón dedicado de PayU -->
                 <button id="btn-pagar-payu" class="btn-pagar-payu">
                     <i class="fa-solid fa-credit-card"></i> Pagar con PayU
                 </button>
@@ -68,22 +66,17 @@
             </div>
         </div>
 
-        <!-- 👇 NUEVA SECCIÓN: RECOMENDACIONES IA CON RAZONAMIENTO -->
         <section class="recomendaciones-ia">
             <h2>Recomendaciones para ti</h2>
-
             <div id="ia-razonamiento"></div>
-
             <div id="recomendaciones-ia-container"></div>
         </section>
-
 
     </div>
 
     <div class="modal-overlay" id="auth-modal"></div>
     <div class="modal-overlay" id="perfil-modal"></div>
 
-    <!-- SCRIPTS - VERSIÓN CORREGIDA -->
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/pagos.js"></script>

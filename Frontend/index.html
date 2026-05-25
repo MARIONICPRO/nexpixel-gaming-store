@@ -16,59 +16,50 @@
 </head>
 
 <body>
-<!-- Pantalla de Bienvenida NexPixel -->
-<div id="welcome-screen" class="welcome-screen">
-    <!-- Partículas de fondo -->
-    <div class="welcome-particles" id="welcomeParticles"></div>
-    
-    <div class="welcome-container">
-        <!-- Logo principal -->
-        <div class="welcome-logo">
-            <h1 class="welcome-title">
-                <span class="nex">Nex</span><span class="pixel">Pixel</span>
-            </h1>
-            <div class="welcome-subtitle">Videojuegos Digitales</div>
+    <!-- Pantalla de Bienvenida NexPixel -->
+    <div id="welcome-screen" class="welcome-screen">
+        <div class="welcome-particles" id="welcomeParticles"></div>
+        
+        <div class="welcome-container">
+            <div class="welcome-logo">
+                <h1 class="welcome-title">
+                    <span class="nex">Nex</span><span class="pixel">Pixel</span>
+                </h1>
+                <div class="welcome-subtitle">Videojuegos Digitales</div>
+            </div>
+
+            <div class="welcome-divider">
+                <span class="divider-line"></span>
+                <span class="divider-icon"><i class="fas fa-gamepad"></i></span>
+                <span class="divider-line"></span>
+            </div>
+
+            <div class="welcome-message">
+                <p class="welcome-text">Bienvenido a la mejor tienda de videojuegos digitales</p>
+                <p class="welcome-subtext">Descubre, compra y juega al instante</p>
+            </div>
+
+            <button class="welcome-btn" id="welcomeBtn" onclick="cerrarBienvenida()">
+                <span class="btn-text">Presiona Start</span>
+                <span class="btn-subtext">o haz clic aquí</span>
+                <div class="btn-glow"></div>
+            </button>
+
+            <div class="welcome-hint">
+                <p>También puedes presionar <kbd>Enter</kbd> o <kbd>Espacio</kbd></p>
+            </div>
         </div>
 
-        <!-- Línea decorativa -->
-        <div class="welcome-divider">
-            <span class="divider-line"></span>
-            <span class="divider-icon"><i class="fas fa-gamepad"></i></span>
-            <span class="divider-line"></span>
-        </div>
-
-        <!-- Mensaje de bienvenida -->
-        <div class="welcome-message">
-            <p class="welcome-text">Bienvenido a la mejor tienda de videojuegos digitales</p>
-            <p class="welcome-subtext">Descubre, compra y juega al instante</p>
-        </div>
-
-        <!-- Botón de entrada -->
-        <button class="welcome-btn" id="welcomeBtn" onclick="cerrarBienvenida()">
-            <span class="btn-text">Presiona Start</span>
-            <span class="btn-subtext">o haz clic aquí</span>
-            <div class="btn-glow"></div>
-        </button>
-
-        <!-- Tecla提示 -->
-        <div class="welcome-hint">
-            <p>También puedes presionar <kbd>Enter</kbd> o <kbd>Espacio</kbd></p>
-        </div>
+        <div class="welcome-scanline"></div>
     </div>
 
-    <!-- Efecto de escaneo -->
-    <div class="welcome-scanline"></div>
-</div>
-    <!-- Botón menú hamburguesa para móvil -->
-    <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
     <div class="sidebar" id="sidebar"></div>
 
     <div class="content">
         <section class="hero">
             <div class="hero-content">
-
+                <!-- 🔥 CAMBIO: Ruta relativa de la imagen -->
                 <img src="../resources/img/Logo.png" alt="NexPixel Logo" class="hero-logo">
-
                 <div class="hero-text">
                     <h1>
                         BIENVENIDO A
@@ -90,25 +81,21 @@
             </div>
         </section>
 
-
-        <!-- 👇 NUEVA SECCIÓN: RECOMENDACIONES IA CON RAZONAMIENTO -->
         <section class="recomendaciones-ia">
             <h2>Recomendaciones para ti</h2>
-
             <div id="ia-razonamiento"></div>
-
             <div id="recomendaciones-ia-container"></div>
         </section>
     </div>
-    <a href="carrito.html" class="cart-floating" id="cartFloating">
+
+    <!-- 🔥 CAMBIO: URL limpia -->
+    <a href="/carrito" class="cart-floating" id="cartFloating">
         <i class="fa-solid fa-cart-shopping"></i>
         <span class="cart-badge" id="cartCount">0</span>
     </a>
 
-
     <div class="modal-overlay" id="auth-modal"></div>
     <div class="modal-overlay" id="perfil-modal"></div>
-
 
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
