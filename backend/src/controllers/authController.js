@@ -110,12 +110,12 @@ export const authController = {
                 { expiresIn: process.env.JWT_EXPIRES_IN }
             );
 
-            // 🔥 URL de redirección según rol
-            let redirectUrl = '/Frontend/index.html';
+            // 🔥 CAMBIO: URL limpias
+            let redirectUrl = '/home';
             if (usuario.tipo_usuario === 'admin') {
-                redirectUrl = '/Frontend/dashboard-admin.html';
+                redirectUrl = '/admin';
             } else if (usuario.tipo_usuario === 'proveedor') {
-                redirectUrl = '/Frontend/dashboard-prove.html';
+                redirectUrl = '/proveedor';
             }
 
             res.status(201).json({
@@ -254,12 +254,12 @@ export const authController = {
                 { expiresIn: process.env.JWT_EXPIRES_IN }
             );
 
-            // 🔥 DETERMINAR URL DE REDIRECCIÓN SEGÚN ROL
-            let redirectUrl = '/Frontend/index.html';
+            // 🔥 CAMBIO: URL limpias
+            let redirectUrl = '/home';
             if (usuario.tipo_usuario === 'admin') {
-                redirectUrl = '/Frontend/dashboard-admin.html';
+                redirectUrl = '/admin';
             } else if (usuario.tipo_usuario === 'proveedor') {
-                redirectUrl = '/Frontend/dashboard-prove.html';
+                redirectUrl = '/proveedor';
             }
 
             console.log('✅ Login exitoso:', usuario.email, '- Tipo:', usuario.tipo_usuario, '- Redirect:', redirectUrl);
