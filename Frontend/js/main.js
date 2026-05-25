@@ -11,6 +11,13 @@ let filtrosVisibles = true;
 async function inicializarApp() {
     console.log('🚀 Inicializando NexPixel...');
 
+     // 🔥 Forzar ajuste responsive al cargar
+    if (window.innerWidth <= 768) {
+        document.body.classList.add('mobile-view');
+    } else {
+        document.body.classList.remove('mobile-view');
+    }
+
     await Auth.init();
     await Carrito.inicializar();
     await renderizarSidebar();
@@ -21,7 +28,6 @@ async function inicializarApp() {
     const path = window.location.pathname;
     console.log('📄 Página actual:', path);
 
-    // 🔥 CAMBIO 1
     if (path === '/' || path === '/home') {
         try {
             const track = document.getElementById('carrusel-recientes');
@@ -46,7 +52,6 @@ async function inicializarApp() {
         }
     }
 
-    // 🔥 CAMBIO 2
     if (path === '/juegos') {
         await Productos.cargarFiltrosPlataformas('filtro-plataformas');
         const containerMobile = document.getElementById('filtro-plataformas-mobile');
@@ -61,19 +66,16 @@ async function inicializarApp() {
         }, 100);
     }
 
-    // 🔥 CAMBIO 3
     if (path === '/tarjetas') {
         const tarjetas = await Productos.cargarTarjetas();
         Productos.renderizarTarjetas(tarjetas, 'tarjetas-grid');
         inicializarFiltros();
     }
 
-    // 🔥 CAMBIO 4
     if (path === '/contacto') {
         // Solo sidebar
     }
 
-    // 🔥 CAMBIO 5
     if (path === '/carrito') {
         if (!Auth.usuarioActual) {
             mostrarNotificacion('Debes iniciar sesión', 'error');
@@ -86,7 +88,6 @@ async function inicializarApp() {
         }
     }
 
-    // 🔥 CAMBIO 6
     if (path === '/producto') {
         const urlParams = new URLSearchParams(window.location.search);
         const productoId = urlParams.get('id');
@@ -101,12 +102,10 @@ async function inicializarApp() {
         }
     }
 
-    // 🔥 CAMBIO 7
     if (path === '/admin') {
         cargarDashboardAdmin();
     }
 
-    // 🔥 CAMBIO 8
     if (path === '/proveedor') {
         cargarDashboardProveedor();
     }
@@ -126,7 +125,6 @@ function protegerRutas() {
     const usuario = Auth?.usuarioActual;
     if (!usuario) return;
 
-    // 🔥 CAMBIO 9
     const path = window.location.pathname;
 
     if (usuario.tipo_usuario === 'admin' && path !== '/admin') {
@@ -218,7 +216,6 @@ async function verProducto(id) {
     if (Auth.usuarioActual) {
         console.log('Vista de producto:', id);
     }
-    // 🔥 CAMBIO 10
     window.location.href = `/producto?id=${id}`;
 }
 
@@ -333,7 +330,6 @@ function toggleFiltrosPanel() {
 }
 
 function inicializarFiltros() {
-    // 🔥 CAMBIO 11
     if (window.location.pathname !== '/juegos' && window.location.pathname !== '/tarjetas') return;
 
     const guardado = localStorage.getItem('filtrosVisibles');
@@ -437,14 +433,6 @@ async function confirmarPago() {
     }
 }
 
-// ===== CONTACTO =====
-function enviarMensaje(event) {
-    event.preventDefault();
-    mostrarNotificacion('Mensaje enviado correctamente');
-    document.getElementById('form-contacto')?.reset();
-    return false;
-}
-
 // ===== CARRUSEL MENSAJES =====
 function mostrarCarruselVacio(track) {
     if (!track) return;
@@ -492,41 +480,40 @@ window.addEventListener('resize', function () {
 });
 
 setTimeout(inicializarFiltros, 500);
-// Detectar navegación y reiniciar componentes
+
 window.addEventListener('popstate', () => {
     inicializarApp();
 });
 
-// También cuando se usa el sidebar para navegar
 document.addEventListener('click', (e) => {
     const link = e.target.closest('a[href^="/"]');
     if (link && !link.getAttribute('target')) {
-        // Permitir navegación normal, el backend recargará la página
+        // Permitir navegación normal
     }
 });
 
 // ============================================
 // EXPORTAR FUNCIONES GLOBALES
 // ============================================
-window.verProducto = verProducto;
-window.agregarAlCarrito = agregarAlCarrito;
-window.manejarClickCompra = manejarClickCompra;
-window.cerrarSesion = cerrarSesion;
-window.moverCarrusel = moverCarrusel;
-window.enviarMensaje = enviarMensaje;
-window.abrirModalLogin = abrirModalLogin;
-window.abrirModalRegistro = abrirModalRegistro;
-window.abrirModalPerfil = abrirModalPerfil;
-window.toggleSidebar = toggleSidebar;
-window.toggleFiltros = toggleFiltros;
-window.cerrarSidebar = cerrarSidebar;
-window.toggleFiltrosPanel = toggleFiltrosPanel;
-window.seleccionarMetodo = seleccionarMetodo;
+window.verProducto           = verProducto;
+window.agregarAlCarrito      = agregarAlCarrito;
+window.manejarClickCompra    = manejarClickCompra;
+window.cerrarSesion          = cerrarSesion;
+window.moverCarrusel         = moverCarrusel;
+// ✅ enviarMensaje eliminado de aquí — vive en contacto.js
+window.abrirModalLogin       = abrirModalLogin;
+window.abrirModalRegistro    = abrirModalRegistro;
+window.abrirModalPerfil      = abrirModalPerfil;
+window.toggleSidebar         = toggleSidebar;
+window.toggleFiltros         = toggleFiltros;
+window.cerrarSidebar         = cerrarSidebar;
+window.toggleFiltrosPanel    = toggleFiltrosPanel;
+window.seleccionarMetodo     = seleccionarMetodo;
 window.formatearNumeroTarjeta = formatearNumeroTarjeta;
-window.formatearExpiracion = formatearExpiracion;
-window.confirmarPago = confirmarPago;
-window.abrirModalFiltros = abrirModalFiltros;
-window.cerrarModalFiltros = cerrarModalFiltros;
-window.formatearPrecio = formatearPrecio;
-window.mostrarNotificacion = mostrarNotificacion;
-window.cerrarBienvenida = cerrarBienvenida;
+window.formatearExpiracion   = formatearExpiracion;
+window.confirmarPago         = confirmarPago;
+window.abrirModalFiltros     = abrirModalFiltros;
+window.cerrarModalFiltros    = cerrarModalFiltros;
+window.formatearPrecio       = formatearPrecio;
+window.mostrarNotificacion   = mostrarNotificacion;
+window.cerrarBienvenida      = cerrarBienvenida;

@@ -288,7 +288,6 @@ const Productos = {
             </div>
         `;
 
-        // 🔥 CARGAR TIPS CON GROQ
         if (producto.nombre_producto) {
             cargarTipsDelJuego(producto.nombre_producto);
         }
@@ -343,7 +342,7 @@ const Productos = {
 };
 
 // ============================================
-// CARGAR TIPS DEL JUEGO CON GROQ - TARJETAS SEPARADAS
+// CARGAR TIPS DEL JUEGO CON GROQ
 // ============================================
 async function cargarTipsDelJuego(nombreJuego) {
     const section = document.getElementById('tipsSection');
@@ -363,10 +362,8 @@ async function cargarTipsDelJuego(nombreJuego) {
         });
 
         const data = await res.json();
-        console.log('📦 Datos recibidos:', data);
 
         if (data.success) {
-            // Mostrar resumen
             if (data.resumen) {
                 resumen.innerHTML = `<p>${data.resumen}</p>`;
                 resumen.style.display = 'block';
@@ -376,7 +373,6 @@ async function cargarTipsDelJuego(nombreJuego) {
 
             let html = '';
 
-            // 🔥 TRUCOS - Cada uno en su propia tarjeta
             if (data.trucos && data.trucos.length > 0) {
                 html += '<h3 style="color:white;margin:1.2rem 0 0.8rem;font-family:Orbitron;"><i class="fa-solid fa-bullseye"></i> Trucos</h3>';
                 html += '<div class="tips-grid">';
@@ -394,7 +390,6 @@ async function cargarTipsDelJuego(nombreJuego) {
                 html += '</div>';
             }
 
-            // 🔥 CONSEJOS PRO - Cada uno en su propia tarjeta
             if (data.consejos_pro && data.consejos_pro.length > 0) {
                 html += '<h3 style="color:white;margin:1.2rem 0 0.8rem;font-family:Orbitron;"><i class="fa-solid fa-crosshairs"></i> Consejos Pro</h3>';
                 html += '<div class="tips-grid">';
@@ -408,7 +403,6 @@ async function cargarTipsDelJuego(nombreJuego) {
                 html += '</div>';
             }
 
-            // 🔥 SECRETOS - Cada uno en su propia tarjeta
             if (data.secretos && data.secretos.length > 0) {
                 html += '<h3 style="color:white;margin:1.2rem 0 0.8rem;font-family:Orbitron;"><i class="fa-solid fa-lock"></i> Secretos</h3>';
                 html += '<div class="tips-grid">';
@@ -431,7 +425,6 @@ async function cargarTipsDelJuego(nombreJuego) {
             container.innerHTML = '<p style="color:#ff6b6b;">Error al cargar los consejos.</p>';
         }
     } catch (error) {
-        console.error('Error:', error);
         container.innerHTML = '<p style="color:#ff6b6b;">Error de conexión.</p>';
     }
 }
@@ -498,7 +491,61 @@ window.cambiarPaginaTarjetas = function (pagina) {
 };
 
 // ============================================
-// APLICAR FILTROS
+// ORDENAR PRODUCTOS
+// ============================================
+window.ordenarProductos = function () {
+    const orden = document.getElementById('ordenar')?.value || 'relevancia';
+    if (!window.juegosActuales || window.juegosActuales.length === 0) return;
+    
+    let juegosOrdenados = [...window.juegosActuales];
+    
+    switch (orden) {
+        case 'precio-asc':
+            juegosOrdenados.sort((a, b) => (a.precio || 0) - (b.precio || 0));
+            break;
+        case 'precio-desc':
+            juegosOrdenados.sort((a, b) => (b.precio || 0) - (a.precio || 0));
+            break;
+        case 'nombre':
+            juegosOrdenados.sort((a, b) => (a.nombre_producto || '').localeCompare(b.nombre_producto || ''));
+            break;
+        default:
+            break;
+    }
+    
+    window.juegosActuales = juegosOrdenados;
+    Productos.renderizarJuegos(juegosOrdenados, 'juegos-grid', 1, 9);
+};
+
+// ============================================
+// ORDENAR TARJETAS
+// ============================================
+window.ordenarTarjetas = function () {
+    const orden = document.getElementById('ordenar-tarjetas')?.value || 'relevancia';
+    if (!window.tarjetasActuales || window.tarjetasActuales.length === 0) return;
+    
+    let tarjetasOrdenadas = [...window.tarjetasActuales];
+    
+    switch (orden) {
+        case 'precio-asc':
+            tarjetasOrdenadas.sort((a, b) => (a.precio || 0) - (b.precio || 0));
+            break;
+        case 'precio-desc':
+            tarjetasOrdenadas.sort((a, b) => (b.precio || 0) - (a.precio || 0));
+            break;
+        case 'nombre':
+            tarjetasOrdenadas.sort((a, b) => (a.nombre_producto || '').localeCompare(b.nombre_producto || ''));
+            break;
+        default:
+            break;
+    }
+    
+    window.tarjetasActuales = tarjetasOrdenadas;
+    Productos.renderizarTarjetas(tarjetasOrdenadas, 'tarjetas-grid', 1, 9);
+};
+
+// ============================================
+// APLICAR FILTROS - CORREGIDO
 // ============================================
 window.aplicarFiltros = async function () {
     try {
@@ -512,12 +559,18 @@ window.aplicarFiltros = async function () {
             document.querySelectorAll('#filtro-plataformas-mobile input[type="checkbox"]:checked').forEach(cb => plataformasSeleccionadas.push(cb.value));
             document.querySelectorAll('#filtro-generos-mobile input[type="checkbox"]:checked').forEach(cb => generosSeleccionados.push(cb.value));
             const precioRangeMobile = document.getElementById('precio-range-mobile');
-            if (precioRangeMobile && precioRangeMobile.value !== '500000') precioMax = parseInt(precioRangeMobile.value);
+            if (precioRangeMobile) {
+                const valor = parseInt(precioRangeMobile.value);
+                if (valor > 0 && valor < 500000) precioMax = valor;
+            }
         } else {
             document.querySelectorAll('#filtro-plataformas input[type="checkbox"]:checked').forEach(cb => plataformasSeleccionadas.push(cb.value));
             document.querySelectorAll('#filtro-generos input[type="checkbox"]:checked').forEach(cb => generosSeleccionados.push(cb.value));
             const precioRange = document.getElementById('precio-range');
-            if (precioRange && precioRange.value !== '500000') precioMax = parseInt(precioRange.value);
+            if (precioRange) {
+                const valor = parseInt(precioRange.value);
+                if (valor > 0 && valor < 500000) precioMax = valor;
+            }
         }
 
         const params = new URLSearchParams();
@@ -553,7 +606,7 @@ window.aplicarFiltros = async function () {
 };
 
 // ============================================
-// APLICAR FILTROS PARA TARJETAS
+// APLICAR FILTROS PARA TARJETAS - CORREGIDO
 // ============================================
 window.aplicarFiltrosTarjetas = async function () {
     try {
@@ -565,11 +618,17 @@ window.aplicarFiltrosTarjetas = async function () {
         if (isMobile) {
             document.querySelectorAll('#filtro-plataformas-tarjetas-mobile input[type="checkbox"]:checked').forEach(cb => plataformasSeleccionadas.push(cb.value));
             const precioRangeMobile = document.getElementById('precio-range-tarjetas-mobile');
-            if (precioRangeMobile && precioRangeMobile.value !== '500000') precioMax = parseInt(precioRangeMobile.value);
+            if (precioRangeMobile) {
+                const valor = parseInt(precioRangeMobile.value);
+                if (valor > 0 && valor < 500000) precioMax = valor;
+            }
         } else {
             document.querySelectorAll('#filtro-plataformas-tarjetas input[type="checkbox"]:checked').forEach(cb => plataformasSeleccionadas.push(cb.value));
             const precioRange = document.getElementById('precio-range-tarjetas');
-            if (precioRange && precioRange.value !== '500000') precioMax = parseInt(precioRange.value);
+            if (precioRange) {
+                const valor = parseInt(precioRange.value);
+                if (valor > 0 && valor < 500000) precioMax = valor;
+            }
         }
 
         const params = new URLSearchParams();

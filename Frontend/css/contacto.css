@@ -173,3 +173,140 @@
         padding: 1.5rem;
     }
 }
+/* ============================================
+   BOTONES DE CONTACTO (WHATSAPP Y CORREO)
+   ============================================ */
+
+/* Botón dentro de métodos de contacto */
+.btn-metodo {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-metodo i {
+    margin-right: 6px;
+}
+
+/* Botón de WhatsApp */
+.btn-whatsapp {
+    background: #25D366;
+    color: white;
+}
+
+.btn-whatsapp:hover {
+    background: #1ebe57;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
+}
+
+/* Botón de Chat */
+.btn-chat {
+    background: linear-gradient(135deg, #2a6fdb, #4d8cff);
+    color: white;
+}
+
+.btn-chat:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(77, 140, 255, 0.3);
+}
+
+/* ===== RADIO GROUP (EMAIL / WHATSAPP) ===== */
+.radio-group {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.radio-opcion {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: rgba(10, 20, 40, 0.8);
+    border: 1px solid rgba(77, 140, 255, 0.3);
+    border-radius: 10px;
+    cursor: pointer;
+    color: #aaccff;
+    transition: all 0.3s ease;
+    flex: 1;
+    min-width: 180px;
+    justify-content: center;
+    font-weight: 500;
+}
+
+.radio-opcion:hover {
+    border-color: #4d8cff;
+    background: rgba(77, 140, 255, 0.1);
+}
+
+.radio-opcion input[type="radio"] {
+    accent-color: #4d8cff;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.radio-opcion:has(input:checked) {
+    border-color: #4d8cff;
+    background: rgba(77, 140, 255, 0.15);
+    color: white;
+    box-shadow: 0 0 15px rgba(77, 140, 255, 0.2);
+}
+
+.radio-opcion i {
+    font-size: 1.2rem;
+}
+
+/* Icono de WhatsApp en radio */
+.radio-opcion .fa-whatsapp {
+    color: #25D366;
+}
+
+/* Icono de Email en radio */
+.radio-opcion .fa-envelope {
+    color: #4d8cff;
+}
+
+/* ===== BOTÓN DE ENVÍO EN CONFIRMACIÓN ===== */
+.btn-enviar-whatsapp,
+.btn-enviar-email {
+    display: inline-block;
+    padding: 14px 28px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-enviar-whatsapp {
+    background: #25D366;
+    color: white;
+}
+
+.btn-enviar-whatsapp:hover {
+    background: #1ebe57;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+}
+
+.btn-enviar-email {
+    background: #4d8cff;
+    color: white;
+}
+
+.btn-enviar-email:hover {
+    background: #2a6fdb;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(77, 140, 255, 0.4);
+}

@@ -37,7 +37,6 @@
             </div>
             <div class="filtros-modal-content">
                 <div class="filtro-grupo">
-                    <h4>Plataforma</h4>
                     <div id="filtro-plataformas-tarjetas-mobile"></div>
                 </div>
                 <div class="filtro-grupo">
@@ -125,74 +124,8 @@
     <script src="js/productos.js"></script> <!-- ← Aquí está toda la lógica -->
     <script src="js/carrito-db.js"></script>
     <script src="js/ia-db.js"></script>
+    <script src="js/filtros.js"></script>
     <script src="js/compras.js"></script>
     <script src="js/main.js"></script>
-
-    <!-- Script mínimo SOLO para inicializar los filtros de tarjetas -->
-    <script>
-        // Inicializar filtros de plataformas para tarjetas
-        if (document.getElementById('filtro-plataformas-tarjetas')) {
-            Productos.cargarFiltrosPlataformas('filtro-plataformas-tarjetas', 'aplicarFiltrosTarjetas()');
-        }
-
-        // Funciones de modal (solo para la UI)
-        function abrirModalFiltrosTarjetas() {
-            const modal = document.getElementById('filtrosModal');
-            const overlay = document.getElementById('filtrosOverlay');
-            if (modal) {
-                modal.classList.add('active');
-                if (overlay) overlay.classList.add('active');
-                document.body.style.overflow = 'hidden';
-                
-                // Cargar filtros en el modal si están vacíos
-                if (document.getElementById('filtro-plataformas-tarjetas-mobile')?.children.length === 0) {
-                    Productos.cargarFiltrosPlataformas('filtro-plataformas-tarjetas-mobile', 'aplicarFiltrosTarjetas()');
-                }
-                
-                // Sincronizar precio
-                const rangeDesktop = document.getElementById('precio-range-tarjetas');
-                const rangeMobile = document.getElementById('precio-range-tarjetas-mobile');
-                if (rangeDesktop && rangeMobile) {
-                    rangeMobile.value = rangeDesktop.value;
-                    const valorMobile = document.getElementById('precio-valor-tarjetas-mobile');
-                    if (valorMobile) {
-                        valorMobile.textContent = '$' + parseInt(rangeDesktop.value).toLocaleString('es-CO');
-                    }
-                }
-            }
-        }
-        
-        function cerrarModalFiltrosTarjetas() {
-            const modal = document.getElementById('filtrosModal');
-            const overlay = document.getElementById('filtrosOverlay');
-            if (modal) {
-                modal.classList.remove('active');
-                if (overlay) overlay.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-        }
-        
-        function actualizarPrecioTarjetasMobile() {
-            const range = document.getElementById('precio-range-tarjetas-mobile');
-            const valor = document.getElementById('precio-valor-tarjetas-mobile');
-            if (range && valor) {
-                valor.textContent = '$' + parseInt(range.value).toLocaleString('es-CO');
-            }
-            // También actualizar el desktop para sincronizar
-            const rangeDesktop = document.getElementById('precio-range-tarjetas');
-            if (rangeDesktop && range) {
-                rangeDesktop.value = range.value;
-                const valorDesktop = document.getElementById('precio-valor-tarjetas');
-                if (valorDesktop) {
-                    valorDesktop.textContent = '$' + parseInt(range.value).toLocaleString('es-CO');
-                }
-            }
-        }
-        
-        // Exponer funciones globalmente
-        window.abrirModalFiltrosTarjetas = abrirModalFiltrosTarjetas;
-        window.cerrarModalFiltrosTarjetas = cerrarModalFiltrosTarjetas;
-        window.actualizarPrecioTarjetasMobile = actualizarPrecioTarjetasMobile;
-    </script>
 </body>
 </html>

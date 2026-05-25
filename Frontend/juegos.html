@@ -42,7 +42,6 @@
             </div>
             <div class="filtros-modal-content">
                 <div class="filtro-grupo">
-                    <h4>Plataforma</h4>
                     <div id="filtro-plataformas-mobile"></div>
                 </div>
                 <div class="filtro-grupo">
@@ -121,8 +120,8 @@
                         <input type="range" id="precio-range" min="0" max="500000" value="500000" step="10000"
                             oninput="actualizarPrecio()" onchange="aplicarFiltros()">
                         <div class="precio-valor">
-                            <span>$0</span>
-                            <span id="precio-valor">$500,000</span>
+                            <span>sin filtro</span>
+                            <span id="precio-valor">>500</span>
                         </div>
                     </div>
                 </div>
@@ -171,75 +170,8 @@
     <script src="js/productos.js"></script> <!-- ← Toda la lógica está aquí -->
     <script src="js/carrito-db.js"></script>
     <script src="js/ia-db.js"></script>
+    <script src="js/filtros.js"></script>
     <script src="js/compras.js"></script>
     <script src="js/main.js"></script>
-
-    <!-- Script mínimo SOLO para UI de filtros móvil -->
-    <script>
-        // Inicializar filtros de plataformas (ya incluye el título "Plataforma")
-        if (document.getElementById('filtro-plataformas')) {
-            Productos.cargarFiltrosPlataformas('filtro-plataformas', 'aplicarFiltros()');
-        }
-
-        // Funciones de modal para móvil
-        function abrirModalFiltrosJuegos() {
-            const modal = document.getElementById('filtrosModal');
-            const overlay = document.getElementById('filtrosOverlay');
-            if (modal) {
-                modal.classList.add('active');
-                if (overlay) overlay.classList.add('active');
-                document.body.style.overflow = 'hidden';
-                
-                // Cargar plataformas en el modal si están vacías
-                const mobileContainer = document.getElementById('filtro-plataformas-mobile');
-                if (mobileContainer && mobileContainer.children.length === 0) {
-                    Productos.cargarFiltrosPlataformas('filtro-plataformas-mobile', 'aplicarFiltros()');
-                }
-                
-                // Sincronizar precio
-                const rangeDesktop = document.getElementById('precio-range');
-                const rangeMobile = document.getElementById('precio-range-mobile');
-                if (rangeDesktop && rangeMobile) {
-                    rangeMobile.value = rangeDesktop.value;
-                    const valorMobile = document.getElementById('precio-valor-mobile');
-                    if (valorMobile) {
-                        valorMobile.textContent = '$' + parseInt(rangeDesktop.value).toLocaleString('es-CO');
-                    }
-                }
-            }
-        }
-        
-        function cerrarModalFiltrosJuegos() {
-            const modal = document.getElementById('filtrosModal');
-            const overlay = document.getElementById('filtrosOverlay');
-            if (modal) {
-                modal.classList.remove('active');
-                if (overlay) overlay.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-        }
-        
-        function actualizarPrecioMobile() {
-            const range = document.getElementById('precio-range-mobile');
-            const valor = document.getElementById('precio-valor-mobile');
-            if (range && valor) {
-                valor.textContent = '$' + parseInt(range.value).toLocaleString('es-CO');
-            }
-            // Sincronizar con desktop
-            const rangeDesktop = document.getElementById('precio-range');
-            if (rangeDesktop && range) {
-                rangeDesktop.value = range.value;
-                const valorDesktop = document.getElementById('precio-valor');
-                if (valorDesktop) {
-                    valorDesktop.textContent = '$' + parseInt(range.value).toLocaleString('es-CO');
-                }
-            }
-        }
-        
-        // Exponer funciones globalmente
-        window.abrirModalFiltrosJuegos = abrirModalFiltrosJuegos;
-        window.cerrarModalFiltrosJuegos = cerrarModalFiltrosJuegos;
-        window.actualizarPrecioMobile = actualizarPrecioMobile;
-    </script>
 </body>
 </html>

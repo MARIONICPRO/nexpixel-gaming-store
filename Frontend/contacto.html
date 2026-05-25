@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Contacto - NexPixel</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -14,15 +14,13 @@
 </head>
 
 <body>
-       
-    <!-- Botón menú hamburguesa para móvil -->
-<button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">☰</button>
-    <!-- BARRA LATERAL -->
+
     <div class="sidebar" id="sidebar"></div>
 
-    <!-- CONTENIDO PRINCIPAL -->
     <div class="content">
         <div class="contacto-container">
+            
+            <!-- ===== INFORMACIÓN DE CONTACTO ===== -->
             <div class="info-contacto">
                 <h2><i class="fa-solid fa-headset"></i> Contáctanos</h2>
                 <p>¿Tienes dudas o problemas? Estamos aquí para ayudarte.</p>
@@ -32,14 +30,14 @@
                         <div class="metodo-icono"><i class="fa-solid fa-envelope-open-text"></i></div>
                         <div>
                             <h4>Email</h4>
-                            <p>soporte@nexpixel.com</p>
+                            <p>ivanclavijo97@gmail.com</p>
                         </div>
                     </div>
                     <div class="metodo-item">
                         <div class="metodo-icono"><i class="fa-brands fa-whatsapp"></i></div>
                         <div>
                             <h4>WhatsApp</h4>
-                            <p>+57 300 123 4567</p>
+                            <p>+57 321 434 1500</p>
                         </div>
                     </div>
                     <div class="metodo-item">
@@ -52,44 +50,80 @@
                 </div>
             </div>
 
+            <!-- ===== FORMULARIO DE CONTACTO ===== -->
             <div class="formulario-contacto">
-                <h2>Enviar mensaje</h2>
-                <form id="form-contacto" onsubmit="return enviarMensaje(event)">
+                <h2><i class="fa-solid fa-paper-plane"></i> Enviar mensaje</h2>
+
+                <!-- ✅ Sin onsubmit -->
+                <form id="form-contacto">
+                    
                     <div class="form-group">
+                        <label>Nombre completo</label>
                         <input type="text" id="contacto-nombre" placeholder="Tu nombre" required>
                     </div>
-                    <div class="form-group">
+                    
+                    <div class="form-group" id="grupo-email">
+                        <label>Correo electrónico</label>
                         <input type="email" id="contacto-email" placeholder="Tu email" required>
                     </div>
+
+                    <div class="form-group" id="grupo-whatsapp" style="display:none;">
+                        <label>Número de WhatsApp</label>
+                        <input type="tel" id="contacto-whatsapp" placeholder="+57 321 434 1500">
+                    </div>
+                    
                     <div class="form-group">
+                        <label>¿Cómo prefieres que te respondamos?</label>
+                        <div class="radio-group">
+                            <label class="radio-opcion">
+                                <input type="radio" name="respuesta-via" value="email" checked onchange="toggleCampoContacto()">
+                                <i class="fa-solid fa-envelope"></i> Correo electrónico
+                            </label>
+                            <label class="radio-opcion">
+                                <input type="radio" name="respuesta-via" value="whatsapp" onchange="toggleCampoContacto()">
+                                <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Motivo</label>
                         <select id="contacto-tipo" required>
                             <option value="">Selecciona un motivo</option>
-                            <option value="duda">Duda sobre producto</option>
-                            <option value="problema">Problema con compra</option>
-                            <option value="devolucion">Solicitar devolución</option>
-                            <option value="proveedor">Ser proveedor</option>
+                            <option value="duda">❓ Duda sobre producto</option>
+                            <option value="problema">⚠️ Problema con compra</option>
+                            <option value="devolucion">🔄 Solicitar devolución</option>
+                            <option value="proveedor">🏢 Quiero ser proveedor</option>
+                            <option value="cuenta-suspendida">🚫 Cuenta suspendida o inactiva</option>
+                            <option value="otro">📝 Otro</option>
                         </select>
                     </div>
+                    
                     <div class="form-group">
-                        <textarea id="contacto-mensaje" rows="5" placeholder="Tu mensaje" required></textarea>
+                        <label>Mensaje</label>
+                        <textarea id="contacto-mensaje" rows="5" placeholder="Describe tu problema o consulta..." required></textarea>
                     </div>
-                    <button type="submit" class="btn-enviar">Enviar mensaje</button>
+                    
+                    <!-- ✅ type="button" + onclick en lugar de type="submit" -->
+                    <button type="button" class="btn-enviar" onclick="enviarMensaje()">
+                        <i class="fa-solid fa-paper-plane"></i> Enviar mensaje
+                    </button>
                 </form>
+                
+                <div id="form-mensaje" style="display:none; margin-top:1rem; padding:1rem; border-radius:8px; text-align:center;"></div>
             </div>
+            
         </div>
     </div>
 
     <a href="/carrito" class="cart-floating" id="cartFloating">
-         <i class="fa-solid fa-cart-shopping"></i>
+        <i class="fa-solid fa-cart-shopping"></i>
         <span class="cart-badge" id="cartCount">0</span>
     </a>
 
-
-    <!-- MODALES -->
     <div class="modal-overlay" id="auth-modal"></div>
     <div class="modal-overlay" id="perfil-modal"></div>
 
-     <!-- ✅ SCRIPTS CORRECTOS PARA NODE.JS -->
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/sidebar.js"></script>
@@ -97,6 +131,7 @@
     <script src="js/productos.js"></script>
     <script src="js/carrito-db.js"></script>
     <script src="js/ia-db.js"></script>
+    <script src="js/contacto.js"></script>
     <script src="js/compras.js"></script>
     <script src="js/main.js"></script>
 </body>
