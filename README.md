@@ -193,7 +193,7 @@ Proyecto desarrollado en equipo bajo división de roles:
 * 👨‍💻 **Thomas Ávila** – Frontend (interfaz, interacción y experiencia de usuario)
 * 👨‍💻 **Ivan Clavijo** – Backend (lógica del servidor con Node.js, integración de IA)
 * 🗄️ **David Sopó** – Base de datos (gestión y modelado en Supabase)
-* 📈 **David Vargas** – Marketing (estrategia y presentación del producto)
+* 📈 **David Vargas** – Marketing (estrategia y presentación del producto), soporte técnico
 
 ---
 
