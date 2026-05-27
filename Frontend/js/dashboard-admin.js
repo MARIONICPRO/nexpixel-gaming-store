@@ -14,7 +14,7 @@ async function cargarDashboardAdmin() {
     console.log('<i class="fa-solid fa-desktop"></i> Cargando dashboard admin...');
 
     if (!Auth.usuarioActual || Auth.usuarioActual.tipo_usuario !== 'admin') {
-        window.location.href = 'index.html';
+        window.location.href = '/home';
         return;
     }
 

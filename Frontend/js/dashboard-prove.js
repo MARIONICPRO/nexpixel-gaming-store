@@ -10,7 +10,7 @@ async function cargarDashboardProveedor() {
     proveedorActual = Auth.usuarioActual;
 
     if (!proveedorActual || proveedorActual.tipo_usuario !== 'proveedor') {
-        window.location.href = 'index.html';
+        window.location.href = '/home';
         return;
     }
 
