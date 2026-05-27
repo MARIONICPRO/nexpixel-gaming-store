@@ -157,23 +157,13 @@ node server.js
 
 ### Resultado del servidor ejecutándose
 
-<img src="./resources/img/nodeserver_resultado.jpeg" width="800">
+<img src="./resources/img/node_server_ejecucion.png" width="800">
 
 ---
 
 ## 🌐 6. Ejecutar el frontend
 
-Abrir el archivo `index.html` ubicado en la carpeta Frontend.
-
-Luego:
-
-1. Hacer click derecho sobre `index.html`
-2. Seleccionar la opción **Open with Live Server**
-
-### Ejecución con Live Server
-
-<img src="./resources/img/live_server.jpeg" width="800">
-
+Abrir el home mediante la ruta que mandó node server.
 ---
 
 ## ✅ 7. Proyecto funcionando
@@ -186,7 +176,7 @@ Si todos los pasos fueron realizados correctamente:
 
 ### Proyecto ejecutándose correctamente
 
-<img src="./resources/img/index_exitoso.jpeg" width="800">
+<img src="./resources/img/proyecto_ejecucion.png" width="800">
 
 ---
 
