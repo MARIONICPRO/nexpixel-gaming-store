@@ -156,10 +156,10 @@ async function cargarMisProductos() {
                     </td>
                     <td>
                         <button class="btn-accion btn-editar" onclick="editarProducto(${p.id_producto})">
-                            ✏️ Editar
+                            <i class="fa-solid fa-pen"></i> Editar
                         </button>
                         <button class="btn-accion btn-eliminar" onclick="eliminarProducto(${p.id_producto})">
-                            🗑️ Eliminar
+                            <i class="fa-solid fa-trash"></i> Eliminar
                         </button>
                     </td>
                 </tr>
@@ -178,7 +178,7 @@ async function cargarMisProductos() {
 // ===== FORMULARIO PARA NUEVO PRODUCTO =====
 function cargarFormularioNuevoProducto() {
     document.getElementById('proveedor-content').innerHTML = `
-        <h2 style="color: #4d8cff; margin-bottom: 2rem;">➕ Añadir nuevo producto</h2>
+        <h2 style="color: #4d8cff; margin-bottom: 2rem;"><i class="fa-solid fa-plus"></i> Añadir nuevo producto</h2>
         <div style="text-align: center; padding: 2rem;">
             <div class="spinner"></div>
             <p style="color:#aaccff;">Cargando plataformas...</p>
@@ -201,7 +201,7 @@ async function cargarPlataformasYMostrarFormulario() {
         });
 
         document.getElementById('proveedor-content').innerHTML = `
-            <h2 style="color: #4d8cff; margin-bottom: 2rem;">➕ Añadir nuevo producto</h2>
+            <h2 style="color: #4d8cff; margin-bottom: 2rem;"><i class="fa-solid fa-plus"></i> Añadir nuevo producto</h2>
             <form id="form-nuevo-producto" onsubmit="return guardarNuevoProducto(event)" class="form-agregar-producto" enctype="multipart/form-data">
 
                 <div class="form-group">
@@ -270,7 +270,7 @@ async function cargarPlataformasYMostrarFormulario() {
                     <label>Foto del producto</label>
                     <div style="padding:12px; border:2px dashed rgba(77,140,255,0.4); border-radius:8px; cursor:pointer; color:#aaccff; text-align:center;"
                          onclick="document.getElementById('producto-foto-input').click()">
-                        📷 Seleccionar imagen
+                        <i class="fa-solid fa-image"></i> Seleccionar imagen
                     </div>
                     <input type="file" id="producto-foto-input" name="imagen" accept="image/*" style="display:none;"
                            onchange="previewFotoProductoNuevo(event)">
@@ -289,7 +289,7 @@ async function cargarPlataformasYMostrarFormulario() {
     } catch (error) {
         console.error('Error cargando plataformas:', error);
         document.getElementById('proveedor-content').innerHTML = `
-            <h2 style="color: #4d8cff; margin-bottom: 2rem;">➕ Añadir nuevo producto</h2>
+            <h2 style="color: #4d8cff; margin-bottom: 2rem;"><i class="fa-solid fa-plus"></i> Añadir nuevo producto</h2>
             <p style="color: #ff6b8b; text-align: center;">Error al cargar plataformas. Intenta de nuevo.</p>
             <button class="btn-accion btn-editar" onclick="cargarFormularioNuevoProducto()" style="margin-top: 1rem;">Reintentar</button>
         `;
@@ -391,7 +391,7 @@ async function guardarNuevoProducto(event) {
 // ===== CARGAR CÓDIGOS =====
 function cargarFormularioCodigos() {
     document.getElementById('proveedor-content').innerHTML = `
-        <h2 style="color: #4d8cff; margin-bottom: 2rem;">🔑 Cargar códigos digitales</h2>
+        <h2 style="color: #4d8cff; margin-bottom: 2rem;"><i class="fa-solid fa-ticket"></i> Cargar códigos digitales</h2>
         <form onsubmit="return guardarCodigos(event)" class="form-agregar-producto">
             <div class="form-group full-width">
                 <label>Seleccionar producto</label>
@@ -539,7 +539,7 @@ async function eliminarProducto(id) {
 async function editarProducto(id) {
     try {
         document.getElementById('proveedor-content').innerHTML = `
-            <h2 style="color: #4d8cff; margin-bottom: 2rem;">✏️ Editando producto</h2>
+            <h2 style="color: #4d8cff; margin-bottom: 2rem;"><i class="fa-solid fa-pen"></i> Editando producto</h2>
             <div style="text-align: center; padding: 2rem;">
                 <div class="spinner"></div>
                 <p style="color:#aaccff;">Cargando datos del producto...</p>
@@ -568,7 +568,7 @@ async function editarProducto(id) {
         });
 
         document.getElementById('proveedor-content').innerHTML = `
-            <h2 style="color: #4d8cff; margin-bottom: 2rem;">✏️ Editar producto</h2>
+            <h2 style="color: #4d8cff; margin-bottom: 2rem;"><i class="fa-solid fa-pen"></i> Editar producto</h2>
             <form id="form-editar-producto" onsubmit="return guardarEdicionProducto(event, ${id})"
                   class="form-agregar-producto" enctype="multipart/form-data">
 
@@ -645,7 +645,7 @@ async function editarProducto(id) {
                     <label>Cambiar foto</label>
                     <div style="padding:12px; border:2px dashed rgba(77,140,255,0.4); border-radius:8px; cursor:pointer; color:#aaccff; text-align:center;"
                          onclick="document.getElementById('edit-producto-foto-input').click()">
-                        📷 Seleccionar nueva imagen
+                        <i class="fa-solid fa-image"></i> Seleccionar nueva imagen
                     </div>
                     <input type="file" id="edit-producto-foto-input" name="imagen" accept="image/*"
                            style="display:none;" onchange="previewFotoProductoEdit(event)">

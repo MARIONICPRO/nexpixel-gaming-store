@@ -1,5 +1,5 @@
 /* ============================================
-   NEXPIXEL - ESTILOS GLOBALES
+   NEXPIXEL - ESTILOS GLOBALES (LIMPIOS)
    ============================================ */
 
 /* ===== VARIABLES ===== */
@@ -59,8 +59,8 @@ body::after {
     position: fixed;
     inset: 0;
     background: radial-gradient(circle at 20% 30%, rgba(0, 150, 255, 0.35), transparent 50%),
-        radial-gradient(circle at 80% 70%, rgba(100, 0, 255, 0.3), transparent 50%),
-        rgba(0, 0, 0, 0.4);
+                radial-gradient(circle at 80% 70%, rgba(100, 0, 255, 0.3), transparent 50%),
+                rgba(0, 0, 0, 0.4);
     z-index: -1;
 }
 
@@ -90,7 +90,7 @@ p {
     color: rgba(255, 255, 255, 0.6);
 }
 
-/* ===== CONTENIDO PRINCIPAL - OCUPAR TODO EL ANCHO ===== */
+/* ===== CONTENIDO PRINCIPAL ===== */
 .content {
     margin-left: 0;
     padding: 2rem 3rem;
@@ -186,10 +186,12 @@ p {
 .filtros-sidebar::-webkit-scrollbar {
     width: 6px;
 }
+
 .filtros-sidebar::-webkit-scrollbar-track {
     background: rgba(77, 140, 255, 0.1);
     border-radius: 3px;
 }
+
 .filtros-sidebar::-webkit-scrollbar-thumb {
     background: rgba(77, 140, 255, 0.5);
     border-radius: 3px;
@@ -422,10 +424,6 @@ p {
     border-color: white;
 }
 
-.cart-floating i {
-    transition: 0.3s;
-}
-
 .cart-floating:hover i {
     transform: rotate(10deg) scale(1.2);
 }
@@ -608,8 +606,17 @@ p {
 }
 
 /* ===== UTILIDADES ===== */
-.empty-message { text-align: center; padding: 3rem; color: #aaccff; }
-.error-message { text-align: center; padding: 3rem; color: #ff6b6b; }
+.empty-message {
+    text-align: center;
+    padding: 3rem;
+    color: #aaccff;
+}
+
+.error-message {
+    text-align: center;
+    padding: 3rem;
+    color: #ff6b6b;
+}
 
 .filtros-toggle-btn {
     display: none;
@@ -625,13 +632,25 @@ p {
 }
 
 /* ===== SCROLLBAR ===== */
-::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: rgba(10, 15, 31, 0.9); border-radius: 5px; }
-::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #2a6fdb, #1a4f9f); border-radius: 5px; }
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(10, 15, 31, 0.9);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #2a6fdb, #1a4f9f);
+    border-radius: 5px;
+}
 
 /* ===== INPUTS ===== */
 input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
-select, textarea {
+select,
+textarea {
     width: 100%;
     padding: 12px 16px;
     background: rgba(10, 20, 40, 0.8);
@@ -644,13 +663,18 @@ select, textarea {
     box-sizing: border-box;
 }
 
-input:focus, select:focus, textarea:focus {
+input:focus,
+select:focus,
+textarea:focus {
     outline: none;
     border-color: #4d8cff;
     box-shadow: 0 0 0 3px rgba(77, 140, 255, 0.2);
 }
 
-input::placeholder, textarea::placeholder { color: #6688aa; }
+input::placeholder,
+textarea::placeholder {
+    color: #6688aa;
+}
 
 /* ===== PANTALLA DE BIENVENIDA ===== */
 .welcome-screen {
@@ -665,88 +689,333 @@ input::placeholder, textarea::placeholder { color: #6688aa; }
     transition: opacity 0.8s ease, visibility 0.8s ease;
 }
 
-.welcome-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-
-.welcome-title { font-size: 5rem; margin: 0; }
-.welcome-title .nex { background: linear-gradient(135deg, #3aa0ff, #6ec8ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.welcome-title .pixel { background: linear-gradient(135deg, #7bff7b, #00C9A7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-.welcome-btn {
-    background: transparent;
-    border: 2px solid #4d8cff;
-    color: white;
-    padding: 20px 50px;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.5rem;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: all 0.3s ease;
+.welcome-screen.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
 }
 
-.welcome-btn:hover { background: rgba(77, 140, 255, 0.15); border-color: #00C9A7; transform: scale(1.05); }
+.welcome-container {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    max-width: 900px;
+    padding: 2rem;
+}
+
+.welcome-logo {
+    margin-bottom: 2rem;
+}
+
+.welcome-title {
+    font-size: 6rem;
+    line-height: 1;
+    margin-bottom: 1rem;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.welcome-title .nex {
+    background: linear-gradient(135deg, #2a6fdb, #4fd1ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.welcome-title .pixel {
+    background: linear-gradient(135deg, #38f895, #00C9A7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.welcome-subtitle {
+    color: white;
+    font-size: 1.4rem;
+    letter-spacing: 2px;
+    opacity: 0.9;
+}
+
+.welcome-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    max-width: 500px;
+    margin: 2rem 0;
+}
+
+.divider-line {
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #4d8cff, transparent);
+}
+
+.divider-icon {
+    color: white;
+    font-size: 1.4rem;
+}
+
+.welcome-message {
+    margin-bottom: 2rem;
+}
+
+.welcome-text {
+    color: white;
+    font-size: 1.5rem;
+    margin-bottom: 0.8rem;
+}
+
+.welcome-subtext {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.1rem;
+}
+
+.welcome-btn {
+    position: relative;
+    width: auto !important;
+    min-width: 420px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.3);
+    border: 2px solid #4d8cff;
+    color: white;
+    padding: 20px 40px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    backdrop-filter: blur(10px);
+}
+
+.welcome-btn:hover {
+    transform: scale(1.05);
+    border-color: #00C9A7;
+    box-shadow: 0 0 20px rgba(77, 140, 255, 0.5), 0 0 40px rgba(0, 201, 167, 0.3);
+}
+
+.btn-text {
+    font-size: 2rem;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.btn-subtext {
+    font-size: 1rem;
+    opacity: 0.8;
+}
+
+.btn-glow {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(77, 140, 255, 0.15), rgba(0, 201, 167, 0.15));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.welcome-btn:hover .btn-glow {
+    opacity: 1;
+}
+
+.welcome-hint {
+    margin-top: 1.5rem;
+}
+
+.welcome-hint p {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.95rem;
+}
+
+.welcome-hint kbd {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-family: monospace;
+}
+
+.welcome-scanline {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(to bottom, transparent 0px, rgba(255, 255, 255, 0.03) 1px, transparent 2px);
+    opacity: 0.2;
+}
+
+.welcome-particles {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
 
 /* ============================================
    RESPONSIVE
    ============================================ */
 
+/* Tablets grandes y escritorios pequeños */
 @media screen and (max-width: 1400px) {
-    .productos-grid, .tarjetas-grid { grid-template-columns: repeat(3, minmax(240px, 1fr)); }
+    .productos-grid,
+    .tarjetas-grid {
+        grid-template-columns: repeat(3, minmax(240px, 1fr));
+    }
+    
     #recomendaciones-container .productos-grid,
-    #recomendaciones-ia-container .productos-grid { grid-template-columns: repeat(3, 1fr); }
-    .content { padding: 2rem; }
+    #recomendaciones-ia-container .productos-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .content {
+        padding: 2rem;
+    }
 }
 
+/* Escritorios pequeños */
 @media screen and (max-width: 1199px) {
-    .productos-grid, .tarjetas-grid { grid-template-columns: repeat(3, minmax(220px, 1fr)); }
-    .producto-img, .tarjeta-img { height: 180px; }
+    .productos-grid,
+    .tarjetas-grid {
+        grid-template-columns: repeat(3, minmax(220px, 1fr));
+    }
+    
+    .producto-img,
+    .tarjeta-img {
+        height: 180px;
+    }
 }
 
+/* Tablets */
 @media screen and (max-width: 991px) {
-    .content { padding: 1.5rem; }
-    .filtros-sidebar { display: none; }
-    .filtros-toggle-btn { display: flex; }
-    .juegos-container, .tarjetas-container { flex-direction: column; }
-    .productos-grid, .tarjetas-grid { grid-template-columns: repeat(2, 1fr); }
+    .content {
+        padding: 1.5rem;
+    }
+    
+    .filtros-sidebar {
+        display: none;
+    }
+    
+    .filtros-toggle-btn {
+        display: flex;
+    }
+    
+    .juegos-container,
+    .tarjetas-container {
+        flex-direction: column;
+    }
+    
+    .productos-grid,
+    .tarjetas-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
     #recomendaciones-container .productos-grid,
-    #recomendaciones-ia-container .productos-grid { grid-template-columns: repeat(2, 1fr); }
+    #recomendaciones-ia-container .productos-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
+/* Móviles grandes */
 @media screen and (max-width: 767px) {
-    .content { padding: 70px 1rem 1rem 1rem !important; }
-    .productos-grid, .tarjetas-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 0.8rem !important; }
-    .producto-img, .tarjeta-img { height: 160px !important; }
-    .producto-info h3, .tarjeta-info h3 { font-size: 0.85rem !important; }
-    .producto-precio { font-size: 1rem !important; }
-    .btn-agregar, .btn-comprar { padding: 0.4rem !important; font-size: 0.75rem !important; }
+    .content {
+        padding: 70px 1rem 1rem 1rem !important;
+    }
+    
+    .productos-grid,
+    .tarjetas-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.8rem !important;
+    }
+    
+    .producto-img,
+    .tarjeta-img {
+        height: 160px !important;
+    }
+    
+    .producto-info h3,
+    .tarjeta-info h3 {
+        font-size: 0.85rem !important;
+    }
+    
+    .producto-precio {
+        font-size: 1rem !important;
+    }
+    
+    .btn-agregar,
+    .btn-comprar {
+        padding: 0.4rem !important;
+        font-size: 0.75rem !important;
+    }
+    
     #recomendaciones-container .productos-grid,
-    #recomendaciones-ia-container .productos-grid { grid-template-columns: repeat(2, 1fr) !important; }
+    #recomendaciones-ia-container .productos-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
 }
 
+/* Móviles pequeños */
 @media screen and (max-width: 575px) {
-    .productos-grid, .tarjetas-grid { grid-template-columns: 1fr !important; }
+    .productos-grid,
+    .tarjetas-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
     #recomendaciones-container .productos-grid,
-    #recomendaciones-ia-container .productos-grid { grid-template-columns: 1fr !important; }
-    .producto-img, .tarjeta-img { height: 220px !important; }
-    .cart-floating { width: 55px; height: 55px; font-size: 1.5rem; bottom: 20px; right: 20px; }
+    #recomendaciones-ia-container .productos-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .producto-img,
+    .tarjeta-img {
+        height: 220px !important;
+    }
+    
+    .cart-floating {
+        width: 55px;
+        height: 55px;
+        font-size: 1.5rem;
+        bottom: 20px;
+        right: 20px;
+    }
 }
 
+/* Landscape en móviles */
 @media screen and (max-width: 768px) and (orientation: landscape) {
-    .productos-grid, .tarjetas-grid { grid-template-columns: repeat(3, 1fr) !important; }
-    .producto-img, .tarjeta-img { height: 120px !important; }
+    .productos-grid,
+    .tarjetas-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+    
+    .producto-img,
+    .tarjeta-img {
+        height: 120px !important;
+    }
 }
 
-/* ===== RESPONSIVE BIENVENIDA ===== */
+/* Responsive para bienvenida */
 @media screen and (max-width: 768px) {
-    .welcome-title { font-size: 3rem; }
-    .welcome-btn { padding: 15px 30px; }
+    .welcome-title {
+        font-size: 3rem;
+    }
+    
+    .welcome-btn {
+        padding: 15px 30px;
+    }
 }
 
 @media screen and (max-width: 480px) {
-    .welcome-title { font-size: 2.2rem; }
-    .welcome-btn { padding: 12px 20px; }
+    .welcome-title {
+        font-size: 2.2rem;
+    }
+    
+    .welcome-btn {
+        padding: 12px 20px;
+    }
 }
 
-/* ===== FORZAR MÓVIL ===== */
+/* Forzar estilos móviles */
 @media screen and (max-width: 768px) {
     body .content {
         padding: 70px 1rem 1rem 1rem !important;
