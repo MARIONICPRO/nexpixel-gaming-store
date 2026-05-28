@@ -11,7 +11,32 @@ let filtrosVisibles = true;
 async function inicializarApp() {
     console.log('🚀 Inicializando NexPixel...');
 
-     // 🔥 Forzar ajuste responsive al cargar
+    // 🔥 BLOQUEO INMEDIATO — lee localStorage de forma sincrónica
+    // antes de hacer cualquier await, para que el botón "atrás" no funcione
+    const tokenGuardado = localStorage.getItem('nexpixel_token');
+    const usuarioGuardado = localStorage.getItem('nexpixel_usuario');
+    if (tokenGuardado && usuarioGuardado) {
+        try {
+            const u = JSON.parse(usuarioGuardado);
+            const path = window.location.pathname;
+            if (u.tipo_usuario === 'admin' && path !== '/admin') {
+                window.location.replace('/admin');
+                return;
+            }
+            if (u.tipo_usuario === 'proveedor' && path !== '/proveedor') {
+                window.location.replace('/proveedor');
+                return;
+            }
+            if (u.tipo_usuario === 'cliente' && (path === '/admin' || path === '/proveedor')) {
+                window.location.replace('/home');
+                return;
+            }
+        } catch(e) {
+            console.warn('⚠️ Error leyendo usuario del localStorage:', e);
+        }
+    }
+
+    // 🔥 Forzar ajuste responsive al cargar
     if (window.innerWidth <= 768) {
         document.body.classList.add('mobile-view');
     } else {
@@ -22,7 +47,7 @@ async function inicializarApp() {
     await Carrito.inicializar();
     await renderizarSidebar();
 
-    // Proteger rutas por rol
+    // Proteger rutas por rol (segunda verificación con datos frescos del servidor)
     protegerRutas();
 
     const path = window.location.pathname;
@@ -120,6 +145,7 @@ async function inicializarApp() {
 
 // ============================================
 // PROTECCIÓN DE RUTAS POR ROL
+// (segunda verificación con datos frescos del servidor)
 // ============================================
 function protegerRutas() {
     const usuario = Auth?.usuarioActual;
@@ -128,18 +154,21 @@ function protegerRutas() {
     const path = window.location.pathname;
 
     if (usuario.tipo_usuario === 'admin' && path !== '/admin') {
-        console.log('🚫 Admin redirigido a su panel');
-        window.location.href = '/admin';
+        console.log('🚫 Admin redirigido a su panel desde:', path);
+        window.location.replace('/admin');
+        return;
     }
 
     if (usuario.tipo_usuario === 'proveedor' && path !== '/proveedor') {
-        console.log('🚫 Proveedor redirigido a su panel');
-        window.location.href = '/proveedor';
+        console.log('🚫 Proveedor redirigido a su panel desde:', path);
+        window.location.replace('/proveedor');
+        return;
     }
 
     if (usuario.tipo_usuario === 'cliente' && (path === '/admin' || path === '/proveedor')) {
         console.log('🚫 Cliente redirigido al inicio');
-        window.location.href = '/home';
+        window.location.replace('/home');
+        return;
     }
 }
 
@@ -481,7 +510,30 @@ window.addEventListener('resize', function () {
 
 setTimeout(inicializarFiltros, 500);
 
-window.addEventListener('popstate', () => {
+// 🔥 POPSTATE CORREGIDO — bloquea navegación "atrás" para roles restringidos
+window.addEventListener('popstate', async () => {
+    const token = localStorage.getItem('nexpixel_token');
+    const raw = localStorage.getItem('nexpixel_usuario');
+    if (token && raw) {
+        try {
+            const u = JSON.parse(raw);
+            const path = window.location.pathname;
+            if (u.tipo_usuario === 'admin' && path !== '/admin') {
+                window.location.replace('/admin');
+                return;
+            }
+            if (u.tipo_usuario === 'proveedor' && path !== '/proveedor') {
+                window.location.replace('/proveedor');
+                return;
+            }
+            if (u.tipo_usuario === 'cliente' && (path === '/admin' || path === '/proveedor')) {
+                window.location.replace('/home');
+                return;
+            }
+        } catch(e) {
+            console.warn('⚠️ Error en popstate:', e);
+        }
+    }
     inicializarApp();
 });
 
@@ -495,25 +547,24 @@ document.addEventListener('click', (e) => {
 // ============================================
 // EXPORTAR FUNCIONES GLOBALES
 // ============================================
-window.verProducto           = verProducto;
-window.agregarAlCarrito      = agregarAlCarrito;
-window.manejarClickCompra    = manejarClickCompra;
-window.cerrarSesion          = cerrarSesion;
-window.moverCarrusel         = moverCarrusel;
-// ✅ enviarMensaje eliminado de aquí — vive en contacto.js
-window.abrirModalLogin       = abrirModalLogin;
-window.abrirModalRegistro    = abrirModalRegistro;
-window.abrirModalPerfil      = abrirModalPerfil;
-window.toggleSidebar         = toggleSidebar;
-window.toggleFiltros         = toggleFiltros;
-window.cerrarSidebar         = cerrarSidebar;
-window.toggleFiltrosPanel    = toggleFiltrosPanel;
-window.seleccionarMetodo     = seleccionarMetodo;
+window.verProducto            = verProducto;
+window.agregarAlCarrito       = agregarAlCarrito;
+window.manejarClickCompra     = manejarClickCompra;
+window.cerrarSesion           = cerrarSesion;
+window.moverCarrusel          = moverCarrusel;
+window.abrirModalLogin        = abrirModalLogin;
+window.abrirModalRegistro     = abrirModalRegistro;
+window.abrirModalPerfil       = abrirModalPerfil;
+window.toggleSidebar          = toggleSidebar;
+window.toggleFiltros          = toggleFiltros;
+window.cerrarSidebar          = cerrarSidebar;
+window.toggleFiltrosPanel     = toggleFiltrosPanel;
+window.seleccionarMetodo      = seleccionarMetodo;
 window.formatearNumeroTarjeta = formatearNumeroTarjeta;
-window.formatearExpiracion   = formatearExpiracion;
-window.confirmarPago         = confirmarPago;
-window.abrirModalFiltros     = abrirModalFiltros;
-window.cerrarModalFiltros    = cerrarModalFiltros;
-window.formatearPrecio       = formatearPrecio;
-window.mostrarNotificacion   = mostrarNotificacion;
-window.cerrarBienvenida      = cerrarBienvenida;
+window.formatearExpiracion    = formatearExpiracion;
+window.confirmarPago          = confirmarPago;
+window.abrirModalFiltros      = abrirModalFiltros;
+window.cerrarModalFiltros     = cerrarModalFiltros;
+window.formatearPrecio        = formatearPrecio;
+window.mostrarNotificacion    = mostrarNotificacion;
+window.cerrarBienvenida       = cerrarBienvenida;

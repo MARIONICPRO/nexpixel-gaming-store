@@ -515,18 +515,40 @@
 /* ===== NOTIFICACIONES MEJORADAS ===== */
 .notificacion {
     position: fixed;
-    bottom: 20px;
+    top: 20px;
     right: 20px;
+
+    width: 320px;
+    max-width: 90vw;
+
+    min-height: auto;
+    height: auto;
+
+    padding: 1rem 1.2rem;
+
     background: var(--gradient-card);
     backdrop-filter: blur(20px);
+
     border-left: 4px solid var(--neon-cyan);
-    padding: 1rem 1.5rem;
-    border-radius: 12px;
+    border-radius: 14px;
+
     color: var(--text-primary);
     font-weight: 500;
+    line-height: 1.4;
+
     z-index: 10000;
-    animation: slideInRight 0.3s ease-out, fadeOut 0.3s ease-out 2.7s forwards;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+
+    animation:
+        slideInRight 0.3s ease,
+        fadeOut 0.3s ease 2.7s forwards;
+
+    overflow: hidden;
 }
 
 .notificacion.error {

@@ -22,7 +22,6 @@ import proveedorRoutes from './src/routes/proveedorRoutes.js';
 import iaRoutes from './src/routes/iaRoutes.js';
 import pagoRoutes from './src/routes/pagoRoutes.js';
 
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -42,8 +41,25 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// 🔥 Servir archivos estáticos del frontend
-app.use(express.static(path.join(__dirname, '../Frontend')));
+// 🔥 EVITAR CACHÉ DEL NAVEGADOR
+app.use((req, res, next) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    next();
+});
+
+// Servir archivos estáticos del frontend (sin caché)
+app.use(express.static(path.join(__dirname, '../Frontend'), {
+    etag: false,
+    lastModified: false,
+    setHeaders: (res) => {
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+    }
+}));
+
 // 🔥 Servir la carpeta resources (raíz del proyecto)
 app.use('/resources', express.static(path.join(__dirname, '../resources')));
 
