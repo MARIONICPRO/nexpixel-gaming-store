@@ -249,7 +249,10 @@ async function verProducto(id) {
 }
 
 async function agregarAlCarrito(id) {
-    await Carrito.agregar(id);
+    const resultado = await Carrito.agregar(id);
+    if (resultado) {
+        mostrarNotificacion('✅ Producto agregado al carrito', 'success');
+    }
 }
 
 async function manejarClickCompra(productoId) {
