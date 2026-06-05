@@ -87,6 +87,7 @@ function validarPasswordModal() {
     const uppercaseValid = /[A-Z]/.test(password);
     const numberValid = /[0-9]/.test(password);
 
+    // Actualizar UI
     if (reqLength) {
         reqLength.className = lengthValid ? 'requirement valid' : 'requirement invalid';
     }
@@ -97,12 +98,23 @@ function validarPasswordModal() {
         reqNumber.className = numberValid ? 'requirement valid' : 'requirement invalid';
     }
     
+    // Validación completa
     const isValid = lengthValid && uppercaseValid && numberValid;
     
-    return {
-        valid: isValid,
-        error: isValid ? '' : 'La contraseña debe tener al menos 6 caracteres, una mayúscula y un número'
-    };
+    // Mensajes de error específicos
+    if (!isValid) {
+        if (!lengthValid) {
+            return { valid: false, error: 'La contraseña debe tener al menos 6 caracteres' };
+        }
+        if (!uppercaseValid) {
+            return { valid: false, error: 'La contraseña debe contener al menos una mayúscula' };
+        }
+        if (!numberValid) {
+            return { valid: false, error: 'La contraseña debe contener al menos un número' };
+        }
+    }
+    
+    return { valid: true, error: '' };
 }
 
 // =============================================
@@ -125,6 +137,7 @@ function togglePassword(inputId, btn) {
         icon.classList.add('fa-eye');
     }
 }
+
 function cerrarModal() {
     document.getElementById('auth-modal').classList.remove('active');
 }
@@ -269,7 +282,7 @@ function abrirModalRegistro() {
 }
 
 // =============================================
-// REGISTRO DE USUARIO (VERSIÓN CORREGIDA)
+// REGISTRO DE USUARIO (VERSIÓN CORREGIDA CON VALIDACIONES)
 // =============================================
 async function registrarUsuarioModal(event) {
     event.preventDefault();
@@ -281,20 +294,39 @@ async function registrarUsuarioModal(event) {
     const telefono = document.getElementById('reg-telefono')?.value;
     const fotoInput = document.getElementById('reg-foto');
 
-    if (!nombre || !email || !password || !telefono) {
-        mostrarNotificacion('Todos los campos son obligatorios', 'error');
+    // ✅ VALIDAR NOMBRE
+    const nombreValidation = validarNombreModal(nombre);
+    if (!nombreValidation.valid) {
+        mostrarNotificacion(nombreValidation.error, 'error');
         return false;
     }
 
-    const telefonoLimpio = telefono.replace(/\D/g, '');
+    // ✅ VALIDAR EMAIL
+    const emailValidation = validarEmailModal(email);
+    if (!emailValidation.valid) {
+        mostrarNotificacion(emailValidation.error, 'error');
+        return false;
+    }
+
+    // ✅ VALIDAR CONTRASEÑA (usando tu función existente)
+    const passwordValidation = validarPasswordModal();
+    if (!passwordValidation.valid) {
+        mostrarNotificacion(passwordValidation.error, 'error');
+        return false;
+    }
+
+    // ✅ VALIDAR TELÉFONO
+    const telefonoValidation = validarTelefonoModal(telefono);
+    if (!telefonoValidation.valid) {
+        mostrarNotificacion(telefonoValidation.error, 'error');
+        return false;
+    }
+
+    // ✅ Usar teléfono limpio de la validación
+    const telefonoLimpio = telefonoValidation.telefonoLimpio;
     const telefonoNumero = parseInt(telefonoLimpio, 10);
-    
-    if (isNaN(telefonoNumero)) {
-        mostrarNotificacion('Teléfono inválido. Debe contener solo números', 'error');
-        return false;
-    }
 
-    // ✅ USAR FormData (NO JSON)
+    // ✅ USAR FormData
     const formData = new FormData();
     formData.append('nombre', nombre.trim());
     formData.append('email', email.toLowerCase().trim());
@@ -302,7 +334,7 @@ async function registrarUsuarioModal(event) {
     formData.append('tipo_usuario', 'cliente');
     formData.append('telefono', telefonoNumero);
 
-    // ✅ Agregar foto si existe
+    // Agregar foto si existe
     if (fotoInput && fotoInput.files && fotoInput.files.length > 0) {
         console.log('📸 Foto seleccionada:', fotoInput.files[0].name);
         formData.append('foto', fotoInput.files[0]);
@@ -310,12 +342,12 @@ async function registrarUsuarioModal(event) {
         console.log('📸 No se seleccionó foto');
     }
 
-    console.log('📤 Enviando FormData...');
+    console.log('📤 Enviando FormData con validaciones pasadas...');
 
     try {
         const response = await fetch('http://localhost:3000/api/auth/registro', {
             method: 'POST',
-            body: formData  // 👈 NO USAR JSON, ENVIAR FormData
+            body: formData
         });
 
         const data = await response.json();
@@ -328,6 +360,11 @@ async function registrarUsuarioModal(event) {
             cerrarModal();
             await renderizarSidebar();
             mostrarNotificacion('✅ Cuenta creada exitosamente', 'success');
+            
+            // ✅ Mostrar mensaje de bienvenida específico
+            setTimeout(() => {
+                mostrarNotificacion(`✅ ¡Bienvenido ${nombre.trim()}! Tu cuenta ha sido creada.`, 'success');
+            }, 500);
         } else {
             mostrarNotificacion(data.error || 'Error al registrar', 'error');
         }
@@ -349,9 +386,16 @@ async function iniciarSesionModal(event) {
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
     
+    // ✅ Validar email
     const emailValidation = validarEmailModal(email);
     if (!emailValidation.valid) {
         mostrarNotificacion(emailValidation.error, 'error');
+        return false;
+    }
+    
+    // ✅ Validar que la contraseña no esté vacía
+    if (!password || password.trim() === '') {
+        mostrarNotificacion('La contraseña es obligatoria', 'error');
         return false;
     }
 
@@ -361,16 +405,16 @@ async function iniciarSesionModal(event) {
         console.log('✅ Login exitoso');
         cerrarModal();
         
-        // 🔥 FORZAR RECARGA DE DATOS DEL USUARIO DESDE EL SERVIDOR
+        // Forzar recarga de datos del usuario desde el servidor
         await Auth.recargarUsuarioActual();
         
-        // 🔥 ESPERAR UN MOMENTO Y RENDERIZAR SIDEBAR
+        // Esperar un momento y renderizar sidebar
         setTimeout(() => {
             if (typeof renderizarSidebar === 'function') {
                 renderizarSidebar();
             }
             
-            // 🔥 SI ESTÁS EN EL DASHBOARD, RECARGAR LOS DATOS ESPECÍFICOS
+            // Si estás en el dashboard, recargar los datos específicos
             if (window.location.pathname.includes('dashboard-proveedor')) {
                 if (typeof cargarDashboardProveedor === 'function') {
                     cargarDashboardProveedor();
@@ -385,14 +429,13 @@ async function iniciarSesionModal(event) {
         if (typeof Carrito !== 'undefined' && Carrito.sincronizarCarritoLocal) {
             await Carrito.sincronizarCarritoLocal();
         }
-        
-        mostrarNotificacion('✅ Sesión iniciada correctamente', 'success');
-    } else {
-        mostrarNotificacion(result.error || 'Error al iniciar sesión', 'error');
     }
+    // ✅ ELIMINAR EL ELSE COMPLETO para no mostrar notificación duplicada
+    // Las notificaciones de error ya las muestra Auth.login
 
     return false;
 }
+
 // =============================================
 // PERFIL
 // =============================================
@@ -437,7 +480,7 @@ function abrirModalPerfil() {
                 </div>
                 <div class="form-group password-container">
                     <label>Nueva contraseña</label>
-                    <input type="password" id="perfil-password-nueva" placeholder="Mínimo 6 caracteres">
+                    <input type="password" id="perfil-password-nueva" placeholder="Mínimo 6 caracteres, 1 mayúscula y 1 número">
                     <button type="button" onclick="togglePassword('perfil-password-nueva', this)">
                         <i class="fa-solid fa-eye"></i>
                     </button>
@@ -477,10 +520,24 @@ async function guardarPerfil(event) {
     const formData = new FormData();
 
     const nombre = document.getElementById('perfil-nombre')?.value;
-    if (nombre) formData.append('nombre', nombre);
+    if (nombre) {
+        const nombreValidation = validarNombreModal(nombre);
+        if (!nombreValidation.valid) {
+            mostrarNotificacion(nombreValidation.error, 'error');
+            return false;
+        }
+        formData.append('nombre', nombre);
+    }
 
     const telefono = document.getElementById('perfil-telefono')?.value;
-    if (telefono) formData.append('telefono', telefono);
+    if (telefono) {
+        const telefonoValidation = validarTelefonoModal(telefono);
+        if (!telefonoValidation.valid) {
+            mostrarNotificacion(telefonoValidation.error, 'error');
+            return false;
+        }
+        formData.append('telefono', telefonoValidation.telefonoLimpio);
+    }
 
     const descripcion = document.getElementById('perfil-descripcion')?.value;
     if (descripcion) formData.append('descripcion', descripcion);
@@ -505,8 +562,19 @@ async function guardarPerfil(event) {
             return false;
         }
 
+        // Validar nueva contraseña
         if (passwordNueva.length < 6) {
             mostrarNotificacion('La nueva contraseña debe tener al menos 6 caracteres', 'error');
+            return false;
+        }
+        
+        if (!/[A-Z]/.test(passwordNueva)) {
+            mostrarNotificacion('La nueva contraseña debe contener al menos una mayúscula', 'error');
+            return false;
+        }
+        
+        if (!/[0-9]/.test(passwordNueva)) {
+            mostrarNotificacion('La nueva contraseña debe contener al menos un número', 'error');
             return false;
         }
 
@@ -530,9 +598,9 @@ async function guardarPerfil(event) {
             localStorage.setItem('nexpixel_usuario', JSON.stringify(data.usuario));
             cerrarModalPerfil();
             await renderizarSidebar();
-            mostrarNotificacion('✅ Perfil actualizado correctamente');
+            mostrarNotificacion('✅ Perfil actualizado correctamente', 'success');
             if (passwordNueva) {
-                mostrarNotificacion('🔑 Contraseña actualizada', 'success');
+                mostrarNotificacion('🔑 Contraseña actualizada correctamente', 'success');
             }
         } else {
             mostrarNotificacion(data.error || 'Error al actualizar', 'error');
@@ -582,11 +650,21 @@ async function eliminarCuenta() {
 }
 
 async function cambiarPasswordModal() {
-    const passwordNueva = prompt('Ingresa la nueva contraseña (mínimo 6 caracteres):');
+    const passwordNueva = prompt('Ingresa la nueva contraseña (mínimo 6 caracteres, 1 mayúscula y 1 número):');
     if (!passwordNueva) return;
 
     if (passwordNueva.length < 6) {
         alert('La contraseña debe tener al menos 6 caracteres');
+        return;
+    }
+    
+    if (!/[A-Z]/.test(passwordNueva)) {
+        alert('La contraseña debe contener al menos una mayúscula');
+        return;
+    }
+    
+    if (!/[0-9]/.test(passwordNueva)) {
+        alert('La contraseña debe contener al menos un número');
         return;
     }
 

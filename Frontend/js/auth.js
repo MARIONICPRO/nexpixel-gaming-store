@@ -55,99 +55,162 @@ const Auth = {
         return { valid: true };
     },
 
-    // Función para validar contraseña
+    // Función para validar contraseña (CORREGIDA)
     validarPassword(password) {
         if (!password) return { valid: false, error: 'La contraseña es obligatoria' };
         if (password.length < 6) return { valid: false, error: 'La contraseña debe tener al menos 6 caracteres' };
         if (password.length > 50) return { valid: false, error: 'La contraseña no puede tener más de 50 caracteres' };
-        const hasLetter = /[a-zA-Z]/.test(password);
+        
+        // Validaciones corregidas
+        const hasUpperCase = /[A-Z]/.test(password);
         const hasNumber = /[0-9]/.test(password);
-        if (!hasLetter || !hasNumber) return { valid: false, error: 'La contraseña debe contener al menos una letra y un número' };
+        
+        if (!hasUpperCase) {
+            return { valid: false, error: 'La contraseña debe contener al menos una mayúscula' };
+        }
+        if (!hasNumber) {
+            return { valid: false, error: 'La contraseña debe contener al menos un número' };
+        }
+        
         return { valid: true };
     },
 
-    // ============================================
-    // LOGIN CON REDIRECCIÓN POR ROLES
-    // ============================================
-    async login(email, password) {
-        const emailValidation = this.validarEmail(email);
-        if (!emailValidation.valid) {
-            return { success: false, error: emailValidation.error };
-        }
-        const emailNormalizado = emailValidation.email;
+// ============================================
+// LOGIN CON REDIRECCIÓN POR ROLES (VERSIÓN DEFINITIVA CORREGIDA)
+// ============================================
+async login(email, password) {
+    const emailValidation = this.validarEmail(email);
+    if (!emailValidation.valid) {
+        mostrarNotificacion(`❌ ${emailValidation.error}`, 'error');
+        return { success: false, error: emailValidation.error };
+    }
+    const emailNormalizado = emailValidation.email;
 
-        try {
-            console.log('🔍 Intentando login con:', emailNormalizado);
+    try {
+        console.log('🔍 Intentando login con:', emailNormalizado);
 
-            const response = await API.login(emailNormalizado, password);
+        const response = await API.login(emailNormalizado, password);
 
-            console.log('📥 Respuesta del servidor:', response);
+        console.log('📥 Respuesta del servidor:', response);
 
-            if (response && response.success) {
-                this.usuarioActual = response.usuario;
-                localStorage.setItem('nexpixel_usuario', JSON.stringify(response.usuario));
+        // ✅ CASO 1: Login exitoso
+        if (response && response.success) {
+            this.usuarioActual = response.usuario;
+            localStorage.setItem('nexpixel_usuario', JSON.stringify(response.usuario));
 
-                if (typeof Carrito !== 'undefined' && Carrito.sincronizarCarritoLocal) {
-                    await Carrito.sincronizarCarritoLocal();
-                }
+            if (typeof Carrito !== 'undefined' && Carrito.sincronizarCarritoLocal) {
+                await Carrito.sincronizarCarritoLocal();
+            }
 
-                // Actualizar UI
-                if (typeof Auth !== 'undefined' && Auth.actualizarUI) {
-                    Auth.actualizarUI();
-                }
+            // ✅ SOLO UNA ALERTA DE INICIO DE SESIÓN EXITOSO
+            mostrarNotificacion(`✅ ¡Bienvenido ${response.usuario.nombre}! Has iniciado sesión correctamente.`, 'success');
+            
+            // Actualizar UI
+            if (typeof Auth !== 'undefined' && Auth.actualizarUI) {
+                Auth.actualizarUI();
+            }
 
-                // 🔥 REDIRIGIR SEGÚN ROL
-                if (response.redirectUrl) {
-                    console.log('🔄 Redirigiendo a:', response.redirectUrl);
-                    window.location.href = response.redirectUrl;
-                    return { success: true, usuario: response.usuario };
-                }
-
-                // Para clientes: recargar la página
+            // 🔥 REDIRIGIR SEGÚN ROL
+            if (response.redirectUrl) {
+                console.log('🔄 Redirigiendo a:', response.redirectUrl);
                 setTimeout(() => {
-                    window.location.reload();
-                }, 500);
-
+                    window.location.href = response.redirectUrl;
+                }, 1500);
                 return { success: true, usuario: response.usuario };
             }
 
-            // 🔥 Manejar error 403 (suspendido/inactivo)
-            if (response?.status === 403) {
-                return { success: false, error: response.error || 'Tu cuenta está suspendida o inactiva.' };
-            }
+            // Para clientes: recargar la página
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
 
-            if (response?.status === 401) {
-                return { success: false, error: 'Email o contraseña incorrectos' };
-            }
-
-            return { success: false, error: response?.error || 'Error al iniciar sesión' };
-
-        } catch (error) {
-            console.error('❌ Error en login:', error);
-            return { success: false, error: error.message || 'Error al conectar con el servidor' };
+            return { success: true, usuario: response.usuario };
         }
-    },
+
+        // ✅ CASO 2: Error de credenciales (cuando response tiene error)
+        const errorMessage = (response?.error || '').toLowerCase();
+        
+        if (response?.status === 401 || 
+            errorMessage.includes('credencial') ||
+            errorMessage.includes('contraseña') ||
+            errorMessage.includes('email') ||
+            errorMessage.includes('invalid')) {
+            mostrarNotificacion('❌ Email o contraseña incorrectos', 'error');
+            return { success: false, error: 'Email o contraseña incorrectos' };
+        }
+
+        // ✅ CASO 3: Error 403 - Cuenta suspendida/inactiva
+        if (response?.status === 403 || errorMessage.includes('suspendida')) {
+            mostrarNotificacion(`❌ ${response.error || 'Tu cuenta está suspendida o inactiva.'}`, 'error');
+            return { success: false, error: response.error || 'Tu cuenta está suspendida o inactiva.' };
+        }
+
+        // ✅ CASO 4: Otros errores
+        const errorMsg = response?.error || 'Error al iniciar sesión';
+        mostrarNotificacion(`❌ ${errorMsg}`, 'error');
+        return { success: false, error: errorMsg };
+
+    } catch (error) {
+        console.error('❌ Error en login:', error);
+        
+        // ✅ CAPTURAR EL ERROR "Credenciales inválidas" de API.js
+        const errorMessage = error.message || '';
+        const errorString = JSON.stringify(error).toLowerCase();
+        
+        console.log('🔍 Analizando error:', errorMessage);
+        
+        // Detectar "Credenciales inválidas" (con o sin mayúsculas)
+        if (errorMessage.includes('Credenciales') ||
+            errorMessage.toLowerCase().includes('credencial') ||
+            errorMessage.toLowerCase().includes('contraseña') ||
+            errorMessage.toLowerCase().includes('email') ||
+            errorString.includes('401') ||
+            errorString.includes('unauthorized')) {
+            mostrarNotificacion('❌ Email o contraseña incorrectos', 'error');
+            return { success: false, error: 'Email o contraseña incorrectos' };
+        }
+        
+        // Error de conexión genérico
+        mostrarNotificacion('❌ Error al conectar con el servidor', 'error');
+        return { success: false, error: error.message || 'Error al conectar con el servidor' };
+    }
+},
 
     // ============================================
-    // REGISTRO
+    // REGISTRO CON VALIDACIONES CORREGIDAS
     // ============================================
     async register(datos) {
         try {
             console.log('📝 Registrando usuario:', { ...datos, password: '***' });
 
             const nombreValidation = this.validarNombre(datos.nombre);
-            if (!nombreValidation.valid) return { success: false, error: nombreValidation.error };
+            if (!nombreValidation.valid) {
+                mostrarNotificacion(`❌ ${nombreValidation.error}`, 'error');
+                return { success: false, error: nombreValidation.error };
+            }
 
             const emailValidation = this.validarEmail(datos.email);
-            if (!emailValidation.valid) return { success: false, error: emailValidation.error };
+            if (!emailValidation.valid) {
+                mostrarNotificacion(`❌ ${emailValidation.error}`, 'error');
+                return { success: false, error: emailValidation.error };
+            }
 
             const passwordValidation = this.validarPassword(datos.password);
-            if (!passwordValidation.valid) return { success: false, error: passwordValidation.error };
+            if (!passwordValidation.valid) {
+                mostrarNotificacion(`❌ ${passwordValidation.error}`, 'error');
+                return { success: false, error: passwordValidation.error };
+            }
 
             const telefonoValidation = this.validarTelefono(datos.telefono);
-            if (!telefonoValidation.valid) return { success: false, error: telefonoValidation.error };
+            if (!telefonoValidation.valid) {
+                mostrarNotificacion(`❌ ${telefonoValidation.error}`, 'error');
+                return { success: false, error: telefonoValidation.error };
+            }
 
-            if (!datos.tipo_usuario) return { success: false, error: 'Debes seleccionar un tipo de usuario' };
+            if (!datos.tipo_usuario) {
+                mostrarNotificacion('❌ Debes seleccionar un tipo de usuario', 'error');
+                return { success: false, error: 'Debes seleccionar un tipo de usuario' };
+            }
 
             const datosRegistro = {
                 nombre: datos.nombre.trim(),
@@ -170,23 +233,36 @@ const Auth = {
 
                 // 🔥 REDIRIGIR SEGÚN ROL
                 if (response.redirectUrl) {
-                    window.location.href = response.redirectUrl;
+                    setTimeout(() => {
+                        window.location.href = response.redirectUrl;
+                    }, 1500);
+                } else {
+                    setTimeout(() => {
+                        window.location.href = '/home';
+                    }, 1500);
                 }
 
                 return { success: true, usuario: response.usuario };
             }
 
             if (response?.code === '23505' || (response?.error && response.error.includes('duplicate'))) {
-                return { success: false, error: 'Este correo electrónico ya está registrado.' };
+                const errorMsg = 'Este correo electrónico ya está registrado.';
+                mostrarNotificacion(`❌ ${errorMsg}`, 'error');
+                return { success: false, error: errorMsg };
             }
 
-            return { success: false, error: response?.error || 'Error al registrar usuario' };
+            const errorMsg = response?.error || 'Error al registrar usuario';
+            mostrarNotificacion(`❌ ${errorMsg}`, 'error');
+            return { success: false, error: errorMsg };
 
         } catch (error) {
             console.error('❌ Error en registro:', error);
             if (error.message && error.message.includes('duplicate')) {
-                return { success: false, error: 'Este correo electrónico ya está registrado' };
+                const errorMsg = 'Este correo electrónico ya está registrado';
+                mostrarNotificacion(`❌ ${errorMsg}`, 'error');
+                return { success: false, error: errorMsg };
             }
+            mostrarNotificacion(`❌ ${error.message || 'Error al conectar con el servidor'}`, 'error');
             return { success: false, error: error.message || 'Error al conectar con el servidor' };
         }
     },
@@ -198,15 +274,24 @@ const Auth = {
         try {
             if (datos.nombre) {
                 const nombreValidation = this.validarNombre(datos.nombre);
-                if (!nombreValidation.valid) return { success: false, error: nombreValidation.error };
+                if (!nombreValidation.valid) {
+                    mostrarNotificacion(`❌ ${nombreValidation.error}`, 'error');
+                    return { success: false, error: nombreValidation.error };
+                }
             }
             if (datos.email) {
                 const emailValidation = this.validarEmail(datos.email);
-                if (!emailValidation.valid) return { success: false, error: emailValidation.error };
+                if (!emailValidation.valid) {
+                    mostrarNotificacion(`❌ ${emailValidation.error}`, 'error');
+                    return { success: false, error: emailValidation.error };
+                }
             }
             if (datos.telefono) {
                 const telefonoValidation = this.validarTelefono(datos.telefono);
-                if (!telefonoValidation.valid) return { success: false, error: telefonoValidation.error };
+                if (!telefonoValidation.valid) {
+                    mostrarNotificacion(`❌ ${telefonoValidation.error}`, 'error');
+                    return { success: false, error: telefonoValidation.error };
+                }
                 datos.telefono = telefonoValidation.telefonoLimpio;
             }
 
@@ -219,10 +304,13 @@ const Auth = {
                 return { success: true };
             }
 
-            return { success: false, error: response?.error || 'Error al actualizar' };
+            const errorMsg = response?.error || 'Error al actualizar';
+            mostrarNotificacion(`❌ ${errorMsg}`, 'error');
+            return { success: false, error: errorMsg };
 
         } catch (error) {
             console.error('❌ Error actualizando perfil:', error);
+            mostrarNotificacion(`❌ ${error.message || 'Error al conectar con el servidor'}`, 'error');
             return { success: false, error: error.message || 'Error al conectar con el servidor' };
         }
     },
@@ -232,7 +320,10 @@ const Auth = {
     // ============================================
     async cambiarPassword(passwordActual, passwordNueva) {
         const passwordValidation = this.validarPassword(passwordNueva);
-        if (!passwordValidation.valid) return { success: false, error: passwordValidation.error };
+        if (!passwordValidation.valid) {
+            mostrarNotificacion(`❌ ${passwordValidation.error}`, 'error');
+            return { success: false, error: passwordValidation.error };
+        }
 
         try {
             const response = await fetch(`${API_URL}/auth/cambiar-password`, {
@@ -248,27 +339,36 @@ const Auth = {
             if (data.success) {
                 mostrarNotificacion('✅ Contraseña cambiada exitosamente', 'success');
             } else {
-                mostrarNotificacion(data.error || 'Error al cambiar contraseña', 'error');
+                mostrarNotificacion(`❌ ${data.error || 'Error al cambiar contraseña'}`, 'error');
             }
             return data;
 
         } catch (error) {
             console.error('❌ Error cambiando contraseña:', error);
+            mostrarNotificacion('❌ Error al conectar con el servidor', 'error');
             return { success: false, error: 'Error al conectar con el servidor' };
         }
     },
 
     // ============================================
-    // CERRAR SESIÓN
+    // CERRAR SESIÓN CON ALERTA
     // ============================================
     cerrarSesion() {
-        localStorage.removeItem('nexpixel_token');
-        localStorage.removeItem('nexpixel_usuario');
-        localStorage.removeItem('nexpixel_carrito');
-        API.setToken(null);
-        this.usuarioActual = null;
-        mostrarNotificacion('Sesión cerrada correctamente', 'info');
-        window.location.href = '/home';
+        // ✅ ALERTA DE CIERRE DE SESIÓN
+        const nombreUsuario = this.usuarioActual?.nombre || 'Usuario';
+        mostrarNotificacion(`👋 ¡Hasta luego ${nombreUsuario}! Has cerrado sesión correctamente.`, 'info');
+        
+        // Pequeña pausa para mostrar la notificación antes de redirigir
+        setTimeout(() => {
+            localStorage.removeItem('nexpixel_token');
+            localStorage.removeItem('nexpixel_usuario');
+            localStorage.removeItem('nexpixel_carrito');
+            API.setToken(null);
+            this.usuarioActual = null;
+            
+            // Redirigir después de cerrar sesión
+            window.location.href = '/home';
+        }, 1000);
     },
 
     // ============================================
