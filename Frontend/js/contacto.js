@@ -1,9 +1,9 @@
 // ============================================
-// CONTACTO.JS - Envío de mensajes (FINAL)
+// CONTACTO.JS - Envío de mensajes (GMAIL)
 // ============================================
 
-// ✅ Número de WhatsApp de NexPixel (código de país + número, sin + ni espacios)
-const NEXPIXEL_WHATSAPP = '573214341500';
+// ✅ Número de WhatsApp de NexPixel
+const NEXPIXEL_WHATSAPP = '573208216442';
 
 function toggleCampoContacto() {
     const via           = document.querySelector('input[name="respuesta-via"]:checked')?.value;
@@ -25,7 +25,6 @@ function toggleCampoContacto() {
     }
 }
 
-// ✅ Sin event — llamado directo desde onclick
 function enviarMensaje() {
     const nombre       = document.getElementById('contacto-nombre').value.trim();
     const email        = document.getElementById('contacto-email').value.trim();
@@ -35,7 +34,6 @@ function enviarMensaje() {
     const respuestaVia = document.querySelector('input[name="respuesta-via"]:checked')?.value || 'email';
     const respuestaDiv = document.getElementById('form-mensaje');
 
-    // Validaciones manuales (ya no hay submit nativo)
     if (!nombre || !tipo || !mensaje) {
         mostrarNotificacion('Completa todos los campos obligatorios', 'error');
         return;
@@ -52,15 +50,17 @@ function enviarMensaje() {
     let url = '';
 
     if (respuestaVia === 'whatsapp') {
-        const texto = `Hola NexPixel! 👋\n\nNombre: ${nombre}\nWhatsApp del cliente: ${whatsapp}\nMotivo: ${tipo}\n\nMensaje:\n${mensaje}`;
+        // WhatsApp: abre la app/web con mensaje preescrito
+        const texto = `Hola NexPixel! 👋\n\nNombre: ${nombre}\nWhatsApp: ${whatsapp}\nMotivo: ${tipo}\n\nMensaje:\n${mensaje}`;
         url = `https://wa.me/${NEXPIXEL_WHATSAPP}?text=${encodeURIComponent(texto)}`;
     } else {
+        // 🔥 GMAIL en navegador (NO Outlook)
         const asunto = `Contacto NexPixel - ${tipo}`;
-        const cuerpo = `Nombre: ${nombre}\r\nEmail: ${email}\r\nWhatsApp: ${whatsapp || 'No indicado'}\r\nMotivo: ${tipo}\r\n\r\nMensaje:\r\n${mensaje}`;
-        url = `mailto:ivanclavijo97@gmail.com?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`;
+        const cuerpo = `Nombre: ${nombre}%0D%0AEmail: ${email}%0D%0AWhatsApp: ${whatsapp || 'No indicado'}%0D%0A%0D%0A${mensaje}`;
+        url = `https://mail.google.com/mail/?view=cm&fs=1&to=dgvr007@gmail.com&su=${encodeURIComponent(asunto)}&body=${cuerpo}`;
     }
 
-    // ✅ window.open directo desde clic de botón — no bloqueado
+    // Abrir en nueva pestaña
     window.open(url, '_blank');
 
     // Resetear formulario
@@ -70,10 +70,10 @@ function enviarMensaje() {
     const radioEmail = document.querySelector('input[name="respuesta-via"][value="email"]');
     if (radioEmail) radioEmail.checked = true;
 
-    // Mostrar confirmación con enlace de respaldo
-    const color = respuestaVia === 'whatsapp' ? '#25D366' : '#4d8cff';
+    // Mostrar confirmación
+    const color = respuestaVia === 'whatsapp' ? '#25D366' : '#ea4335';  // Rojo Gmail
     const icono = respuestaVia === 'whatsapp' ? 'fa-brands fa-whatsapp' : 'fa-solid fa-envelope';
-    const label = respuestaVia === 'whatsapp' ? 'Abrir WhatsApp' : 'Abrir correo';
+    const label = respuestaVia === 'whatsapp' ? 'Abrir WhatsApp' : 'Abrir Gmail';
 
     respuestaDiv.style.display      = 'block';
     respuestaDiv.style.background   = 'rgba(46, 204, 113, 0.15)';
