@@ -33,7 +33,8 @@ app.use(cors({
   origin: [
     'http://localhost:5500',
     'http://127.0.0.1:5500',
-    'http://localhost:3000'
+    'http://localhost:3000',
+    'https://nexpixel-gaming-store.onrender.com'
   ],
   credentials: true
 }));
@@ -49,19 +50,42 @@ app.use((req, res, next) => {
     next();
 });
 
-// Servir archivos estáticos del frontend (sin caché)
-app.use(express.static(path.join(__dirname, '../Frontend'), {
+// 🔥 CORRECCIÓN PARA RENDER: Rutas absolutas
+const frontendPath = path.resolve(path.join(__dirname, '..', 'Frontend'));
+const resourcesPath = path.resolve(path.join(__dirname, '..', 'resources'));
+
+console.log('📂 Frontend path:', frontendPath);
+console.log('📂 Resources path:', resourcesPath);
+
+// Servir archivos estáticos del frontend
+app.use(express.static(frontendPath, {
     etag: false,
     lastModified: false,
-    setHeaders: (res) => {
+    setHeaders: (res, filePath) => {
         res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
         res.setHeader('Pragma', 'no-cache');
         res.setHeader('Expires', '0');
+        
+        if (filePath.endsWith('.css')) {
+            res.setHeader('Content-Type', 'text/css');
+        } else if (filePath.endsWith('.js')) {
+            res.setHeader('Content-Type', 'application/javascript');
+        } else if (filePath.endsWith('.json')) {
+            res.setHeader('Content-Type', 'application/json');
+        } else if (filePath.endsWith('.avif')) {
+            res.setHeader('Content-Type', 'image/avif');
+        } else if (filePath.endsWith('.webp')) {
+            res.setHeader('Content-Type', 'image/webp');
+        } else if (filePath.endsWith('.png')) {
+            res.setHeader('Content-Type', 'image/png');
+        } else if (filePath.endsWith('.jpg') || filePath.endsWith('.jpeg')) {
+            res.setHeader('Content-Type', 'image/jpeg');
+        }
     }
 }));
 
-// 🔥 Servir la carpeta resources (raíz del proyecto)
-app.use('/resources', express.static(path.join(__dirname, '../resources')));
+// Servir la carpeta resources
+app.use('/resources', express.static(resourcesPath));
 
 // Rutas API
 app.use('/api/auth', authRoutes);
@@ -74,16 +98,16 @@ app.use('/api/ia', iaRoutes);
 app.use('/api/pagos', pagoRoutes);
 
 // 🔥 Rutas amigables del frontend
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, '../Frontend/index.html')));
-app.get('/home', (req, res) => res.sendFile(path.join(__dirname, '../Frontend/index.html')));
-app.get('/juegos', (req, res) => res.sendFile(path.join(__dirname, '../Frontend/juegos.html')));
-app.get('/tarjetas', (req, res) => res.sendFile(path.join(__dirname, '../Frontend/tarjetas.html')));
-app.get('/carrito', (req, res) => res.sendFile(path.join(__dirname, '../Frontend/carrito.html')));
-app.get('/contacto', (req, res) => res.sendFile(path.join(__dirname, '../Frontend/contacto.html')));
-app.get('/producto', (req, res) => res.sendFile(path.join(__dirname, '../Frontend/producto.html')));
-app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, '../Frontend/dashboard-admin.html')));
-app.get('/proveedor', (req, res) => res.sendFile(path.join(__dirname, '../Frontend/dashboard-prove.html')));
-app.get('/confirmacion', (req, res) => res.sendFile(path.join(__dirname, '../Frontend/confirmacion.html')));
+app.get('/', (req, res) => res.sendFile(path.join(frontendPath, 'index.html')));
+app.get('/home', (req, res) => res.sendFile(path.join(frontendPath, 'index.html')));
+app.get('/juegos', (req, res) => res.sendFile(path.join(frontendPath, 'juegos.html')));
+app.get('/tarjetas', (req, res) => res.sendFile(path.join(frontendPath, 'tarjetas.html')));
+app.get('/carrito', (req, res) => res.sendFile(path.join(frontendPath, 'carrito.html')));
+app.get('/contacto', (req, res) => res.sendFile(path.join(frontendPath, 'contacto.html')));
+app.get('/producto', (req, res) => res.sendFile(path.join(frontendPath, 'producto.html')));
+app.get('/admin', (req, res) => res.sendFile(path.join(frontendPath, 'dashboard-admin.html')));
+app.get('/proveedor', (req, res) => res.sendFile(path.join(frontendPath, 'dashboard-prove.html')));
+app.get('/confirmacion', (req, res) => res.sendFile(path.join(frontendPath, 'confirmacion.html')));
 
 // Ruta de prueba
 app.get('/api/health', (req, res) => {
@@ -106,7 +130,7 @@ app.get('/api/health', (req, res) => {
 
 // Middleware para rutas no encontradas
 app.use((req, res) => {
-  res.status(404).sendFile(path.join(__dirname, '../Frontend/index.html'));
+  res.status(404).sendFile(path.join(frontendPath, 'index.html'));
 });
 
 // Manejo de errores global
@@ -123,12 +147,8 @@ app.listen(PORT, () => {
   🚀 Servidor de NexPixel iniciado
   📡 Puerto: ${PORT}
   🔗 URL: http://localhost:${PORT}
-  🏠 Home: http://localhost:${PORT}/home
-  🎮 Juegos: http://localhost:${PORT}/juegos
-  💳 Tarjetas: http://localhost:${PORT}/tarjetas
-  🛒 Carrito: http://localhost:${PORT}/carrito
-  👑 Admin: http://localhost:${PORT}/admin
-  🏢 Proveedor: http://localhost:${PORT}/proveedor
+  📂 Frontend: ${frontendPath}
+  📂 Resources: ${resourcesPath}
   📅 ${new Date().toLocaleString()}
   `);
 });
