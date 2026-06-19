@@ -1,4 +1,15 @@
 // =============================================
+// CONFIGURACIÓN DE API - ¡NUEVO!
+// =============================================
+
+// Detectar automáticamente el entorno y usar la URL correcta
+const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:3000/api'  // Desarrollo local
+    : 'https://nexpixel-gaming-store.onrender.com'; // 🔴 CAMBIA por tu URL real en Render
+
+console.log('🔗 API_URL configurada:', API_URL);
+
+// =============================================
 // FUNCIONES DE VALIDACIÓN
 // =============================================
 
@@ -282,7 +293,7 @@ function abrirModalRegistro() {
 }
 
 // =============================================
-// REGISTRO DE USUARIO (VERSIÓN CORREGIDA CON VALIDACIONES)
+// REGISTRO DE USUARIO (CORREGIDO)
 // =============================================
 async function registrarUsuarioModal(event) {
     event.preventDefault();
@@ -308,7 +319,7 @@ async function registrarUsuarioModal(event) {
         return false;
     }
 
-    // ✅ VALIDAR CONTRASEÑA (usando tu función existente)
+    // ✅ VALIDAR CONTRASEÑA
     const passwordValidation = validarPasswordModal();
     if (!passwordValidation.valid) {
         mostrarNotificacion(passwordValidation.error, 'error');
@@ -326,7 +337,7 @@ async function registrarUsuarioModal(event) {
     const telefonoLimpio = telefonoValidation.telefonoLimpio;
     const telefonoNumero = parseInt(telefonoLimpio, 10);
 
-    // ✅ USAR FormData
+    // ✅ CREAR FormData
     const formData = new FormData();
     formData.append('nombre', nombre.trim());
     formData.append('email', email.toLowerCase().trim());
@@ -342,10 +353,11 @@ async function registrarUsuarioModal(event) {
         console.log('📸 No se seleccionó foto');
     }
 
-    console.log('📤 Enviando FormData con validaciones pasadas...');
+    console.log('📤 Enviando a:', `${API_URL}/auth/registro`);
 
     try {
-        const response = await fetch('http://localhost:3000/api/auth/registro', {
+        // ✅ CORREGIDO: Usar API_URL en lugar de localhost
+        const response = await fetch(`${API_URL}/auth/registro`, {
             method: 'POST',
             body: formData
         });
@@ -354,14 +366,13 @@ async function registrarUsuarioModal(event) {
         console.log('📥 Respuesta:', data);
 
         if (response.ok && data.success) {
-            if (data.token) API.setToken(data.token);
+            if (data.token) localStorage.setItem('nexpixel_token', data.token);
             Auth.usuarioActual = data.usuario;
             localStorage.setItem('nexpixel_usuario', JSON.stringify(data.usuario));
             cerrarModal();
             await renderizarSidebar();
             mostrarNotificacion('✅ Cuenta creada exitosamente', 'success');
             
-            // ✅ Mostrar mensaje de bienvenida específico
             setTimeout(() => {
                 mostrarNotificacion(`✅ ¡Bienvenido ${nombre.trim()}! Tu cuenta ha sido creada.`, 'success');
             }, 500);
@@ -369,7 +380,7 @@ async function registrarUsuarioModal(event) {
             mostrarNotificacion(data.error || 'Error al registrar', 'error');
         }
     } catch (error) {
-        console.error('❌ Error:', error);
+        console.error('❌ Error en registro:', error);
         mostrarNotificacion('Error al conectar con el servidor', 'error');
     }
 
@@ -377,7 +388,7 @@ async function registrarUsuarioModal(event) {
 }
 
 // =============================================
-// INICIO DE SESIÓN (VERSIÓN CORREGIDA)
+// INICIO DE SESIÓN (CORREGIDO)
 // =============================================
 async function iniciarSesionModal(event) {
     event.preventDefault();
@@ -399,39 +410,61 @@ async function iniciarSesionModal(event) {
         return false;
     }
 
-    const result = await Auth.login(email, password);
+    try {
+        console.log('📤 Enviando a:', `${API_URL}/auth/login`);
+        
+        const response = await fetch(`${API_URL}/auth/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password })
+        });
 
-    if (result.success) {
-        console.log('✅ Login exitoso');
-        cerrarModal();
-        
-        // Forzar recarga de datos del usuario desde el servidor
-        await Auth.recargarUsuarioActual();
-        
-        // Esperar un momento y renderizar sidebar
-        setTimeout(() => {
-            if (typeof renderizarSidebar === 'function') {
-                renderizarSidebar();
-            }
+        const data = await response.json();
+        console.log('📥 Respuesta:', data);
+
+        if (response.ok && data.success) {
+            console.log('✅ Login exitoso');
             
-            // Si estás en el dashboard, recargar los datos específicos
-            if (window.location.pathname.includes('dashboard-proveedor')) {
-                if (typeof cargarDashboardProveedor === 'function') {
-                    cargarDashboardProveedor();
-                }
-            } else if (window.location.pathname.includes('dashboard-admin')) {
-                if (typeof cargarDashboardAdmin === 'function') {
-                    cargarDashboardAdmin();
-                }
+            // Guardar token y usuario
+            if (data.token) {
+                localStorage.setItem('nexpixel_token', data.token);
             }
-        }, 100);
-        
-        if (typeof Carrito !== 'undefined' && Carrito.sincronizarCarritoLocal) {
-            await Carrito.sincronizarCarritoLocal();
+            Auth.usuarioActual = data.usuario;
+            localStorage.setItem('nexpixel_usuario', JSON.stringify(data.usuario));
+            
+            cerrarModal();
+            mostrarNotificacion('✅ ¡Bienvenido de nuevo!', 'success');
+            
+            // Forzar recarga de datos
+            await Auth.recargarUsuarioActual();
+            
+            setTimeout(() => {
+                if (typeof renderizarSidebar === 'function') {
+                    renderizarSidebar();
+                }
+                if (window.location.pathname.includes('dashboard-proveedor')) {
+                    if (typeof cargarDashboardProveedor === 'function') {
+                        cargarDashboardProveedor();
+                    }
+                } else if (window.location.pathname.includes('dashboard-admin')) {
+                    if (typeof cargarDashboardAdmin === 'function') {
+                        cargarDashboardAdmin();
+                    }
+                }
+            }, 100);
+            
+            if (typeof Carrito !== 'undefined' && Carrito.sincronizarCarritoLocal) {
+                await Carrito.sincronizarCarritoLocal();
+            }
+        } else {
+            mostrarNotificacion(data.error || 'Credenciales incorrectas', 'error');
         }
+    } catch (error) {
+        console.error('❌ Error en login:', error);
+        mostrarNotificacion('Error al conectar con el servidor', 'error');
     }
-    // ✅ ELIMINAR EL ELSE COMPLETO para no mostrar notificación duplicada
-    // Las notificaciones de error ya las muestra Auth.login
 
     return false;
 }
@@ -582,6 +615,8 @@ async function guardarPerfil(event) {
         formData.append('password_nueva', passwordNueva);
     }
 
+    console.log('📤 Enviando a:', `${API_URL}/auth/perfil`);
+
     try {
         const response = await fetch(`${API_URL}/auth/perfil`, {
             method: 'PUT',
@@ -606,7 +641,7 @@ async function guardarPerfil(event) {
             mostrarNotificacion(data.error || 'Error al actualizar', 'error');
         }
     } catch (error) {
-        console.error('❌ Error:', error);
+        console.error('❌ Error en perfil:', error);
         mostrarNotificacion('Error al conectar con el servidor', 'error');
     }
 
@@ -626,6 +661,8 @@ async function eliminarCuenta() {
         return;
     }
 
+    console.log('📤 Enviando a:', `${API_URL}/auth/eliminar`);
+
     try {
         const response = await fetch(`${API_URL}/auth/eliminar`, {
             method: 'DELETE',
@@ -644,7 +681,7 @@ async function eliminarCuenta() {
             alert('❌ Error: ' + (data.error || 'No se pudo eliminar la cuenta'));
         }
     } catch (error) {
-        console.error('❌ Error:', error);
+        console.error('❌ Error en eliminar cuenta:', error);
         alert('Error al conectar con el servidor: ' + error.message);
     }
 }
