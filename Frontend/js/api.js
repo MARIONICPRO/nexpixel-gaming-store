@@ -2,7 +2,14 @@
 // API Client para NexPixel
 // ============================================
 
-const API_URL = '/api';
+// ✅ URL CORRECTA PARA RENDER - DETECCIÓN AUTOMÁTICA
+// Si estamos en localhost, usar localhost:3000
+// Si estamos en Render, usar la URL de Render
+const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:3000/api'
+    : 'https://nexpixel-gaming-store.onrender.com/api'; // 🔴 CAMBIA POR TU URL REAL DE RENDER
+
+console.log('🔗 API_URL configurada:', API_URL);
 
 class ApiClient {
     constructor() {
@@ -34,10 +41,6 @@ class ApiClient {
         console.log('📌 Endpoint:', endpoint);
         console.log('📌 URL completa:', url);
         console.log('📌 Método:', options.method || 'GET');
-        console.log('📌 Headers:', this.getHeaders());
-        if (options.body) {
-            console.log('📌 Body:', options.body);
-        }
 
         const config = {
             ...options,
@@ -48,7 +51,6 @@ class ApiClient {
             console.log('📤 Enviando petición...');
             const response = await fetch(url, config);
             console.log('📥 Status respuesta:', response.status);
-            console.log('📥 Status text:', response.statusText);
 
             const data = await response.json();
             console.log('📥 Datos recibidos:', data);
@@ -61,13 +63,12 @@ class ApiClient {
             return data;
         } catch (error) {
             console.error('❌ API Error:', error);
+            console.error('❌ URL intentada:', url);
             throw error;
         }
     }
 
-    // EN api.js - Método login
     async login(email, password) {
-        // ✅ CONVERTIR EMAIL A MINÚSCULAS ANTES DE ENVIAR
         const data = await this.request('/auth/login', {
             method: 'POST',
             body: JSON.stringify({
@@ -81,9 +82,7 @@ class ApiClient {
         return data;
     }
 
-    // Método register
     async register(userData) {
-        // ✅ CONVERTIR EMAIL A MINÚSCULAS ANTES DE ENVIAR
         const data = await this.request('/auth/registro', {
             method: 'POST',
             body: JSON.stringify({
@@ -96,6 +95,7 @@ class ApiClient {
         }
         return data;
     }
+
     async getPerfil() {
         return this.request('/auth/perfil');
     }
@@ -107,14 +107,12 @@ class ApiClient {
         });
     }
 
-    // 👇 NUEVO: Método para eliminar cuenta
     async eliminarCuenta() {
         return this.request('/auth/eliminar', {
             method: 'DELETE'
         });
     }
 
-    // En api.js
     async getProductos(filtros = {}) {
         const params = new URLSearchParams();
         Object.keys(filtros).forEach(key => {
@@ -129,6 +127,7 @@ class ApiClient {
 
         return response.json();
     }
+
     async getJuegosRecientes(limite = 8) {
         return this.request(`/productos/recientes?limite=${limite}`);
     }
@@ -145,7 +144,6 @@ class ApiClient {
         return this.request(`/productos/populares?limite=${limite}`);
     }
 
-    // ===== RECOMENDACIONES =====
     async getRecomendaciones(limite = 8) {
         return this.request(`/recomendaciones?limite=${limite}`);
     }
@@ -153,3 +151,7 @@ class ApiClient {
 
 // Instancia global
 const API = new ApiClient();
+
+console.log('✅ api.js cargado correctamente');
+console.log('🔗 API_URL final:', API_URL);
+console.log('🔍 Instancia API creada:', typeof API);
