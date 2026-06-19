@@ -1,12 +1,13 @@
 // =============================================
-// CONFIGURACIÓN DE API - ¡NUEVO!
+// CONFIGURACIÓN DE API - ÚNICA DECLARACIÓN
 // =============================================
 
 // Detectar automáticamente el entorno y usar la URL correcta
 const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://localhost:3000/api'  // Desarrollo local
-    : 'https://nexpixel-gaming-store.onrender.com/api'; // 🔴 CAMBIA por tu URL real en Render
+    ? 'http://localhost:3000/api'
+    : 'https://nexpixel-gaming-store.onrender.com/api';
 
+console.log('🚀 MODALES CARGADO');
 console.log('🔗 API_URL configurada:', API_URL);
 
 // =============================================
@@ -98,7 +99,6 @@ function validarPasswordModal() {
     const uppercaseValid = /[A-Z]/.test(password);
     const numberValid = /[0-9]/.test(password);
 
-    // Actualizar UI
     if (reqLength) {
         reqLength.className = lengthValid ? 'requirement valid' : 'requirement invalid';
     }
@@ -109,10 +109,8 @@ function validarPasswordModal() {
         reqNumber.className = numberValid ? 'requirement valid' : 'requirement invalid';
     }
     
-    // Validación completa
     const isValid = lengthValid && uppercaseValid && numberValid;
     
-    // Mensajes de error específicos
     if (!isValid) {
         if (!lengthValid) {
             return { valid: false, error: 'La contraseña debe tener al menos 6 caracteres' };
@@ -150,11 +148,13 @@ function togglePassword(inputId, btn) {
 }
 
 function cerrarModal() {
-    document.getElementById('auth-modal').classList.remove('active');
+    const modal = document.getElementById('auth-modal');
+    if (modal) modal.classList.remove('active');
 }
 
 function cerrarModalPerfil() {
-    document.getElementById('perfil-modal').classList.remove('active');
+    const modal = document.getElementById('perfil-modal');
+    if (modal) modal.classList.remove('active');
 }
 
 function cambiarTabModal(tab) {
@@ -165,11 +165,16 @@ function cambiarTabModal(tab) {
     forms.forEach(f => f.classList.remove('active'));
 
     if (tab === 'login') {
-        document.querySelector('.modal-tab').classList.add('active');
-        document.getElementById('login-form').classList.add('active');
+        if (document.querySelector('.modal-tab')) {
+            document.querySelector('.modal-tab').classList.add('active');
+        }
+        const loginForm = document.getElementById('login-form');
+        if (loginForm) loginForm.classList.add('active');
     } else {
-        document.querySelectorAll('.modal-tab')[1].classList.add('active');
-        document.getElementById('registro-form').classList.add('active');
+        const tabsList = document.querySelectorAll('.modal-tab');
+        if (tabsList[1]) tabsList[1].classList.add('active');
+        const registroForm = document.getElementById('registro-form');
+        if (registroForm) registroForm.classList.add('active');
     }
 }
 
@@ -202,10 +207,10 @@ function previewFotoPerfil(event) {
 }
 
 function abrirModalLogin() {
-    console.log('Abriendo modal de login');
+    console.log('📱 Abriendo modal de login');
     const modal = document.getElementById('auth-modal');
     if (!modal) {
-        console.error('No se encontró el elemento auth-modal');
+        console.error('❌ No se encontró el elemento auth-modal');
         return;
     }
 
@@ -287,13 +292,13 @@ function abrirModalLogin() {
 }
 
 function abrirModalRegistro() {
-    console.log('Abriendo modal de registro');
+    console.log('📱 Abriendo modal de registro');
     abrirModalLogin();
     cambiarTabModal('registro');
 }
 
 // =============================================
-// REGISTRO DE USUARIO (CORREGIDO)
+// REGISTRO DE USUARIO
 // =============================================
 async function registrarUsuarioModal(event) {
     event.preventDefault();
@@ -305,39 +310,33 @@ async function registrarUsuarioModal(event) {
     const telefono = document.getElementById('reg-telefono')?.value;
     const fotoInput = document.getElementById('reg-foto');
 
-    // ✅ VALIDAR NOMBRE
     const nombreValidation = validarNombreModal(nombre);
     if (!nombreValidation.valid) {
         mostrarNotificacion(nombreValidation.error, 'error');
         return false;
     }
 
-    // ✅ VALIDAR EMAIL
     const emailValidation = validarEmailModal(email);
     if (!emailValidation.valid) {
         mostrarNotificacion(emailValidation.error, 'error');
         return false;
     }
 
-    // ✅ VALIDAR CONTRASEÑA
     const passwordValidation = validarPasswordModal();
     if (!passwordValidation.valid) {
         mostrarNotificacion(passwordValidation.error, 'error');
         return false;
     }
 
-    // ✅ VALIDAR TELÉFONO
     const telefonoValidation = validarTelefonoModal(telefono);
     if (!telefonoValidation.valid) {
         mostrarNotificacion(telefonoValidation.error, 'error');
         return false;
     }
 
-    // ✅ Usar teléfono limpio de la validación
     const telefonoLimpio = telefonoValidation.telefonoLimpio;
     const telefonoNumero = parseInt(telefonoLimpio, 10);
 
-    // ✅ CREAR FormData
     const formData = new FormData();
     formData.append('nombre', nombre.trim());
     formData.append('email', email.toLowerCase().trim());
@@ -345,19 +344,16 @@ async function registrarUsuarioModal(event) {
     formData.append('tipo_usuario', 'cliente');
     formData.append('telefono', telefonoNumero);
 
-    // Agregar foto si existe
     if (fotoInput && fotoInput.files && fotoInput.files.length > 0) {
         console.log('📸 Foto seleccionada:', fotoInput.files[0].name);
         formData.append('foto', fotoInput.files[0]);
-    } else {
-        console.log('📸 No se seleccionó foto');
     }
 
-    console.log('📤 Enviando a:', `${API_URL}/auth/registro`);
+    const urlCompleta = `${API_URL}/auth/registro`;
+    console.log('📤 Enviando a:', urlCompleta);
 
     try {
-        // ✅ CORREGIDO: Usar API_URL en lugar de localhost
-        const response = await fetch(`${API_URL}/auth/registro`, {
+        const response = await fetch(urlCompleta, {
             method: 'POST',
             body: formData
         });
@@ -367,14 +363,18 @@ async function registrarUsuarioModal(event) {
 
         if (response.ok && data.success) {
             if (data.token) localStorage.setItem('nexpixel_token', data.token);
-            Auth.usuarioActual = data.usuario;
+            if (typeof Auth !== 'undefined') {
+                Auth.usuarioActual = data.usuario;
+            }
             localStorage.setItem('nexpixel_usuario', JSON.stringify(data.usuario));
             cerrarModal();
-            await renderizarSidebar();
+            if (typeof renderizarSidebar === 'function') {
+                await renderizarSidebar();
+            }
             mostrarNotificacion('✅ Cuenta creada exitosamente', 'success');
             
             setTimeout(() => {
-                mostrarNotificacion(`✅ ¡Bienvenido ${nombre.trim()}! Tu cuenta ha sido creada.`, 'success');
+                mostrarNotificacion(`✅ ¡Bienvenido ${nombre.trim()}!`, 'success');
             }, 500);
         } else {
             mostrarNotificacion(data.error || 'Error al registrar', 'error');
@@ -388,7 +388,7 @@ async function registrarUsuarioModal(event) {
 }
 
 // =============================================
-// INICIO DE SESIÓN (CORREGIDO)
+// INICIO DE SESIÓN
 // =============================================
 async function iniciarSesionModal(event) {
     event.preventDefault();
@@ -397,23 +397,22 @@ async function iniciarSesionModal(event) {
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
     
-    // ✅ Validar email
     const emailValidation = validarEmailModal(email);
     if (!emailValidation.valid) {
         mostrarNotificacion(emailValidation.error, 'error');
         return false;
     }
     
-    // ✅ Validar que la contraseña no esté vacía
     if (!password || password.trim() === '') {
         mostrarNotificacion('La contraseña es obligatoria', 'error');
         return false;
     }
 
+    const urlCompleta = `${API_URL}/auth/login`;
+    console.log('📤 Enviando a:', urlCompleta);
+
     try {
-        console.log('📤 Enviando a:', `${API_URL}/auth/login`);
-        
-        const response = await fetch(`${API_URL}/auth/login`, {
+        const response = await fetch(urlCompleta, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -427,31 +426,24 @@ async function iniciarSesionModal(event) {
         if (response.ok && data.success) {
             console.log('✅ Login exitoso');
             
-            // Guardar token y usuario
             if (data.token) {
                 localStorage.setItem('nexpixel_token', data.token);
             }
-            Auth.usuarioActual = data.usuario;
+            if (typeof Auth !== 'undefined') {
+                Auth.usuarioActual = data.usuario;
+            }
             localStorage.setItem('nexpixel_usuario', JSON.stringify(data.usuario));
             
             cerrarModal();
             mostrarNotificacion('✅ ¡Bienvenido de nuevo!', 'success');
             
-            // Forzar recarga de datos
-            await Auth.recargarUsuarioActual();
+            if (typeof Auth !== 'undefined' && typeof Auth.recargarUsuarioActual === 'function') {
+                await Auth.recargarUsuarioActual();
+            }
             
             setTimeout(() => {
                 if (typeof renderizarSidebar === 'function') {
                     renderizarSidebar();
-                }
-                if (window.location.pathname.includes('dashboard-proveedor')) {
-                    if (typeof cargarDashboardProveedor === 'function') {
-                        cargarDashboardProveedor();
-                    }
-                } else if (window.location.pathname.includes('dashboard-admin')) {
-                    if (typeof cargarDashboardAdmin === 'function') {
-                        cargarDashboardAdmin();
-                    }
                 }
             }, 100);
             
@@ -473,9 +465,9 @@ async function iniciarSesionModal(event) {
 // PERFIL
 // =============================================
 function abrirModalPerfil() {
-    console.log('Abriendo modal de perfil');
+    console.log('📱 Abriendo modal de perfil');
     const modal = document.getElementById('perfil-modal');
-    const usuario = Auth.usuarioActual;
+    const usuario = typeof Auth !== 'undefined' ? Auth.usuarioActual : null;
     if (!usuario) {
         console.error('No hay usuario logueado');
         return;
@@ -544,7 +536,7 @@ async function guardarPerfil(event) {
     event.preventDefault();
     console.log('📝 Guardando perfil...');
 
-    const usuario = Auth.usuarioActual;
+    const usuario = typeof Auth !== 'undefined' ? Auth.usuarioActual : null;
     if (!usuario) {
         mostrarNotificacion('No hay usuario logueado', 'error');
         return false;
@@ -595,7 +587,6 @@ async function guardarPerfil(event) {
             return false;
         }
 
-        // Validar nueva contraseña
         if (passwordNueva.length < 6) {
             mostrarNotificacion('La nueva contraseña debe tener al menos 6 caracteres', 'error');
             return false;
@@ -615,10 +606,11 @@ async function guardarPerfil(event) {
         formData.append('password_nueva', passwordNueva);
     }
 
-    console.log('📤 Enviando a:', `${API_URL}/auth/perfil`);
+    const urlCompleta = `${API_URL}/auth/perfil`;
+    console.log('📤 Enviando a:', urlCompleta);
 
     try {
-        const response = await fetch(`${API_URL}/auth/perfil`, {
+        const response = await fetch(urlCompleta, {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('nexpixel_token')}`
@@ -629,10 +621,14 @@ async function guardarPerfil(event) {
         const data = await response.json();
 
         if (data.success) {
-            Auth.usuarioActual = data.usuario;
+            if (typeof Auth !== 'undefined') {
+                Auth.usuarioActual = data.usuario;
+            }
             localStorage.setItem('nexpixel_usuario', JSON.stringify(data.usuario));
             cerrarModalPerfil();
-            await renderizarSidebar();
+            if (typeof renderizarSidebar === 'function') {
+                await renderizarSidebar();
+            }
             mostrarNotificacion('✅ Perfil actualizado correctamente', 'success');
             if (passwordNueva) {
                 mostrarNotificacion('🔑 Contraseña actualizada correctamente', 'success');
@@ -661,10 +657,11 @@ async function eliminarCuenta() {
         return;
     }
 
-    console.log('📤 Enviando a:', `${API_URL}/auth/eliminar`);
+    const urlCompleta = `${API_URL}/auth/eliminar`;
+    console.log('📤 Enviando a:', urlCompleta);
 
     try {
-        const response = await fetch(`${API_URL}/auth/eliminar`, {
+        const response = await fetch(urlCompleta, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -676,7 +673,9 @@ async function eliminarCuenta() {
 
         if (response.ok && data.success) {
             alert('✅ Cuenta eliminada correctamente');
-            Auth.cerrarSesion();
+            if (typeof Auth !== 'undefined' && typeof Auth.cerrarSesion === 'function') {
+                Auth.cerrarSesion();
+            }
         } else {
             alert('❌ Error: ' + (data.error || 'No se pudo eliminar la cuenta'));
         }
@@ -708,33 +707,40 @@ async function cambiarPasswordModal() {
     const passwordActual = prompt('Ingresa tu contraseña actual para confirmar:');
     if (!passwordActual) return;
 
-    const result = await Auth.cambiarPassword(passwordActual, passwordNueva);
-
-    if (result.success) {
-        alert('✅ Contraseña actualizada correctamente');
+    if (typeof Auth !== 'undefined' && typeof Auth.cambiarPassword === 'function') {
+        const result = await Auth.cambiarPassword(passwordActual, passwordNueva);
+        if (result.success) {
+            alert('✅ Contraseña actualizada correctamente');
+        } else {
+            alert('❌ Error: ' + (result.error || 'No se pudo cambiar la contraseña'));
+        }
     } else {
-        alert('❌ Error: ' + (result.error || 'No se pudo cambiar la contraseña'));
+        alert('❌ Error: La función Auth.cambiarPassword no está disponible');
     }
 }
 
 // =============================================
 // EXPORTAR FUNCIONES GLOBALMENTE
 // =============================================
-window.abrirModalLogin = abrirModalLogin;
-window.abrirModalRegistro = abrirModalRegistro;
-window.abrirModalPerfil = abrirModalPerfil;
+window.API_URL = API_URL;
+window.validarNombreModal = validarNombreModal;
+window.validarEmailModal = validarEmailModal;
+window.validarTelefonoModal = validarTelefonoModal;
+window.validarPasswordModal = validarPasswordModal;
+window.togglePassword = togglePassword;
 window.cerrarModal = cerrarModal;
 window.cerrarModalPerfil = cerrarModalPerfil;
 window.cambiarTabModal = cambiarTabModal;
 window.previewFotoModal = previewFotoModal;
 window.previewFotoPerfil = previewFotoPerfil;
+window.abrirModalLogin = abrirModalLogin;
+window.abrirModalRegistro = abrirModalRegistro;
+window.abrirModalPerfil = abrirModalPerfil;
 window.iniciarSesionModal = iniciarSesionModal;
 window.registrarUsuarioModal = registrarUsuarioModal;
 window.guardarPerfil = guardarPerfil;
 window.eliminarCuenta = eliminarCuenta;
-window.validarEmailModal = validarEmailModal;
-window.validarTelefonoModal = validarTelefonoModal;
-window.validarNombreModal = validarNombreModal;
-window.validarPasswordModal = validarPasswordModal;
-window.togglePassword = togglePassword;
 window.cambiarPasswordModal = cambiarPasswordModal;
+
+console.log('✅ modales.js cargado correctamente');
+console.log('🔗 API_URL final:', API_URL); 
