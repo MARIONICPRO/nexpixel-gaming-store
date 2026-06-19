@@ -1,16 +1,18 @@
 // =============================================
-// MODALES.JS - USANDO API_URL DE API.JS
+// MODALES.JS - USA API_URL DE API.JS
 // =============================================
 
 console.log('🚀 MODALES CARGADO');
 
-// ✅ USAR LA API_URL QUE YA EXISTE EN API.JS
-// Si no existe, crearla con el valor correcto
+// ✅ NO DECLARAR API_URL - USAR LA DE API.JS
+// Si no existe, mostrar error y crear fallback
 if (typeof API_URL === 'undefined') {
+    console.error('❌ API_URL no está definida. Asegúrate de que api.js se cargue primero.');
+    // Fallback solo si api.js no se cargó
     var API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
         ? 'http://localhost:3000/api'
         : 'https://nexpixel-gaming-store.onrender.com/api';
-    console.log('⚠️ API_URL creada en modales.js:', API_URL);
+    console.warn('⚠️ API_URL creada como fallback:', API_URL);
 } else {
     console.log('✅ API_URL obtenida de api.js:', API_URL);
 }
@@ -747,4 +749,4 @@ window.eliminarCuenta = eliminarCuenta;
 window.cambiarPasswordModal = cambiarPasswordModal;
 
 console.log('✅ modales.js cargado correctamente');
-console.log('🔗 Usando API_URL:', API_URL);
+console.log('🔗 Usando API_URL de api.js:', API_URL);

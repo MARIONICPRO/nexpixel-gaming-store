@@ -546,18 +546,16 @@ document.addEventListener('click', (e) => {
         // Permitir navegación normal
     }
 });
+// ============================================
+// EXPORTAR FUNCIONES GLOBALES - SOLO LAS DE MAIN.JS
+// ============================================
 
-// ============================================
-// EXPORTAR FUNCIONES GLOBALES
-// ============================================
+// ✅ Funciones definidas en main.js
 window.verProducto            = verProducto;
 window.agregarAlCarrito       = agregarAlCarrito;
 window.manejarClickCompra     = manejarClickCompra;
 window.cerrarSesion           = cerrarSesion;
 window.moverCarrusel          = moverCarrusel;
-window.abrirModalLogin        = abrirModalLogin;
-window.abrirModalRegistro     = abrirModalRegistro;
-window.abrirModalPerfil       = abrirModalPerfil;
 window.toggleSidebar          = toggleSidebar;
 window.toggleFiltros          = toggleFiltros;
 window.cerrarSidebar          = cerrarSidebar;
@@ -571,3 +569,17 @@ window.cerrarModalFiltros     = cerrarModalFiltros;
 window.formatearPrecio        = formatearPrecio;
 window.mostrarNotificacion    = mostrarNotificacion;
 window.cerrarBienvenida       = cerrarBienvenida;
+
+// ✅ Funciones que vienen de modales.js - NO SOBRESCRIBIR
+// window.abrirModalLogin      = abrirModalLogin;  // ❌ ELIMINAR
+// window.abrirModalRegistro   = abrirModalRegistro; // ❌ ELIMINAR
+// window.abrirModalPerfil     = abrirModalPerfil; // ❌ ELIMINAR
+// window.cerrarModal          = cerrarModal; // ❌ ELIMINAR
+// window.cerrarModalPerfil    = cerrarModalPerfil; // ❌ ELIMINAR
+
+console.log('✅ main.js cargado correctamente');
+
+// Verificar que las funciones de modales están disponibles
+console.log('🔍 abrirModalLogin:', typeof window.abrirModalLogin);
+console.log('🔍 abrirModalRegistro:', typeof window.abrirModalRegistro);
+console.log('🔍 abrirModalPerfil:', typeof window.abrirModalPerfil);
