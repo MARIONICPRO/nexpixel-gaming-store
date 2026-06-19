@@ -292,7 +292,7 @@ function abrirModalRegistro() {
 }
 
 // =============================================
-// REGISTRO DE USUARIO
+// REGISTRO DE USUARIO - CON REDIRECCIÓN
 // =============================================
 async function registrarUsuarioModal(event) {
     event.preventDefault();
@@ -362,14 +362,24 @@ async function registrarUsuarioModal(event) {
             }
             localStorage.setItem('nexpixel_usuario', JSON.stringify(data.usuario));
             cerrarModal();
-            if (typeof renderizarSidebar === 'function') {
-                await renderizarSidebar();
-            }
-            mostrarNotificacion('✅ Cuenta creada exitosamente', 'success');
             
+            const usuario = data.usuario;
+            mostrarNotificacion(`✅ Cuenta creada exitosamente. ¡Bienvenido ${nombre.trim()}!`, 'success');
+            
+            // ✅ REDIRIGIR SEGÚN ROL DESPUÉS DE REGISTRARSE
             setTimeout(() => {
-                mostrarNotificacion(`✅ ¡Bienvenido ${nombre.trim()}!`, 'success');
-            }, 500);
+                if (usuario.tipo_usuario === 'admin') {
+                    console.log('🔴 Admin → redirigiendo a /admin');
+                    window.location.href = '/admin';
+                } else if (usuario.tipo_usuario === 'proveedor') {
+                    console.log('🟢 Proveedor → redirigiendo a /proveedor');
+                    window.location.href = '/proveedor';
+                } else {
+                    console.log('🔵 Cliente → redirigiendo a /home');
+                    window.location.href = '/home';
+                }
+            }, 1500);
+            
         } else {
             mostrarNotificacion(data.error || 'Error al registrar', 'error');
         }
@@ -382,7 +392,7 @@ async function registrarUsuarioModal(event) {
 }
 
 // =============================================
-// INICIO DE SESIÓN
+// INICIO DE SESIÓN - CON REDIRECCIÓN POR ROL
 // =============================================
 async function iniciarSesionModal(event) {
     event.preventDefault();
@@ -420,6 +430,7 @@ async function iniciarSesionModal(event) {
         if (response.ok && data.success) {
             console.log('✅ Login exitoso');
             
+            // Guardar token y usuario
             if (data.token) {
                 localStorage.setItem('nexpixel_token', data.token);
             }
@@ -429,17 +440,27 @@ async function iniciarSesionModal(event) {
             localStorage.setItem('nexpixel_usuario', JSON.stringify(data.usuario));
             
             cerrarModal();
-            mostrarNotificacion('✅ ¡Bienvenido de nuevo!', 'success');
             
-            if (typeof Auth !== 'undefined' && typeof Auth.recargarUsuarioActual === 'function') {
-                await Auth.recargarUsuarioActual();
-            }
+            const usuario = data.usuario;
+            const nombreUsuario = usuario.nombre || usuario.email || 'Usuario';
+            mostrarNotificacion(`✅ ¡Bienvenido ${nombreUsuario}!`, 'success');
             
+            console.log('👤 Usuario logueado:', usuario);
+            console.log('🎯 Tipo de usuario:', usuario.tipo_usuario);
+            
+            // ✅ REDIRIGIR SEGÚN ROL DESPUÉS DE 1.5 SEGUNDOS
             setTimeout(() => {
-                if (typeof renderizarSidebar === 'function') {
-                    renderizarSidebar();
+                if (usuario.tipo_usuario === 'admin') {
+                    console.log('🔴 Admin → redirigiendo a /admin');
+                    window.location.href = '/admin';
+                } else if (usuario.tipo_usuario === 'proveedor') {
+                    console.log('🟢 Proveedor → redirigiendo a /proveedor');
+                    window.location.href = '/proveedor';
+                } else {
+                    console.log('🔵 Cliente → redirigiendo a /home');
+                    window.location.href = '/home';
                 }
-            }, 100);
+            }, 1500);
             
             if (typeof Carrito !== 'undefined' && Carrito.sincronizarCarritoLocal) {
                 await Carrito.sincronizarCarritoLocal();
@@ -737,3 +758,4 @@ window.cambiarPasswordModal = cambiarPasswordModal;
 
 console.log('✅ modales.js cargado correctamente');
 console.log('🔗 Usando API_URL de api.js:', API_URL);
+console.log('🔍 Funciones de modales exportadas correctamente');
