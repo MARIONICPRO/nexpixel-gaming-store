@@ -1,14 +1,19 @@
 // =============================================
-// CONFIGURACIÓN DE API - ÚNICA DECLARACIÓN
+// MODALES.JS - USANDO API_URL DE API.JS
 // =============================================
 
-// Detectar automáticamente el entorno y usar la URL correcta
-const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://localhost:3000/api'
-    : 'https://nexpixel-gaming-store.onrender.com/api';
-
 console.log('🚀 MODALES CARGADO');
-console.log('🔗 API_URL configurada:', API_URL);
+
+// ✅ USAR LA API_URL QUE YA EXISTE EN API.JS
+// Si no existe, crearla con el valor correcto
+if (typeof API_URL === 'undefined') {
+    var API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://localhost:3000/api'
+        : 'https://nexpixel-gaming-store.onrender.com/api';
+    console.log('⚠️ API_URL creada en modales.js:', API_URL);
+} else {
+    console.log('✅ API_URL obtenida de api.js:', API_URL);
+}
 
 // =============================================
 // FUNCIONES DE VALIDACIÓN
@@ -216,34 +221,34 @@ function abrirModalLogin() {
 
     modal.innerHTML = `
         <div class="modal">
-            <button class="modal-close" onclick="cerrarModal()">✕</button>
+            <button class="modal-close" onclick="window.cerrarModal()">✕</button>
             <div class="modal-tabs">
-                <div class="modal-tab active" onclick="cambiarTabModal('login')">Iniciar Sesión</div>
-                <div class="modal-tab" onclick="cambiarTabModal('registro')">Crear Cuenta</div>
+                <div class="modal-tab active" onclick="window.cambiarTabModal('login')">Iniciar Sesión</div>
+                <div class="modal-tab" onclick="window.cambiarTabModal('registro')">Crear Cuenta</div>
             </div>
 
             <div class="modal-form active" id="login-form">
                 <h2>Iniciar Sesión</h2>
-                <form onsubmit="return iniciarSesionModal(event)">
+                <form onsubmit="return window.iniciarSesionModal(event)">
                     <div class="form-group">
                         <input type="email" id="login-email" placeholder="Email" required>
                     </div>
                     <div class="form-group password-container">
                         <input type="password" id="login-password" placeholder="Contraseña" required>
-                        <button type="button" onclick="togglePassword('login-password', this)">
+                        <button type="button" onclick="window.togglePassword('login-password', this)">
                             <i class="fa-solid fa-eye"></i>
                         </button>
                     </div>
                     <button type="submit" class="btn-modal">Entrar</button>
                 </form>
                 <div class="modal-switch">
-                    ¿No tienes cuenta? <a onclick="cambiarTabModal('registro')">Regístrate</a>
+                    ¿No tienes cuenta? <a onclick="window.cambiarTabModal('registro')">Regístrate</a>
                 </div>
             </div>
 
             <div class="modal-form" id="registro-form">
                 <h2>Crear Cuenta</h2>
-                <form onsubmit="return registrarUsuarioModal(event)">
+                <form onsubmit="return window.registrarUsuarioModal(event)">
                     <div class="form-group">
                         <input type="text" id="reg-nombre" placeholder="Nombre completo" required>
                     </div>
@@ -252,8 +257,8 @@ function abrirModalLogin() {
                         <small id="email-error" style="color: #e94560; font-size: 0.8rem; display: none;"></small>
                     </div>
                     <div class="form-group password-container">
-                        <input type="password" id="reg-password" placeholder="Contraseña" required oninput="validarPasswordModal()">
-                        <button type="button" onclick="togglePassword('reg-password', this)">
+                        <input type="password" id="reg-password" placeholder="Contraseña" required oninput="window.validarPasswordModal()">
+                        <button type="button" onclick="window.togglePassword('reg-password', this)">
                             <i class="fa-solid fa-eye"></i>
                         </button>
                     </div>
@@ -278,12 +283,12 @@ function abrirModalLogin() {
                     <div class="foto-upload-modal" onclick="document.getElementById('reg-foto').click()">
                         📷 Subir foto de perfil
                     </div>
-                    <input type="file" id="reg-foto" accept="image/*" style="display:none;" onchange="previewFotoModal(event)">
+                    <input type="file" id="reg-foto" accept="image/*" style="display:none;" onchange="window.previewFotoModal(event)">
                     <img id="foto-preview-modal" class="foto-preview-modal">
                     <button type="submit" class="btn-modal">Crear Cuenta</button>
                 </form>
                 <div class="modal-switch">
-                    ¿Ya tienes cuenta? <a onclick="cambiarTabModal('login')">Inicia sesión</a>
+                    ¿Ya tienes cuenta? <a onclick="window.cambiarTabModal('login')">Inicia sesión</a>
                 </div>
             </div>
         </div>
@@ -475,16 +480,16 @@ function abrirModalPerfil() {
 
     modal.innerHTML = `
         <div class="modal">
-            <button class="modal-close" onclick="cerrarModalPerfil()">✕</button>
+            <button class="modal-close" onclick="window.cerrarModalPerfil()">✕</button>
             <h2>Editar Perfil</h2>
-            <form onsubmit="return guardarPerfil(event)">
+            <form onsubmit="return window.guardarPerfil(event)">
                 <div class="form-group">
                     <label>Nombre completo</label>
                     <input type="text" id="perfil-nombre" value="${usuario.nombre || ''}" required>
                 </div>
                 <div class="form-group">
                     <label>Email</label>
-                    <input type="email" id="perfil-email" value="${usuario.email || ''}" >
+                    <input type="email" id="perfil-email" value="${usuario.email || ''}" disabled>
                 </div>
                 <div class="form-group">
                     <label>Teléfono</label>
@@ -499,21 +504,21 @@ function abrirModalPerfil() {
                 <div class="form-group password-container">
                     <label>Contraseña actual</label>
                     <input type="password" id="perfil-password-actual" placeholder="Ingresa tu contraseña actual">
-                    <button type="button" onclick="togglePassword('perfil-password-actual', this)">
+                    <button type="button" onclick="window.togglePassword('perfil-password-actual', this)">
                         <i class="fa-solid fa-eye"></i>
                     </button>
                 </div>
                 <div class="form-group password-container">
                     <label>Nueva contraseña</label>
                     <input type="password" id="perfil-password-nueva" placeholder="Mínimo 6 caracteres, 1 mayúscula y 1 número">
-                    <button type="button" onclick="togglePassword('perfil-password-nueva', this)">
+                    <button type="button" onclick="window.togglePassword('perfil-password-nueva', this)">
                         <i class="fa-solid fa-eye"></i>
                     </button>
                 </div>
                 <div class="form-group password-container">
                     <label>Confirmar nueva contraseña</label>
                     <input type="password" id="perfil-password-confirmar" placeholder="Repite la nueva contraseña">
-                    <button type="button" onclick="togglePassword('perfil-password-confirmar', this)">
+                    <button type="button" onclick="window.togglePassword('perfil-password-confirmar', this)">
                         <i class="fa-solid fa-eye"></i>
                     </button>
                 </div>
@@ -521,11 +526,11 @@ function abrirModalPerfil() {
                 <div class="foto-upload-modal" onclick="document.getElementById('perfil-foto').click()">
                     <i class="fa-solid fa-camera"></i> Cambiar foto
                 </div>
-                <input type="file" id="perfil-foto" accept="image/*" style="display:none;" onchange="previewFotoPerfil(event)">
+                <input type="file" id="perfil-foto" accept="image/*" style="display:none;" onchange="window.previewFotoPerfil(event)">
                 <img id="foto-perfil-preview" class="foto-preview-modal" src="${usuario.foto_perfil || ''}">
                 
                 <button type="submit" class="btn-modal">Guardar cambios</button>
-                <button type="button" class="btn-modal" style="background:#f44336;" onclick="eliminarCuenta()">Eliminar cuenta</button>
+                <button type="button" class="btn-modal" style="background:#f44336;" onclick="window.eliminarCuenta()">Eliminar cuenta</button>
             </form>
         </div>
     `;
@@ -722,7 +727,6 @@ async function cambiarPasswordModal() {
 // =============================================
 // EXPORTAR FUNCIONES GLOBALMENTE
 // =============================================
-window.API_URL = API_URL;
 window.validarNombreModal = validarNombreModal;
 window.validarEmailModal = validarEmailModal;
 window.validarTelefonoModal = validarTelefonoModal;
@@ -743,4 +747,4 @@ window.eliminarCuenta = eliminarCuenta;
 window.cambiarPasswordModal = cambiarPasswordModal;
 
 console.log('✅ modales.js cargado correctamente');
-console.log('🔗 API_URL final:', API_URL); 
+console.log('🔗 Usando API_URL:', API_URL);
