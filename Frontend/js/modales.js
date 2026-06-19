@@ -5,7 +5,7 @@
 // Detectar automáticamente el entorno y usar la URL correcta
 const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://localhost:3000/api'  // Desarrollo local
-    : 'https://nexpixel-gaming-store.onrender.com'; // 🔴 CAMBIA por tu URL real en Render
+    : 'https://nexpixel-gaming-store.onrender.com/api'; // 🔴 CAMBIA por tu URL real en Render
 
 console.log('🔗 API_URL configurada:', API_URL);
 
