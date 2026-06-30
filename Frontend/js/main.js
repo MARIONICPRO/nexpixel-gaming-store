@@ -267,7 +267,7 @@ function formatearPrecio(precio) {
 function mostrarNotificacion(mensaje, tipo = 'success') {
     const notif = document.createElement('div');
     notif.className = `notificacion ${tipo}`;
-    notif.textContent = mensaje;
+    notif.innerHTML = mensaje;  // ✅ Esto interpreta el HTML
     document.body.appendChild(notif);
     setTimeout(() => notif.remove(), 3000);
 }
