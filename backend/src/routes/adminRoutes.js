@@ -31,6 +31,7 @@ router.put('/proveedores/:id/reactivar', adminController.reactivarProveedor);   
 // Productos
 router.get('/productos', adminController.getProductos);
 router.put('/productos/:id/desactivar', adminController.desactivarProducto);
+router.put('/productos/:id', adminController.actualizarProducto);    
 router.put('/productos/:id/activar', adminController.activarProducto);
 
 // Ventas

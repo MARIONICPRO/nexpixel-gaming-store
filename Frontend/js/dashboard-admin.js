@@ -70,7 +70,8 @@ function cambiarTabAdmin(tab) {
 // FUNCIÓN DE SEGURIDAD
 // ============================================
 function escapeHtml(text) {
-    if (!text) return '';
+    if (text === null || text === undefined) return '';
+    if (typeof text !== 'string') text = String(text);
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
@@ -347,7 +348,7 @@ async function cargarTablaProductosAdmin(search = '', estado = 'todos') {
                             ? `<button class="btn-action btn-warning" onclick="desactivarProducto(${p.id_producto})" title="Desactivar"><i class="fa-solid fa-lock"></i></button>`
                             : `<button class="btn-action btn-success" onclick="activarProducto(${p.id_producto})" title="Activar"><i class="fa-solid fa-lock-open"></i></button>`
                         }
-                        <button class="btn-action btn-edit" onclick="editarProductoAdmin(${p.id_producto})" title="Editar"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button class="btn-action btn-edit" onclick="editarProductoAdmin(${p.id_producto})" title="Ver información"><i class="fa-solid fa-eye"></i></button>
                     </td>
                 </tr>`;
         });
@@ -551,7 +552,217 @@ async function activarProducto(id) {
     } catch (error) { console.error(error); }
 }
 
-function editarProductoAdmin(id) { mostrarNotificacion('✏️ Edición - Próximamente', 'info'); }
+// ============================================
+// VER PRODUCTO EN MODAL (CON BOTÓN EDITAR)
+// ============================================
+async function editarProductoAdmin(id) {
+    try {
+        const modal = document.createElement('div');
+        modal.className = 'modal-edicion';
+        modal.innerHTML = `
+            <div class="modal-edicion-content" style="max-width:650px;">
+                <h3><i class="fa-solid fa-eye"></i> Información del Producto</h3>
+                <div style="text-align:center; padding:2rem;">
+                    <div class="spinner"></div>
+                    <p style="color:#aaccff;">Cargando información...</p>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.remove();
+        });
+
+        const response = await fetch(`${API_URL}/productos/${id}`);
+        const data = await response.json();
+        const p = data.producto || data;
+
+        if (!p) {
+            modal.querySelector('.modal-edicion-content').innerHTML = `
+                <h3><i class="fa-solid fa-triangle-exclamation"></i> Error</h3>
+                <p style="color:#ff6b6b;">Producto no encontrado</p>
+                <button class="btn-action btn-delete" onclick="this.closest('.modal-edicion').remove()">
+                    <i class="fa-solid fa-xmark"></i> Cerrar
+                </button>
+            `;
+            return;
+        }
+
+        const stock = p.stock || 0;
+        const stockClass = stock === 0 ? 'stock-agotado' : stock < 5 ? 'stock-bajo' : 'stock-ok';
+        const estadoIcon = p.estado === 'activo' ? 
+            '<i class="fa-solid fa-circle-check" style="color:#2ecc71;"></i> Activo' : 
+            '<i class="fa-solid fa-circle-xmark" style="color:#ff6b6b;"></i> Inactivo';
+
+        modal.querySelector('.modal-edicion-content').innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                <h3 style="margin:0;"><i class="fa-solid fa-box"></i> ${escapeHtml(p.nombre_producto)}</h3>
+                <button onclick="this.closest('.modal-edicion').remove()" style="background:none; border:none; color:#aaccff; font-size:1.5rem; cursor:pointer;">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                <div style="text-align:center;">
+                    <img src="${p.imagen_url || 'assets/img/default-game.jpg'}" 
+                         style="width:100%; max-width:250px; border-radius:12px;"
+                         onerror="this.src='assets/img/default-game.jpg'">
+                    <p style="margin-top:0.5rem;">
+                        <span class="badge-estado ${p.estado === 'activo' ? 'badge-activo' : 'badge-inactivo'}">${estadoIcon}</span>
+                    </p>
+                </div>
+                
+                <div style="color:#aaccff; font-size:0.9rem; line-height:2;">
+                    <p><i class="fa-solid fa-tag"></i> <strong>Precio:</strong> $${formatearPrecio(p.precio)}</p>
+                    <p><i class="fa-solid fa-cubes"></i> <strong>Stock:</strong> <span class="${stockClass}">${stock}</span></p>
+                    <p><i class="fa-solid fa-shapes"></i> <strong>Tipo:</strong> ${p.tipo_producto || 'N/A'}</p>
+                    <p><i class="fa-solid fa-gamepad"></i> <strong>Plataforma:</strong> ${p.plataforma?.nombre_plataforma || 'N/A'}</p>
+                    <p><i class="fa-solid fa-folder"></i> <strong>Categoría:</strong> ${p.categoria?.nombre_grupo || 'N/A'}</p>
+                    ${p.genero ? `<p><i class="fa-solid fa-bullseye"></i> <strong>Género:</strong> ${escapeHtml(p.genero)}</p>` : ''}
+                    ${p.edicion ? `<p><i class="fa-solid fa-compact-disc"></i> <strong>Edición:</strong> ${escapeHtml(p.edicion)}</p>` : ''}
+                    ${p.desarrollador ? `<p><i class="fa-solid fa-code"></i> <strong>Desarrollador:</strong> ${escapeHtml(p.desarrollador)}</p>` : ''}
+                    ${p.fecha_lanzamiento ? `<p><i class="fa-solid fa-calendar"></i> <strong>Lanzamiento:</strong> ${new Date(p.fecha_lanzamiento).toLocaleDateString()}</p>` : ''}
+                    <p><i class="fa-solid fa-building"></i> <strong>Proveedor:</strong> ${p.proveedor?.empresa || p.proveedor?.nombre || 'N/A'}</p>
+                    <p><i class="fa-solid fa-clock"></i> <strong>Creado:</strong> ${p.fecha_creacion ? new Date(p.fecha_creacion).toLocaleDateString() : 'N/A'}</p>
+                </div>
+            </div>
+            
+            ${p.descripcion ? `
+                <div style="margin-top:1rem; padding:1rem; background:rgba(10,20,40,0.5); border-radius:8px;">
+                    <strong style="color:#4d8cff;"><i class="fa-solid fa-align-left"></i> Descripción:</strong>
+                    <p style="color:#aaccff; margin-top:0.5rem;">${escapeHtml(p.descripcion)}</p>
+                </div>
+            ` : ''}
+            
+            <div style="display:flex; gap:10px; margin-top:1.5rem;">
+                <button class="btn-action btn-edit" onclick="this.closest('.modal-edicion').remove(); abrirModalEdicionAdmin(${id})" style="flex:1; padding:12px; font-size:0.9rem;">
+                    <i class="fa-solid fa-pen-to-square"></i> Editar producto
+                </button>
+                <button class="btn-action btn-delete" onclick="this.closest('.modal-edicion').remove()" style="padding:12px 20px; font-size:0.9rem;">
+                    <i class="fa-solid fa-xmark"></i> Cerrar
+                </button>
+            </div>
+        `;
+
+    } catch (error) {
+        console.error('Error cargando producto:', error);
+        mostrarNotificacion('Error al cargar información', 'error');
+    }
+}
+
+// ============================================
+// MODAL DE EDICIÓN RÁPIDA DESDE ADMIN
+// ============================================
+async function abrirModalEdicionAdmin(id) {
+    try {
+        const response = await fetch(`${API_URL}/productos/${id}`);
+        const data = await response.json();
+        const p = data.producto || data;
+
+        if (!p) {
+            mostrarNotificacion('Producto no encontrado', 'error');
+            return;
+        }
+
+        const modal = document.createElement('div');
+        modal.className = 'modal-edicion';
+        modal.innerHTML = `
+            <div class="modal-edicion-content">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                    <h3 style="margin:0;"><i class="fa-solid fa-pen-to-square"></i> Editar Producto</h3>
+                    <button onclick="this.closest('.modal-edicion').remove()" style="background:none; border:none; color:#aaccff; font-size:1.5rem; cursor:pointer;">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fa-solid fa-tag"></i> Nombre</label>
+                    <input type="text" id="edit-nombre" value="${escapeHtml(p.nombre_producto)}">
+                </div>
+                <div class="form-group">
+                    <label><i class="fa-solid fa-dollar-sign"></i> Precio</label>
+                    <input type="number" id="edit-precio" value="${p.precio}" min="0" step="1000">
+                </div>
+                <div class="form-group">
+                    <label><i class="fa-solid fa-cubes"></i> Stock</label>
+                    <input type="number" id="edit-stock" value="${p.stock || 0}" min="0">
+                </div>
+                <div class="form-group">
+                    <label><i class="fa-solid fa-circle-check"></i> Estado</label>
+                    <select id="edit-estado">
+                        <option value="activo" ${p.estado === 'activo' ? 'selected' : ''}>Activo</option>
+                        <option value="inactivo" ${p.estado === 'inactivo' ? 'selected' : ''}>Inactivo</option>
+                    </select>
+                </div>
+                
+                <div class="modal-edicion-buttons">
+                    <button class="btn-action btn-success" onclick="guardarEdicionAdmin(${id})" style="flex:1; padding:12px;">
+                        <i class="fa-solid fa-floppy-disk"></i> Guardar cambios
+                    </button>
+                    <button class="btn-action btn-delete" onclick="this.closest('.modal-edicion').remove()" style="padding:12px 20px;">
+                        <i class="fa-solid fa-xmark"></i> Cancelar
+                    </button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.remove();
+        });
+
+    } catch (error) {
+        console.error('Error:', error);
+        mostrarNotificacion('Error al cargar producto', 'error');
+    }
+}
+
+// ============================================
+// GUARDAR EDICIÓN DESDE ADMIN
+// ============================================
+async function guardarEdicionAdmin(id) {
+    const nombre = document.getElementById('edit-nombre')?.value;
+    const precio = document.getElementById('edit-precio')?.value;
+    const stock = document.getElementById('edit-stock')?.value;
+    const estado = document.getElementById('edit-estado')?.value;
+
+    if (!nombre || !precio) {
+        mostrarNotificacion('<i class="fa-solid fa-triangle-exclamation"></i> Completa nombre y precio', 'error');
+        return;
+    }
+
+    try {
+        const token = localStorage.getItem('nexpixel_token');
+        
+        const res = await fetch(`${API_URL}/admin/productos/${id}`, {
+            method: 'PUT',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                nombre_producto: nombre,
+                precio: parseFloat(precio),
+                stock: parseInt(stock),
+                estado: estado
+            })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+            mostrarNotificacion('Producto actualizado correctamente', 'success');
+            document.querySelectorAll('.modal-edicion').forEach(m => m.remove());
+            cargarTablaProductosAdmin();
+        } else {
+            mostrarNotificacion('<i class="fa-solid fa-circle-xmark"></i> ' + (data.error || 'Error al actualizar'), 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        mostrarNotificacion('<i class="fa-solid fa-plug-circle-xmark"></i> Error de conexión', 'error');
+    }
+}
 
 // ============================================
 // ACCIONES DE VENTAS Y DEVOLUCIONES
@@ -560,7 +771,7 @@ async function actualizarEstadoCompra(id, estado) {
     try {
         const res = await fetch(`${API_URL}/admin/compras/${id}/estado`, { method: 'PUT', headers: { ...API.getHeaders(), 'Content-Type': 'application/json' }, body: JSON.stringify({ estado }) });
         const data = await res.json();
-        if (data.success) { mostrarNotificacion('✅ Estado actualizado'); cargarTablaVentas(); }
+        if (data.success) { mostrarNotificacion('<i class="fa-solid fa-circle-check"></i> Estado actualizado', 'success'); cargarTablaVentas(); }
     } catch (error) { console.error(error); }
 }
 
@@ -568,7 +779,7 @@ async function aprobarDevolucion(id) {
     try {
         const res = await fetch(`${API_URL}/admin/devoluciones/${id}/aprobar`, { method: 'PUT', headers: API.getHeaders() });
         const data = await res.json();
-        if (data.success) { mostrarNotificacion('✅ Devolución aprobada'); cargarTablaDevoluciones(); }
+        if (data.success) { mostrarNotificacion('<i class="fa-solid fa-circle-check"></i> Devolución aprobada', 'success'); cargarTablaDevoluciones(); }
     } catch (error) { console.error(error); }
 }
 
@@ -576,7 +787,7 @@ async function rechazarDevolucion(id) {
     try {
         const res = await fetch(`${API_URL}/admin/devoluciones/${id}/rechazar`, { method: 'PUT', headers: API.getHeaders() });
         const data = await res.json();
-        if (data.success) { mostrarNotificacion('<i class="fa-solid fa-xmark"></i> Devolución rechazada'); cargarTablaDevoluciones(); }
+        if (data.success) { mostrarNotificacion('<i class="fa-solid fa-circle-xmark"></i> Devolución rechazada', 'success'); cargarTablaDevoluciones(); }
     } catch (error) { console.error(error); }
 }
 
@@ -599,6 +810,8 @@ window.verificarProveedor = verificarProveedor;
 window.desactivarProducto = desactivarProducto;
 window.activarProducto = activarProducto;
 window.editarProductoAdmin = editarProductoAdmin;
+window.abrirModalEdicionAdmin = abrirModalEdicionAdmin;
+window.guardarEdicionAdmin = guardarEdicionAdmin;
 window.actualizarEstadoCompra = actualizarEstadoCompra;
 window.aprobarDevolucion = aprobarDevolucion;
 window.rechazarDevolucion = rechazarDevolucion;

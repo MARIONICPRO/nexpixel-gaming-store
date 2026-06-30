@@ -150,68 +150,58 @@ export const adminController = {
       res.status(500).json({ success: false, error: error.message });
     }
   },
-  // backend/src/controllers/adminController.js
 
-// Agregar esta función junto a las otras de usuarios
-async cambiarRolUsuario(req, res) {
+  async cambiarRolUsuario(req, res) {
     try {
-        const { id } = req.params;
-        const { tipo_usuario } = req.body;
-        
-        // Validar que el rol sea válido
-        const rolesPermitidos = ['cliente', 'proveedor', 'admin'];
-        if (!rolesPermitidos.includes(tipo_usuario)) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'Rol no válido. Los roles permitidos son: cliente, proveedor, admin' 
-            });
-        }
-        
-        // No permitir cambiar el propio rol
-        if (req.usuario.id_usuario === parseInt(id)) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'No puedes cambiar tu propio rol' 
-            });
-        }
-        
-        // Verificar que el usuario existe
-        const { data: usuario, error: errorFind } = await supabase
-            .from('usuarios')
-            .select('*')
-            .eq('id_usuario', id)
-            .single();
-        
-        if (errorFind || !usuario) {
-            return res.status(404).json({ 
-                success: false, 
-                error: 'Usuario no encontrado' 
-            });
-        }
-        
-        // Actualizar el rol
-        const { data, error } = await supabase
-            .from('usuarios')
-            .update({ tipo_usuario: tipo_usuario })
-            .eq('id_usuario', id)
-            .select();
-        
-        if (error) throw error;
-        
-        res.json({ 
-            success: true, 
-            message: `Rol cambiado a ${tipo_usuario} correctamente`,
-            usuario: data[0]
+      const { id } = req.params;
+      const { tipo_usuario } = req.body;
+      
+      const rolesPermitidos = ['cliente', 'proveedor', 'admin'];
+      if (!rolesPermitidos.includes(tipo_usuario)) {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'Rol no válido. Los roles permitidos son: cliente, proveedor, admin' 
         });
-        
+      }
+      
+      if (req.usuario.id_usuario === parseInt(id)) {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'No puedes cambiar tu propio rol' 
+        });
+      }
+      
+      const { data: usuario, error: errorFind } = await supabase
+        .from('usuarios')
+        .select('*')
+        .eq('id_usuario', id)
+        .single();
+      
+      if (errorFind || !usuario) {
+        return res.status(404).json({ 
+          success: false, 
+          error: 'Usuario no encontrado' 
+        });
+      }
+      
+      const { data, error } = await supabase
+        .from('usuarios')
+        .update({ tipo_usuario: tipo_usuario })
+        .eq('id_usuario', id)
+        .select();
+      
+      if (error) throw error;
+      
+      res.json({ 
+        success: true, 
+        message: `Rol cambiado a ${tipo_usuario} correctamente`,
+        usuario: data[0]
+      });
     } catch (error) {
-        console.error('Error cambiando rol:', error);
-        res.status(500).json({ 
-            success: false, 
-            error: error.message 
-        });
+      console.error('Error cambiando rol:', error);
+      res.status(500).json({ success: false, error: error.message });
     }
-},
+  },
 
   async eliminarUsuario(req, res) {
     try {
@@ -221,7 +211,6 @@ async cambiarRolUsuario(req, res) {
         return res.status(400).json({ success: false, error: 'No puedes eliminarte a ti mismo' });
       }
       
-      // Cambiar estado a 'inactivo' en lugar de eliminar físicamente
       const { data, error } = await supabase
         .from('usuarios')
         .update({ estado: 'inactivo' })
@@ -229,7 +218,6 @@ async cambiarRolUsuario(req, res) {
         .select();
       
       if (error) {
-        // Si el error es porque no existe la columna 'estado'
         if (error.message.includes('column')) {
           return res.status(500).json({ 
             success: false, 
@@ -440,6 +428,53 @@ async cambiarRolUsuario(req, res) {
     } catch (error) {
       console.error('Error activando producto:', error);
       res.status(500).json({ success: false, error: error.message });
+    }
+  },
+
+  async actualizarProducto(req, res) {
+    try {
+      const { id } = req.params;
+      const { nombre_producto, precio, stock, estado, descripcion, id_categoria, id_plataforma, genero, edicion, desarrollador, fecha_lanzamiento, valor_tarjeta } = req.body;
+
+      const datosActualizar = {};
+
+      if (nombre_producto !== undefined) datosActualizar.nombre_producto = nombre_producto;
+      if (precio !== undefined) datosActualizar.precio = parseFloat(precio);
+      if (stock !== undefined) {
+        datosActualizar.stock = parseInt(stock);
+        if (parseInt(stock) === 0) {
+          datosActualizar.estado = 'inactivo';
+        }
+      }
+      if (estado !== undefined) datosActualizar.estado = estado;
+      if (descripcion !== undefined) datosActualizar.descripcion = descripcion;
+      if (id_categoria !== undefined) datosActualizar.id_categoria = id_categoria;
+      if (id_plataforma !== undefined) datosActualizar.id_plataforma = id_plataforma;
+      if (genero !== undefined && genero.trim() !== '') datosActualizar.genero = genero;
+      if (edicion !== undefined && edicion.trim() !== '') datosActualizar.edicion = edicion;
+      if (desarrollador !== undefined && desarrollador.trim() !== '') datosActualizar.desarrollador = desarrollador;
+      if (fecha_lanzamiento !== undefined && fecha_lanzamiento.trim() !== '') datosActualizar.fecha_lanzamiento = fecha_lanzamiento;
+      if (valor_tarjeta !== undefined) datosActualizar.valor_tarjeta = parseFloat(valor_tarjeta);
+
+      const { data, error } = await supabase
+        .from('producto')
+        .update(datosActualizar)
+        .eq('id_producto', id)
+        .select();
+
+      if (error) throw error;
+
+      res.json({
+        success: true,
+        message: 'Producto actualizado correctamente',
+        producto: data[0]
+      });
+    } catch (error) {
+      console.error('❌ Error actualizando producto:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Error al actualizar producto: ' + error.message
+      });
     }
   },
 
