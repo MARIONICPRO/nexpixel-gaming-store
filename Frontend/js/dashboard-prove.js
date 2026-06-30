@@ -418,6 +418,10 @@ async function cargarSelectProductos() {
         const data = await response.json();
         const productos = data.productos || [];
         const select = document.getElementById('codigo-producto');
+        if (!select) {
+            console.warn('⚠️ Select de productos no encontrado');
+            return;
+        }
 
         if (productos.length === 0) {
             select.innerHTML = '<option value="">No tienes productos</option>';
@@ -700,11 +704,25 @@ async function guardarEdicionProducto(event, productoId) {
         formData.append('tipo_producto', tipoProducto);
         formData.append('stock', parseInt(document.getElementById('edit-producto-stock').value) || 0);
         formData.append('descripcion', document.getElementById('edit-producto-descripcion')?.value || '');
-        formData.append('genero', document.getElementById('edit-juego-genero')?.value || '');
-        formData.append('edicion', document.getElementById('edit-juego-edicion')?.value || '');
-        formData.append('desarrollador', document.getElementById('edit-juego-desarrollador')?.value || '');
-        formData.append('fecha_lanzamiento', document.getElementById('edit-juego-lanzamiento')?.value || '');
-        formData.append('valor_tarjeta', parseFloat(document.getElementById('edit-tarjeta-valor')?.value) || 0);
+
+        // 🔥 Solo enviar campos según el tipo de producto
+        if (tipoProducto === 'Juego') {
+            const genero = document.getElementById('edit-juego-genero')?.value;
+            const edicion = document.getElementById('edit-juego-edicion')?.value;
+            const desarrollador = document.getElementById('edit-juego-desarrollador')?.value;
+            const fechaLanzamiento = document.getElementById('edit-juego-lanzamiento')?.value;
+            
+            if (genero && genero.trim() !== '') formData.append('genero', genero);
+            if (edicion && edicion.trim() !== '') formData.append('edicion', edicion);
+            if (desarrollador && desarrollador.trim() !== '') formData.append('desarrollador', desarrollador);
+            if (fechaLanzamiento && fechaLanzamiento.trim() !== '') formData.append('fecha_lanzamiento', fechaLanzamiento);
+        } else {
+            // Para tarjetas de regalo
+            const valorTarjeta = document.getElementById('edit-tarjeta-valor')?.value;
+            if (valorTarjeta && valorTarjeta.trim() !== '') {
+                formData.append('valor_tarjeta', valorTarjeta);
+            }
+        }
 
         const fotoInput = document.getElementById('edit-producto-foto-input');
         if (fotoInput && fotoInput.files.length > 0) {
@@ -734,7 +752,8 @@ async function guardarEdicionProducto(event, productoId) {
 
 // ===== UTILIDADES =====
 function escapeHtml(str) {
-    if (!str) return '';
+    if (str === null || str === undefined) return '';
+    if (typeof str !== 'string') str = String(str);
     return str
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
